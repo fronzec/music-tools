@@ -12,7 +12,7 @@
 
 <div
   id="legend-panel"
-  style="max-height: {open ? '500px' : '0'}; overflow: hidden; transition: max-height 0.3s ease"
+  style="max-height: {open ? '700px' : '0'}; overflow: hidden; transition: max-height 0.3s ease"
   role="region"
   aria-label="Fretboard legend"
 >
@@ -35,15 +35,32 @@
     <div class="space-y-2">
       <div class="flex items-center gap-2">
         <span class="text-blue-600 font-bold shrink-0">◆</span>
-        <span class="text-sm text-gray-700">Root note</span>
+        <span class="text-sm text-gray-700">Root note — name inside</span>
       </div>
       <div class="flex items-center gap-2">
         <span class="text-green-600 font-bold shrink-0">●</span>
-        <span class="text-sm text-gray-700">Chord tone</span>
+        <span class="text-sm text-gray-700">Chord tone — name inside</span>
+      </div>
+    </div>
+
+    <!-- Interval Labels -->
+    <h3 class="mt-4 mb-3 text-sm font-semibold text-gray-800">Labels</h3>
+    <div class="space-y-2">
+      <div class="flex items-center gap-2">
+        <span class="font-mono font-bold text-gray-700 shrink-0">R</span>
+        <span class="text-sm text-gray-700">Root</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-gray-400 shrink-0">○</span>
-        <span class="text-sm text-gray-700">Overlapping note</span>
+        <span class="font-mono font-bold text-gray-700 shrink-0">3</span>
+        <span class="text-sm text-gray-700">Major third</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-mono font-bold text-gray-700 shrink-0">b3</span>
+        <span class="text-sm text-gray-700">Minor third</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-mono font-bold text-gray-700 shrink-0">5</span>
+        <span class="text-sm text-gray-700">Perfect fifth</span>
       </div>
     </div>
 
@@ -51,12 +68,12 @@
     <h3 class="mt-4 mb-3 text-sm font-semibold text-gray-800">Open &amp; Muted</h3>
     <div class="space-y-2">
       <div class="flex items-center gap-2">
-        <span class="font-mono font-bold text-gray-700 shrink-0">O</span>
-        <span class="text-sm text-gray-700">Open string</span>
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold text-white bg-blue-600 shrink-0">O</span>
+        <span class="text-sm text-gray-700">Open string — color shows shape</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="font-mono font-bold text-gray-700 shrink-0">×</span>
-        <span class="text-sm text-gray-700">Muted string</span>
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold text-white bg-blue-600/40 shrink-0">×</span>
+        <span class="text-sm text-gray-700">Muted string — dimmed for muted</span>
       </div>
     </div>
 
