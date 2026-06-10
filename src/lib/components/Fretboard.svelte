@@ -4,6 +4,7 @@
   import { semitoneToNoteName } from '$lib/theory/notes';
   import {
     L,
+    FL,
     stringY,
     fretLineX,
     noteX,
@@ -20,6 +21,9 @@
   }
 
   let { shape, labelMode, showNotes = true, width }: Props = $props();
+
+  // ── Reduced motion ─────────────────────────────────────────────
+  let reducedMotion = $state(typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   // ── Fret range calculation ──────────────────────────────────────
   // In open position (baseFret === 1): frets are absolute (0 = open, 1 = 1st fret, …)
@@ -213,6 +217,7 @@
       fill="#3B82F6"
       opacity="0.75"
       rx="2"
+      style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
     />
   {/if}
 
@@ -230,24 +235,42 @@
         {@const label = getLabel(i, absFret, interval)}
 
         {#if cls === 'root'}
-          <circle cx={cx} cy={cy} r={L.ROOT_R} fill="#3B82F6" stroke="#2563EB" stroke-width="1" />
+          <circle cx={cx} cy={cy} r={L.ROOT_R} fill="#3B82F6" stroke="#2563EB" stroke-width="1"
+            style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {:else if cls === 'tone'}
-          <circle cx={cx} cy={cy} r={L.TONE_R} fill="#22C55E" stroke="#16A34A" stroke-width="1" />
+          <circle cx={cx} cy={cy} r={L.TONE_R} fill="#22C55E" stroke="#16A34A" stroke-width="1"
+            style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {:else}
-          <circle cx={cx} cy={cy} r={L.OTHER_R} fill="none" stroke="#9CA3AF" stroke-width="1.5" />
+          <circle cx={cx} cy={cy} r={L.OTHER_R} fill="none" stroke="#9CA3AF" stroke-width="1.5"
+            style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {/if}
 
         {#if label}
-          <text
-            x={cx}
-            y={cy - L.ROOT_R - 4}
-            text-anchor="middle"
-            font-size={L.LABEL_FS}
-            fill="#374151"
-            font-weight="bold"
-          >{label}</text>
+          <g
+            transform="translate({cx},{cy - L.ROOT_R - 4})"
+            style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+          >
+            <text
+              x="0"
+              y="0"
+              text-anchor="middle"
+              font-size={L.LABEL_FS}
+              fill="#374151"
+              font-weight="bold"
+            >{label}</text>
+          </g>
         {/if}
       {/if}
     {/each}
   {/if}
 </svg>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    circle[style*="transition"],
+    rect[style*="transition"],
+    g[style*="transition: transform"] {
+      transition: none !important;
+    }
+  }
+</style>

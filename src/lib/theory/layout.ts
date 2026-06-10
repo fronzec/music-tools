@@ -35,6 +35,10 @@ export const FL = {
   NOTE_OPACITY: 0.75,
   /** Opacity for barre indicator rectangles. */
   BARRE_OPACITY: 0.35,
+  /** CSS transition duration for animated shape changes. */
+  ANIM_DURATION: '0.3s',
+  /** CSS transition timing function for animated shape changes. */
+  ANIM_EASING: 'ease-out',
 } as const;
 
 /** Per-shape colors for the CAGED full-neck overlay. */
