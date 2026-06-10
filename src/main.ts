@@ -1,10 +1,11 @@
+import { mount } from 'svelte';
 import App from './App.svelte';
 import './app.css';
 
 const target = document.getElementById('app')!;
 
 try {
-  new App({ target });
+  mount(App, { target });
   console.log('[music-tools] App mounted');
 } catch (err) {
   console.error('[music-tools] Failed to mount:', err);
