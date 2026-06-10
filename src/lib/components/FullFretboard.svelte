@@ -363,27 +363,26 @@
     {/if}
   {/each}
 
-  <!-- Open/Muted indicators — per-(baseFret, stringIndex) groups -->
+  <!-- Open/Muted indicators — animated per shape, keyed by shape-string -->
   {#each positionIndicators as group (group.baseFret + '-' + group.stringIndex)}
-    {@const cx = indicatorX(group.baseFret, minFret) - 8}
-    {@const cy = stringY(group.stringIndex)}
+    {#each group.indicators as indicator, j (indicator.shape + '-' + group.stringIndex)}
+      {@const cx = indicatorX(group.baseFret, minFret) - 8 + j * 20}
+      {@const cy = stringY(group.stringIndex)}
 
-    <g
-      style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
-      transform="translate({cx}, {cy})"
-    >
-      {#each group.indicators as indicator, j}
-        {@const ix = j * 20}
-        <rect x={ix - 9} y="-8" width="18" height="16" rx="5" class="indicator-badge"
+      <g
+        style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+        transform="translate({cx}, {cy})"
+      >
+        <rect x="-9" y="-8" width="18" height="16" rx="5" class="indicator-badge"
               fill={indicator.color}
               opacity={indicator.type === 'muted' ? 0.4 : 0.85} />
-        <text x={ix} y="3" text-anchor="middle"
+        <text x="0" y="3" text-anchor="middle"
               font-size="11" fill="white"
               font-weight="bold">
           {indicator.type === 'open' ? 'O' : '×'}
         </text>
-      {/each}
-    </g>
+      </g>
+    {/each}
   {/each}
 
   <!-- Note rendering with shape-keyed animation -->
