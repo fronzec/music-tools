@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ChordShape, LabelMode, CagedShape } from '$lib/types/chord';
   import { STANDARD_TUNING, CAGED_ORDER } from '$lib/types/chord';
-  import { buildPositionMap, type NoteEntry } from '$lib/theory/fretboard';
+  import { buildPositionMap, type NoteEntry, type DiffEntry } from '$lib/theory/fretboard';
   import { semitoneToNoteName } from '$lib/theory/notes';
   import {
     L,
@@ -20,9 +20,10 @@
     visibleShapes: Set<CagedShape>;
     labelMode: LabelMode;
     width?: number;
+    highlightPositions?: Map<string, DiffEntry>;
   }
 
-  let { shapes, visibleShapes, labelMode, width }: Props = $props();
+  let { shapes, visibleShapes, labelMode, width, highlightPositions }: Props = $props();
 
   // ── Fret range calculation ──────────────────────────────────────
 
@@ -370,6 +371,51 @@
           font-weight="bold"
           style="pointer-events:none"
         >{getNoteName(entry.stringIndex, entry.absFret)}</text>
+      {/if}
+    {/if}
+
+    <!-- Highlight diff ring -->
+    {#if highlightPositions?.has(_key)}
+      {@const diff = highlightPositions.get(_key)!}
+      {@const ringR = (entry.isRoot ? FL.ROOT_DIAMOND_R : L.TONE_R) + 4}
+      {#if diff.type === 'different'}
+        {#if entry.isRoot}
+          <polygon
+            points={diamondPoints(cx, cy, ringR)}
+            fill="none"
+            stroke="#F59E0B"
+            stroke-width="2"
+            stroke-dasharray="3 2"
+            opacity="0.6"
+          />
+        {:else}
+          <circle
+            cx={cx} cy={cy} r={ringR}
+            fill="none"
+            stroke="#F59E0B"
+            stroke-width="2"
+            stroke-dasharray="3 2"
+            opacity="0.6"
+          />
+        {/if}
+      {:else if diff.type === 'same'}
+        {#if entry.isRoot}
+          <polygon
+            points={diamondPoints(cx, cy, ringR)}
+            fill="none"
+            stroke="#22C55E"
+            stroke-width="1.5"
+            opacity="0.5"
+          />
+        {:else}
+          <circle
+            cx={cx} cy={cy} r={ringR}
+            fill="none"
+            stroke="#22C55E"
+            stroke-width="1.5"
+            opacity="0.5"
+          />
+        {/if}
       {/if}
     {/if}
 

@@ -9,12 +9,12 @@
 | Chained PRs recommended | No |
 | Suggested split | Single PR; optional 2-PR split: (1) extract utility + refactor, (2) highlight rings + dual diff |
 | Delivery strategy | ask-on-risk |
-| Chain strategy | pending |
+| Chain strategy | stacked-to-main |
 
-Decision needed before apply: Yes
-Chained PRs recommended: No
-Chain strategy: pending
-400-line budget risk: Medium
+Decision needed before apply: No (resolved — stacked-to-main, PR 2 of 2)
+Chained PRs recommended: Yes (done)
+Chain strategy: stacked-to-main
+400-line budget risk: Medium (distributed across 2 PRs)
 
 ### Suggested Work Units
 
@@ -30,22 +30,22 @@ Chain strategy: pending
 
 ## Phase 2: Highlight Rendering (FullFretboard)
 
-- [ ] 2.1 Add optional `highlightPositions?: Map<string, DiffEntry>` to `FullFretboard` Props interface
-- [ ] 2.2 Insert ring rendering in note loop (after shape, before label): green solid polygon/circle (`#22C55E`, opacity 0.5) for `type: 'same'`, amber dashed (`#F59E0B`, `stroke-dasharray="3 2"`, opacity 0.6) for `type: 'different'`, ring radius = shape radius + 4
-- [ ] 2.3 Verify backward compatibility — no visual change when `highlightPositions` absent; existing tests pass
+- [x] 2.1 Add optional `highlightPositions?: Map<string, DiffEntry>` to `FullFretboard` Props interface
+- [x] 2.2 Insert ring rendering in note loop (after shape, before label): green solid polygon/circle (`#22C55E`, opacity 0.5) for `type: 'same'`, amber dashed (`#F59E0B`, `stroke-dasharray="3 2"`, opacity 0.6) for `type: 'different'`, ring radius = shape radius + 4
+- [x] 2.3 Verify backward compatibility — no visual change when `highlightPositions` absent; existing tests pass
 
 ## Phase 3: Diff Computation (DualFretboard)
 
-- [ ] 3.1 Import `buildPositionMap`, `DiffEntry` into `DualFretboard.svelte`
-- [ ] 3.2 Add `diffPositions` `$derived.by()` — call `buildPositionMap` for both fretboards, intersect keys, skip `null` intervals, classify shared as `'same'` (equal interval strings) or `'different'`
-- [ ] 3.3 Pass `highlightPositions={diffPositions}` to both `<FullFretboard>` instances
+- [x] 3.1 Import `buildPositionMap`, `DiffEntry` into `DualFretboard.svelte`
+- [x] 3.2 Add `diffPositions` `$derived.by()` — call `buildPositionMap` for both fretboards, intersect keys, skip `null` intervals, classify shared as `'same'` (equal interval strings) or `'different'`
+- [x] 3.3 Pass `highlightPositions={diffPositions}` to both `<FullFretboard>` instances
 
 ## Phase 4: Testing
 
-- [ ] 4.1 Test `buildPositionMap()` — empty shapes, single shape, multi-shape overlap, barre `absFret` computation, CAGED_ORDER sort
-- [ ] 4.2 Test diff classification — same interval → `'same'`, different → `'different'`, null intervals excluded, unique positions absent from map
-- [ ] 4.3 Test `FullFretboard` rings — green ring for `'same'` entry, amber dashed for `'different'`, no rings when prop absent, ring matches note shape (polygon for root, circle for tone)
-- [ ] 4.4 Test `DualFretboard` integration — identical shapes yield all-green, different roots yield mix, no overlap yields zero highlights, empty one side yields no highlights
+- [x] 4.1 Test `buildPositionMap()` — empty shapes, single shape, multi-shape overlap, barre `absFret` computation, CAGED_ORDER sort
+- [x] 4.2 Test diff classification — same interval → `'same'`, different → `'different'`, null intervals excluded, unique positions absent from map
+- [x] 4.3 Test `FullFretboard` rings — green ring for `'same'` entry, amber dashed for `'different'`, no rings when prop absent, ring matches note shape (polygon for root, circle for tone)
+- [x] 4.4 Test `DualFretboard` integration — identical shapes yield all-green, different roots yield mix, no overlap yields zero highlights, empty one side yields no highlights
 
 ## Dependencies
 
