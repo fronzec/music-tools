@@ -13,6 +13,7 @@
     viewBoxW,
     viewBoxH,
     FRET_MARKERS,
+    indicatorX,
   } from '$lib/theory/layout';
 
   interface Props {
@@ -40,8 +41,8 @@
   let displaySpan = $derived(FL.MIN_FRET_SPAN); // always 14
 
   /**
-   * Open position only if at least one visible shape is at/near the nut.
-   * Determines whether to show O/X indicators.
+   * True if at least one visible shape is at/near the nut.
+   * Controls nut vs. barre-label rendering.
    */
   let isOpenPosition = $derived(
     visibleShapeData.some((s) => s.baseFret === 0),
@@ -50,39 +51,39 @@
   // ── Open/Muted indicator pre-computation ────────────────────────
 
   /**
-   * Pre-computes per-string O/× indicator data across all visible shapes.
-   * Each string gets a horizontal row of tiny colored indicators (one per visible shape).
-   * Only computed when isOpenPosition is true; otherwise empty.
+   * Groups O/× indicators by (baseFret, stringIndex) across all visible shapes.
+   * Each group is positioned at its shape's base position and animates with it.
    */
-  let stringIndicators = $derived.by(() => {
-    const result: Array<{
+  let positionIndicators = $derived.by(() => {
+    const groups = new Map<string, {
+      baseFret: number;
       stringIndex: number;
       indicators: Array<{ shape: CagedShape; type: 'open' | 'muted'; color: string }>;
-    }> = [];
+    }>();
 
-    if (!isOpenPosition) return result;
+    for (const shapeType of CAGED_ORDER) {
+      const shape = shapes.find((s) => s.shape === shapeType);
+      if (!shape || !visibleShapes.has(shapeType)) continue;
 
-    for (let i = 0; i < 6; i++) {
-      const row: typeof result[0]['indicators'] = [];
-
-      for (const shapeType of CAGED_ORDER) {
-        const shape = shapes.find((s) => s.shape === shapeType);
-        if (!shape || !visibleShapes.has(shapeType)) continue;
-
+      const isBarre = shape.baseFret > 0;
+      for (let i = 0; i < 6; i++) {
         const fret = shape.frets[i];
-        if (fret === 0) {
-          row.push({ shape: shapeType, type: 'open', color: SHAPE_COLORS[shapeType] });
-        } else if (fret === null) {
-          row.push({ shape: shapeType, type: 'muted', color: SHAPE_COLORS[shapeType] });
+        // barre strings (fret=0 in barre position): barre rect renders, skip O indicator
+        if (fret === null || (fret === 0 && !isBarre)) {
+          const key = `${shape.baseFret}-${i}`;
+          if (!groups.has(key)) {
+            groups.set(key, { baseFret: shape.baseFret, stringIndex: i, indicators: [] });
+          }
+          groups.get(key)!.indicators.push({
+            shape: shapeType,
+            type: fret === 0 ? 'open' : 'muted',
+            color: SHAPE_COLORS[shapeType],
+          });
         }
-      }
-
-      if (row.length > 0) {
-        result.push({ stringIndex: i, indicators: row });
       }
     }
 
-    return result;
+    return [...groups.values()];
   });
 
   // ── ViewBox ─────────────────────────────────────────────────────
@@ -362,25 +363,28 @@
     {/if}
   {/each}
 
-  <!-- Open/Muted indicators — deduplicated per-string row at nut -->
-  {#if isOpenPosition}
-    {#each stringIndicators as { stringIndex, indicators } (stringIndex)}
-      {@const cy = stringY(stringIndex) - L.ROOT_R - 4}
-      <g transform="translate({L.LEFT_PAD + L.NUT_W + 6}, {cy})">
-        {#each indicators as indicator, j}
-          <text
-            x={j * FL.INDICATOR_SP}
-            y="0"
-            text-anchor="middle"
-            font-size={FL.INDICATOR_FS}
-            fill={indicator.color}
-            font-weight="bold"
-            opacity={indicator.type === 'muted' ? 0.65 : 0.85}
-          >{indicator.type === 'open' ? 'O' : '×'}</text>
-        {/each}
-      </g>
-    {/each}
-  {/if}
+  <!-- Open/Muted indicators — per-(baseFret, stringIndex) groups -->
+  {#each positionIndicators as group (group.baseFret + '-' + group.stringIndex)}
+    {@const cx = indicatorX(group.baseFret, minFret)}
+    {@const cy = stringY(group.stringIndex) - L.ROOT_R - 4}
+
+    <g
+      style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+      transform="translate({cx}, {cy})"
+    >
+      {#each group.indicators as indicator, j}
+        <text
+          x={j * FL.INDICATOR_SP}
+          y="0"
+          text-anchor="middle"
+          font-size={FL.INDICATOR_FS}
+          fill={indicator.color}
+          font-weight="bold"
+          opacity={indicator.type === 'muted' ? 0.65 : 0.85}
+        >{indicator.type === 'open' ? 'O' : '×'}</text>
+      {/each}
+    </g>
+  {/each}
 
   <!-- Note rendering with shape-keyed animation -->
   {#each allNotes as note (note.stableKey)}

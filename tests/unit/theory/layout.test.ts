@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { L, FL, SHAPE_COLORS, stringY, fretLineX, noteX, viewBoxW, viewBoxH, FRET_MARKERS } from '$lib/theory/layout';
+import { L, FL, SHAPE_COLORS, stringY, fretLineX, noteX, viewBoxW, viewBoxH, FRET_MARKERS, indicatorX } from '$lib/theory/layout';
 
 describe('layout constants', () => {
   it('has expected TOP_PAD', () => {
@@ -102,6 +102,22 @@ describe('viewBoxH', () => {
   it('returns height for 6 strings', () => {
     const expected = L.TOP_PAD + 5 * L.STRING_SP + L.BOTTOM_PAD;
     expect(viewBoxH()).toBe(expected);
+  });
+});
+
+describe('indicatorX', () => {
+  it('returns LEFT_PAD + NUT_W + 6 for baseFret === 0 (nut area)', () => {
+    expect(indicatorX(0, 0)).toBe(L.LEFT_PAD + L.NUT_W + 6);
+  });
+
+  it('returns fretLineX(3) - FRET_SP/2 - 8 for baseFret=3 minFret=0', () => {
+    // fretLineX(3) = 12+6+150 = 168; FRET_SP/2 = 25; 168-25-8 = 135
+    expect(indicatorX(3, 0)).toBe(fretLineX(3) - L.FRET_SP / 2 - 8);
+  });
+
+  it('handles non-zero minFret (barre offset)', () => {
+    // minFret=2: fretLineX(5-2) = fretLineX(3) = 168; 168-25-8=135
+    expect(indicatorX(5, 2)).toBe(fretLineX(3) - L.FRET_SP / 2 - 8);
   });
 });
 

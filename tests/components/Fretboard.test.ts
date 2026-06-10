@@ -457,6 +457,38 @@ describe('Fretboard', () => {
         expect(x.getAttribute('opacity')).toBe('0.6');
       });
     });
+
+    it('shows × for muted string in barre position', () => {
+      // G shape at baseFret=3 with a muted string
+      const shape = makeCShape({
+        shape: 'G',
+        baseFret: 3,
+        frets: [3, 2, 0, null, 0, 3],
+        intervals: ['R', '3', '5', null, 'R', '3'],
+        rootString: 0,
+      });
+      const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
+      const texts = [...container.querySelectorAll('text')];
+      const xMarkers = texts.filter((t) => t.textContent === '×');
+      // String 3 is null → ×
+      expect(xMarkers.length).toBe(1);
+      expect(xMarkers[0]!.getAttribute('fill')).toBe('#16A34A'); // G color
+    });
+
+    it('barre-position indicator X uses barre-area offset', () => {
+      const shape = makeCShape({
+        shape: 'G',
+        baseFret: 3,
+        frets: [3, 2, 0, null, 0, 3],
+        intervals: ['R', '3', '5', null, 'R', '3'],
+        rootString: 0,
+      });
+      const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
+      const texts = [...container.querySelectorAll('text')];
+      const xMarker = texts.find((t) => t.textContent === '×')!;
+      const barreX = L.LEFT_PAD + L.NUT_W - L.FRET_SP / 2 - 8; // fretLineX(0) - FRET_SP/2 - 8
+      expect(xMarker.getAttribute('x')).toBe(String(barreX));
+    });
   });
 
   describe('barre indicator', () => {

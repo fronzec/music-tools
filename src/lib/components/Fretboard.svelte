@@ -184,9 +184,13 @@
   <!-- Open (O) / muted (×) indicators -->
   {#each [0, 1, 2, 3, 4, 5] as i (i)}
     {@const fret = shape.frets[i]!}
+    {@const indicatorXPos = isBarre
+      ? fretLineX(0) - L.FRET_SP / 2 - 8
+      : L.LEFT_PAD + L.NUT_W / 2}
+
     {#if fret === 0 && !isBarre}
       <text
-        x={L.LEFT_PAD + L.NUT_W / 2}
+        x={indicatorXPos}
         y={stringY(i) - L.ROOT_R - 2}
         text-anchor="middle"
         font-size={L.LABEL_FS + 2}
@@ -195,7 +199,7 @@
       >O</text>
     {:else if fret === null}
       <text
-        x={L.LEFT_PAD + L.NUT_W / 2}
+        x={indicatorXPos}
         y={stringY(i) - L.ROOT_R - 2}
         text-anchor="middle"
         font-size={L.LABEL_FS + 2}
