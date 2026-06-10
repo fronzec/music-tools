@@ -369,7 +369,7 @@ describe('CagedTool', () => {
 
       const grids = container.querySelectorAll('.grid');
       const shapeGrid = [...grids].find((g) =>
-        g.className.includes('grid-cols-1'),
+        g.className.includes('lg:grid-cols-3'),
       );
       expect(shapeGrid).toBeTruthy();
       const classList = shapeGrid!.className;

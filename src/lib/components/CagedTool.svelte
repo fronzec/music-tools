@@ -66,12 +66,12 @@
     CAGED Chord Visualizer
   </h1>
 
-  <!-- Controls bar: chord selector + quality toggle + label toggle -->
-  <div class="mb-8 space-y-6">
-    <!-- Chord selector: 12 chromatic buttons -->
-    <div>
-      <div class="mb-2 text-sm font-medium text-gray-600" id="chord-label">Chord</div>
-      <div class="flex flex-wrap gap-1.5" role="group" aria-labelledby="chord-label">
+  <!-- Controls bar: card-based layout -->
+  <div class="mb-8 space-y-4">
+    <!-- Chord selector card -->
+    <div class="rounded-xl border border-gray-200 bg-white p-4">
+      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Chord</div>
+      <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select chord root">
         {#each CHROMATIC as note (note)}
           <button
             aria-label="Select {note} chord"
@@ -93,9 +93,9 @@
 
     <!-- Second root selector (dual mode only) -->
     {#if viewMode === 'dual'}
-      <div>
-        <div class="mb-2 text-sm font-medium text-gray-600" id="second-root-label">To</div>
-        <div class="flex flex-wrap gap-1.5" role="group" aria-labelledby="second-root-label">
+      <div class="rounded-xl border border-gray-200 bg-white p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">To</div>
+        <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select second root">
           {#each CHROMATIC as note (note)}
             <button
               aria-label="Select {note} as second root"
@@ -116,183 +116,156 @@
       </div>
     {/if}
 
-    <!-- Major/Minor toggle -->
-    <div class="flex flex-wrap items-center gap-3">
-      <div class="text-sm font-medium text-gray-600" id="quality-label">Quality</div>
-      <div
-        class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5"
-        role="radiogroup"
-        aria-labelledby="quality-label"
-      >
-        <button
-          class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-          class:bg-white={selectedQuality === 'major'}
-          class:text-gray-900={selectedQuality === 'major'}
-          class:shadow-sm={selectedQuality === 'major'}
-          class:text-gray-500={selectedQuality !== 'major'}
-          class:hover:text-gray-700={selectedQuality !== 'major'}
-          role="radio"
-          aria-checked={selectedQuality === 'major'}
-          onclick={() => (selectedQuality = 'major')}
-        >
-          Major
-        </button>
-        <button
-          class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-          class:bg-white={selectedQuality === 'minor'}
-          class:text-gray-900={selectedQuality === 'minor'}
-          class:shadow-sm={selectedQuality === 'minor'}
-          class:text-gray-500={selectedQuality !== 'minor'}
-          class:hover:text-gray-700={selectedQuality !== 'minor'}
-          role="radio"
-          aria-checked={selectedQuality === 'minor'}
-          onclick={() => (selectedQuality = 'minor')}
-        >
-          Minor
-        </button>
-      </div>
-    </div>
-
-    <!-- Label mode toggle -->
-    <div class="flex flex-wrap items-center gap-3">
-      <div class="text-sm font-medium text-gray-600" id="label-mode-label">Labels</div>
-      <div
-        class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5"
-        role="radiogroup"
-        aria-labelledby="label-mode-label"
-      >
-        <button
-          class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-          class:bg-white={labelMode === 'intervals'}
-          class:text-gray-900={labelMode === 'intervals'}
-          class:shadow-sm={labelMode === 'intervals'}
-          class:text-gray-500={labelMode !== 'intervals'}
-          class:hover:text-gray-700={labelMode !== 'intervals'}
-          role="radio"
-          aria-checked={labelMode === 'intervals'}
-          onclick={() => (labelMode = 'intervals')}
-        >
-          Intervals
-        </button>
-        <button
-          class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-          class:bg-white={labelMode === 'notes'}
-          class:text-gray-900={labelMode === 'notes'}
-          class:shadow-sm={labelMode === 'notes'}
-          class:text-gray-500={labelMode !== 'notes'}
-          class:hover:text-gray-700={labelMode !== 'notes'}
-          role="radio"
-          aria-checked={labelMode === 'notes'}
-          onclick={() => (labelMode = 'notes')}
-        >
-          Notes
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- View mode toggle -->
-  <div class="mb-6 flex flex-wrap items-center gap-3">
-    <div class="text-sm font-medium text-gray-600" id="view-mode-label">View</div>
-    <div
-      class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5"
-      role="radiogroup"
-      aria-labelledby="view-mode-label"
-    >
-      <button
-        class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-        class:bg-white={viewMode === 'full'}
-        class:text-gray-900={viewMode === 'full'}
-        class:shadow-sm={viewMode === 'full'}
-        class:text-gray-500={viewMode !== 'full'}
-        class:hover:text-gray-700={viewMode !== 'full'}
-        role="radio"
-        aria-checked={viewMode === 'full'}
-        aria-label="Full Neck view"
-        onclick={() => (viewMode = 'full')}
-      >
-        Full Neck
-      </button>
-      <button
-        class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-        class:bg-white={viewMode === 'grid'}
-        class:text-gray-900={viewMode === 'grid'}
-        class:shadow-sm={viewMode === 'grid'}
-        class:text-gray-500={viewMode !== 'grid'}
-        class:hover:text-gray-700={viewMode !== 'grid'}
-        role="radio"
-        aria-checked={viewMode === 'grid'}
-        aria-label="Shape Grid view"
-        onclick={() => (viewMode = 'grid')}
-      >
-        Shape Grid
-      </button>
-      <button
-        class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-        class:bg-white={viewMode === 'dual'}
-        class:text-gray-900={viewMode === 'dual'}
-        class:shadow-sm={viewMode === 'dual'}
-        class:text-gray-500={viewMode !== 'dual'}
-        class:hover:text-gray-700={viewMode !== 'dual'}
-        role="radio"
-        aria-checked={viewMode === 'dual'}
-        aria-label="Dual Compare view"
-        onclick={() => (viewMode = 'dual')}
-      >
-        Dual Compare
-      </button>
-    </div>
-  </div>
-
-  <!-- Legend toggle button -->
-  <div class="mb-6">
-    <button
-      class="rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200"
-      class:bg-blue-600={legendOpen}
-      class:text-white={legendOpen}
-      class:bg-gray-100={!legendOpen}
-      class:text-gray-700={!legendOpen}
-      class:hover:bg-gray-200={!legendOpen}
-      aria-expanded={legendOpen}
-      aria-controls="legend-panel"
-      aria-label="Toggle legend"
-      onclick={() => (legendOpen = !legendOpen)}
-    >
-      Legend
-    </button>
-  </div>
-
-  <!-- Legend panel -->
-  <LegendPanel open={legendOpen} viewMode={viewMode} />
-
-  <!-- Shape toggle bar (only in Full Neck mode) -->
-  {#if viewMode === 'full'}
-    <div class="mb-6 flex flex-wrap items-center gap-3">
-      <div class="text-sm font-medium text-gray-600" id="shape-toggle-label">Shapes</div>
-      <div class="flex flex-wrap gap-2" role="group" aria-labelledby="shape-toggle-label">
-        {#each CAGED_ORDER as shapeName (shapeName)}
-          {@const color = SHAPE_COLORS[shapeName]}
-          {@const isActive = visibleShapes.has(shapeName)}
+    <!-- Quality + Labels + View + Legend: grid of cards -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Quality card -->
+      <div class="rounded-xl border border-gray-200 bg-white p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Quality</div>
+        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5" role="radiogroup" aria-label="Quality">
           <button
-            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
-            class:border={true}
-            style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
-            aria-label="Toggle {shapeName} shape"
-            aria-pressed={isActive}
-            onclick={() => toggleShape(shapeName)}
-          >
-            <span
-              class="inline-block h-3 w-3 rounded-full"
-              style="background-color: {color}"
-              class:ring-1={!isActive}
-              class:ring-white={!isActive}
-            ></span>
-            {shapeName}
-          </button>
-        {/each}
+            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+            class:bg-white={selectedQuality === 'major'}
+            class:text-gray-900={selectedQuality === 'major'}
+            class:shadow-sm={selectedQuality === 'major'}
+            class:text-gray-500={selectedQuality !== 'major'}
+            class:hover:text-gray-700={selectedQuality !== 'major'}
+            role="radio"
+            aria-checked={selectedQuality === 'major'}
+            onclick={() => (selectedQuality = 'major')}
+          >Major</button>
+          <button
+            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+            class:bg-white={selectedQuality === 'minor'}
+            class:text-gray-900={selectedQuality === 'minor'}
+            class:shadow-sm={selectedQuality === 'minor'}
+            class:text-gray-500={selectedQuality !== 'minor'}
+            class:hover:text-gray-700={selectedQuality !== 'minor'}
+            role="radio"
+            aria-checked={selectedQuality === 'minor'}
+            onclick={() => (selectedQuality = 'minor')}
+          >Minor</button>
+        </div>
+      </div>
+
+      <!-- Labels card -->
+      <div class="rounded-xl border border-gray-200 bg-white p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Labels</div>
+        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5" role="radiogroup" aria-label="Label mode">
+          <button
+            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+            class:bg-white={labelMode === 'intervals'}
+            class:text-gray-900={labelMode === 'intervals'}
+            class:shadow-sm={labelMode === 'intervals'}
+            class:text-gray-500={labelMode !== 'intervals'}
+            class:hover:text-gray-700={labelMode !== 'intervals'}
+            role="radio"
+            aria-checked={labelMode === 'intervals'}
+            onclick={() => (labelMode = 'intervals')}
+          >Intervals</button>
+          <button
+            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+            class:bg-white={labelMode === 'notes'}
+            class:text-gray-900={labelMode === 'notes'}
+            class:shadow-sm={labelMode === 'notes'}
+            class:text-gray-500={labelMode !== 'notes'}
+            class:hover:text-gray-700={labelMode !== 'notes'}
+            role="radio"
+            aria-checked={labelMode === 'notes'}
+            onclick={() => (labelMode = 'notes')}
+          >Notes</button>
+        </div>
+      </div>
+
+      <!-- View mode card -->
+      <div class="rounded-xl border border-gray-200 bg-white p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">View</div>
+        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5" role="radiogroup" aria-label="View mode">
+          <button
+            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+            class:bg-white={viewMode === 'full'}
+            class:text-gray-900={viewMode === 'full'}
+            class:shadow-sm={viewMode === 'full'}
+            class:text-gray-500={viewMode !== 'full'}
+            class:hover:text-gray-700={viewMode !== 'full'}
+            role="radio" aria-checked={viewMode === 'full'}
+            aria-label="Full Neck view"
+            onclick={() => (viewMode = 'full')}
+          >Full Neck</button>
+          <button
+            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+            class:bg-white={viewMode === 'grid'}
+            class:text-gray-900={viewMode === 'grid'}
+            class:shadow-sm={viewMode === 'grid'}
+            class:text-gray-500={viewMode !== 'grid'}
+            class:hover:text-gray-700={viewMode !== 'grid'}
+            role="radio" aria-checked={viewMode === 'grid'}
+            aria-label="Shape Grid view"
+            onclick={() => (viewMode = 'grid')}
+          >Shape Grid</button>
+          <button
+            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+            class:bg-white={viewMode === 'dual'}
+            class:text-gray-900={viewMode === 'dual'}
+            class:shadow-sm={viewMode === 'dual'}
+            class:text-gray-500={viewMode !== 'dual'}
+            class:hover:text-gray-700={viewMode !== 'dual'}
+            role="radio" aria-checked={viewMode === 'dual'}
+            aria-label="Dual Compare view"
+            onclick={() => (viewMode = 'dual')}
+          >Dual Compare</button>
+        </div>
+      </div>
+
+      <!-- Legend card -->
+      <div class="rounded-xl border border-gray-200 bg-white p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Help</div>
+        <button
+          class="rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200"
+          class:bg-blue-600={legendOpen}
+          class:text-white={legendOpen}
+          class:bg-gray-100={!legendOpen}
+          class:text-gray-700={!legendOpen}
+          class:hover:bg-gray-200={!legendOpen}
+          aria-expanded={legendOpen}
+          aria-controls="legend-panel"
+          aria-label="Toggle legend"
+          onclick={() => (legendOpen = !legendOpen)}
+        >Legend</button>
       </div>
     </div>
-  {/if}
+
+    <!-- Legend panel -->
+    <LegendPanel open={legendOpen} viewMode={viewMode} />
+
+    <!-- Shape toggle bar (only in Full Neck mode) -->
+    {#if viewMode === 'full'}
+      <div class="rounded-xl border border-gray-200 bg-white p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Shapes</div>
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Toggle shapes">
+          {#each CAGED_ORDER as shapeName (shapeName)}
+            {@const color = SHAPE_COLORS[shapeName]}
+            {@const isActive = visibleShapes.has(shapeName)}
+            <button
+              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
+              class:border={true}
+              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
+              aria-label="Toggle {shapeName} shape"
+              aria-pressed={isActive}
+              onclick={() => toggleShape(shapeName)}
+            >
+              <span
+                class="inline-block h-3 w-3 rounded-full"
+                style="background-color: {color}"
+                class:ring-1={!isActive}
+                class:ring-white={!isActive}
+              ></span>
+              {shapeName}
+            </button>
+          {/each}
+        </div>
+      </div>
+    {/if}
+  </div>
 
   <!-- Content area -->
   {#if viewMode === 'full'}
