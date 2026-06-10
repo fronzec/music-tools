@@ -369,13 +369,57 @@ describe('CagedTool', () => {
 
       const grids = container.querySelectorAll('.grid');
       const shapeGrid = [...grids].find((g) =>
-        g.className.includes('gap-4'),
+        g.className.includes('grid-cols-1'),
       );
       expect(shapeGrid).toBeTruthy();
       const classList = shapeGrid!.className;
-      expect(classList).toContain('grid-cols-1');
+      expect(classList).toContain('gap-4');
       expect(classList).toContain('sm:grid-cols-2');
       expect(classList).toContain('lg:grid-cols-3');
+    });
+  });
+
+  describe('legend toggle', () => {
+    it('renders Legend toggle button', () => {
+      renderTool();
+      const legendBtn = screen.getByLabelText('Toggle legend');
+      expect(legendBtn).toBeTruthy();
+      expect(legendBtn.textContent).toContain('Legend');
+    });
+
+    it('clicking toggle opens legend panel', async () => {
+      renderTool();
+      const legendBtn = screen.getByLabelText('Toggle legend');
+      await legendBtn.click();
+      const panel = document.getElementById('legend-panel');
+      expect(panel).toBeTruthy();
+      expect(panel!.getAttribute('style')).toContain('max-height: 500px');
+    });
+
+    it('clicking toggle again closes it', async () => {
+      renderTool();
+      const legendBtn = screen.getByLabelText('Toggle legend');
+      await legendBtn.click();
+      await legendBtn.click();
+      const panel = document.getElementById('legend-panel');
+      expect(panel).toBeTruthy();
+      expect(panel!.getAttribute('style')).toContain('max-height: 0');
+    });
+
+    it('aria-expanded reflects open state', async () => {
+      renderTool();
+      const legendBtn = screen.getByLabelText('Toggle legend');
+      expect(legendBtn.getAttribute('aria-expanded')).toBe('false');
+      await legendBtn.click();
+      expect(legendBtn.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('legend panel content visible when open', async () => {
+      renderTool();
+      const legendBtn = screen.getByLabelText('Toggle legend');
+      await legendBtn.click();
+      expect(screen.getByText('CAGED Shapes')).toBeTruthy();
+      expect(screen.getByText('Symbols')).toBeTruthy();
     });
   });
 
@@ -416,7 +460,7 @@ describe('CagedTool', () => {
 
       it('Dual Compare button is active in dual mode', async () => {
         await enterDualMode();
-        const dualBtn = screen.getByText('Dual Compare', { exact: true });
+        const dualBtn = screen.getByLabelText('Dual Compare view');
         expect(dualBtn.classList.contains('bg-white')).toBe(true);
       });
     });
