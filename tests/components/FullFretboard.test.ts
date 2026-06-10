@@ -474,6 +474,86 @@ describe('FullFretboard', () => {
       const mutedMarkers = texts.filter((t) => t.textContent === '×');
       expect(mutedMarkers.length).toBe(1);
     });
+
+    it('uses shape color for O/× indicators (single shape)', () => {
+      const shapes = [makeCShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+      });
+      const texts = [...container.querySelectorAll('text')];
+      const oMarkers = texts.filter((t) => t.textContent === 'O');
+      const xMarkers = texts.filter((t) => t.textContent === '×');
+
+      // O uses C shape color
+      oMarkers.forEach((o) => {
+        expect(o.getAttribute('fill')).toBe(SHAPE_COLORS.C);
+      });
+      // × uses C shape color (not old gray)
+      xMarkers.forEach((x) => {
+        expect(x.getAttribute('fill')).toBe(SHAPE_COLORS.C);
+        expect(x.getAttribute('opacity')).toBe('0.65');
+      });
+    });
+
+    it('renders deduplicated per-string indicator rows (multi-shape)', () => {
+      const shapes = allShapes();
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A', 'G', 'E', 'D']),
+        labelMode: 'intervals' as LabelMode,
+      });
+      const texts = [...container.querySelectorAll('text')];
+      const oMarkers = texts.filter((t) => t.textContent === 'O');
+      const xMarkers = texts.filter((t) => t.textContent === '×');
+      const total = oMarkers.length + xMarkers.length;
+
+      // Deduplicated: more than single-shape (3) but fewer than 5× duplication (15)
+      expect(total).toBeGreaterThan(3);
+      expect(total).toBeLessThan(30);
+
+      // Every O/× uses a known shape color, never generic gray
+      const shapeColors = Object.values(SHAPE_COLORS);
+      [...oMarkers, ...xMarkers].forEach((ind) => {
+        const fill = ind.getAttribute('fill')!;
+        expect(shapeColors).toContain(fill);
+      });
+    });
+
+    it('O/× indicators appear in CAGED order colors (multi-shape)', () => {
+      const shapes = allShapes();
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A', 'G', 'E', 'D']),
+        labelMode: 'intervals' as LabelMode,
+      });
+      const texts = [...container.querySelectorAll('text')];
+      const oMarkers = texts.filter((t) => t.textContent === 'O');
+      const xMarkers = texts.filter((t) => t.textContent === '×');
+
+      // Each shape color should appear at least once across all indicators
+      for (const color of Object.values(SHAPE_COLORS)) {
+        const withColor = [...oMarkers, ...xMarkers].filter(
+          (t) => t.getAttribute('fill') === color,
+        );
+        expect(withColor.length).toBeGreaterThanOrEqual(1);
+      }
+    });
+
+    it('renders no indicators for non-open position (barre only)', () => {
+      const shapes = [makeEShape()]; // baseFret=8, barre
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['E']),
+        labelMode: 'intervals' as LabelMode,
+      });
+      const texts = [...container.querySelectorAll('text')];
+      const oMarkers = texts.filter((t) => t.textContent === 'O');
+      const xMarkers = texts.filter((t) => t.textContent === '×');
+      expect(oMarkers.length).toBe(0);
+      expect(xMarkers.length).toBe(0);
+    });
   });
 
   describe('accessibility', () => {

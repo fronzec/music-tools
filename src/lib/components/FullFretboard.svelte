@@ -47,6 +47,44 @@
     visibleShapeData.some((s) => s.baseFret === 0),
   );
 
+  // ── Open/Muted indicator pre-computation ────────────────────────
+
+  /**
+   * Pre-computes per-string O/× indicator data across all visible shapes.
+   * Each string gets a horizontal row of tiny colored indicators (one per visible shape).
+   * Only computed when isOpenPosition is true; otherwise empty.
+   */
+  let stringIndicators = $derived.by(() => {
+    const result: Array<{
+      stringIndex: number;
+      indicators: Array<{ shape: CagedShape; type: 'open' | 'muted'; color: string }>;
+    }> = [];
+
+    if (!isOpenPosition) return result;
+
+    for (let i = 0; i < 6; i++) {
+      const row: typeof result[0]['indicators'] = [];
+
+      for (const shapeType of CAGED_ORDER) {
+        const shape = shapes.find((s) => s.shape === shapeType);
+        if (!shape || !visibleShapes.has(shapeType)) continue;
+
+        const fret = shape.frets[i];
+        if (fret === 0) {
+          row.push({ shape: shapeType, type: 'open', color: SHAPE_COLORS[shapeType] });
+        } else if (fret === null) {
+          row.push({ shape: shapeType, type: 'muted', color: SHAPE_COLORS[shapeType] });
+        }
+      }
+
+      if (row.length > 0) {
+        result.push({ stringIndex: i, indicators: row });
+      }
+    }
+
+    return result;
+  });
+
   // ── ViewBox ─────────────────────────────────────────────────────
 
   let vbW = $derived(width ?? viewBoxW(displaySpan));
@@ -321,33 +359,28 @@
         {/if}
       {/if}
 
-      <!-- Open (O) / muted (×) indicators at nut -->
-      {#if isOpenPosition}
-        {#each [0, 1, 2, 3, 4, 5] as i (i)}
-          {@const fret = shape.frets[i]}
-          {#if fret === 0}
-            <text
-              x={L.LEFT_PAD + L.NUT_W / 2}
-              y={stringY(i) - L.ROOT_R - 2}
-              text-anchor="middle"
-              font-size={L.LABEL_FS + 2}
-              fill={color}
-              font-weight="bold"
-            >O</text>
-          {:else if fret === null}
-            <text
-              x={L.LEFT_PAD + L.NUT_W / 2}
-              y={stringY(i) - L.ROOT_R - 2}
-              text-anchor="middle"
-              font-size={L.LABEL_FS + 2}
-              fill="#9CA3AF"
-              font-weight="bold"
-            >×</text>
-          {/if}
-        {/each}
-      {/if}
     {/if}
   {/each}
+
+  <!-- Open/Muted indicators — deduplicated per-string row at nut -->
+  {#if isOpenPosition}
+    {#each stringIndicators as { stringIndex, indicators } (stringIndex)}
+      {@const cy = stringY(stringIndex) - L.ROOT_R - 4}
+      <g transform="translate({L.LEFT_PAD + L.NUT_W + 6}, {cy})">
+        {#each indicators as indicator, j}
+          <text
+            x={j * FL.INDICATOR_SP}
+            y="0"
+            text-anchor="middle"
+            font-size={FL.INDICATOR_FS}
+            fill={indicator.color}
+            font-weight="bold"
+            opacity={indicator.type === 'muted' ? 0.65 : 0.85}
+          >{indicator.type === 'open' ? 'O' : '×'}</text>
+        {/each}
+      </g>
+    {/each}
+  {/if}
 
   <!-- Note rendering with shape-keyed animation -->
   {#each allNotes as note (note.stableKey)}

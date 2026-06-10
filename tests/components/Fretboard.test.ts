@@ -439,6 +439,24 @@ describe('Fretboard', () => {
       const mutedMarkers = allText.filter((t) => t.textContent === '×');
       expect(mutedMarkers.length).toBe(1);
     });
+
+    it('uses shape color for O/× indicators', () => {
+      const shape = makeCShape();
+      const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
+      const texts = [...container.querySelectorAll('text')];
+      const oMarkers = texts.filter((t) => t.textContent === 'O');
+      const xMarkers = texts.filter((t) => t.textContent === '×');
+
+      // O and × use shape color (not old gray)
+      oMarkers.forEach((o) => {
+        expect(o.getAttribute('fill')).toBe('#2563EB'); // SHAPE_COLORS.C
+      });
+      xMarkers.forEach((x) => {
+        expect(x.getAttribute('fill')).toBe('#2563EB');
+        // × has reduced opacity for visual distinction
+        expect(x.getAttribute('opacity')).toBe('0.6');
+      });
+    });
   });
 
   describe('barre indicator', () => {
