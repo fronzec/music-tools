@@ -367,7 +367,7 @@ describe('CagedTool', () => {
       await legendBtn.click();
       const panel = document.getElementById('legend-panel');
       expect(panel).toBeTruthy();
-      expect(panel!.getAttribute('style')).toContain('max-height: 500px');
+      expect(panel!.getAttribute('style')).toContain('max-height: 700px');
     });
 
     it('clicking toggle again closes it', async () => {

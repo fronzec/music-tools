@@ -34,12 +34,11 @@ describe('LegendPanel', () => {
   });
 
   describe('symbols section', () => {
-    it('shows symbols section with diamond, circle, and ring', () => {
+    it('shows symbols section with diamond and circle', () => {
       renderPanel();
       expect(screen.getByText('Symbols')).toBeTruthy();
-      expect(screen.getByText('Root note')).toBeTruthy();
-      expect(screen.getByText('Chord tone')).toBeTruthy();
-      expect(screen.getByText('Overlapping note')).toBeTruthy();
+      expect(screen.getByText('Root note — name inside')).toBeTruthy();
+      expect(screen.getByText('Chord tone — name inside')).toBeTruthy();
     });
   });
 
@@ -47,8 +46,8 @@ describe('LegendPanel', () => {
     it('shows open and muted string indicators', () => {
       renderPanel();
       expect(screen.getByText('Open & Muted')).toBeTruthy();
-      expect(screen.getByText('Open string')).toBeTruthy();
-      expect(screen.getByText('Muted string')).toBeTruthy();
+      expect(screen.getByText('Open string — color shows shape')).toBeTruthy();
+      expect(screen.getByText('Muted string — dimmed for muted')).toBeTruthy();
     });
   });
 
@@ -85,7 +84,7 @@ describe('LegendPanel', () => {
       const { container } = renderPanel({ open: true });
       const panel = container.querySelector('[role="region"]');
       expect(panel).toBeTruthy();
-      expect(panel!.getAttribute('style')).toContain('max-height: 500px');
+      expect(panel!.getAttribute('style')).toContain('max-height: 700px');
     });
   });
 
