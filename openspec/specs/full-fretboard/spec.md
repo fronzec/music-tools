@@ -14,7 +14,7 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 | **Root Note Diamonds** | MUST render roots as diamonds; others as circles | Distinct shape per root | Overlapping roots show both colors |
 | **Fret Numbers** | MUST render numbers below 6th string | Sequential from min fret | Barre offset: first visible = base fret label |
 | **Barre Indicators** | MUST render per-shape colored barre rects and animate them when root changes via CSS transition on `<g>` wrapper | Barre at baseFret > 1, animates via CSS transition | Multiple barres visible simultaneously |
-| **Open/Muted Strings** | MUST show O / × at nut position | Open string (fret 0); muted (null) | — |
+| **Open/Muted Strings** | MUST compute and render one deduplicated set of O/× indicators per string, aggregated across all visible shapes, as a compact horizontal row centered at the nut area; MUST shape-color each indicator via `SHAPE_COLORS[shape]`; MUST render only when `isOpenPosition` is true | All five shapes at open position → horizontal row of colored O/× per string; CAGED order (C→A→G→E→D) left to right | No visible shapes at open position → no indicators; barre-only position → no indicators |
 | **Shape Visibility** | MUST accept `visibleShapes: Set<CagedShape>` | Toggle on/off adds/removes shape | — |
 | **Label Mode** | MUST support `labelMode: 'intervals' \| 'notes' \| 'both'`; labels animate alongside their parent notes via the same `<g>` transition | R, 3, 5; C, E, G; C (R) | — |
 | **Scale-to-Fit** | MUST scale via SVG viewBox to container width | Fills container | No horizontal scroll |
@@ -136,6 +136,40 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 - GIVEN `ANIM_DURATION` and `ANIM_EASING` are exported from `layout.ts`
 - WHEN `FullFretboard` renders a note `<g>` element
 - THEN the inline style is `transition: transform {{ANIM_DURATION}}ms {{ANIM_EASING}}`
+
+### Scenario: Open indicators — all five shapes, horizontal row
+
+- GIVEN all five CAGED shapes visible with `baseFret === 0`
+- AND high E string is open (fret 0) in C, A, G, E and muted (fret null) in D
+- WHEN FullFretboard renders
+- THEN high E string shows a horizontal row: [O C-color] [O A-color] [O G-color] [O E-color] [× D-color]
+- AND indicators are spaced 12px apart, center-to-center
+- AND each indicator uses its shape's `SHAPE_COLORS` fill
+
+### Scenario: Open indicators — partial shape visibility
+
+- GIVEN only C and G shapes visible with `baseFret === 0`
+- AND low E string is open (fret 0) in C and muted (fret null) in G
+- WHEN FullFretboard renders
+- THEN low E string shows exactly two indicators: [O C-color] [× G-color]
+
+### Scenario: Open indicators — all-fretted string
+
+- GIVEN all visible shapes have a fretted note (fret > 0) on string 3
+- WHEN FullFretboard renders
+- THEN string 3 shows no indicator row
+
+### Scenario: Open indicators — non-open position
+
+- GIVEN all visible shapes have `baseFret > 0`
+- WHEN FullFretboard renders
+- THEN no O/× indicators are rendered anywhere
+
+### Scenario: Open indicators do not animate
+
+- GIVEN a root change occurs in open position
+- WHEN the fretboard re-renders
+- THEN O/× indicators remain static (no CSS transition), consistent with Static Elements requirement
 
 ## Notes
 
