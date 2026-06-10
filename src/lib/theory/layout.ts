@@ -94,6 +94,15 @@ export function viewBoxH(): number {
 }
 
 /**
+ * Returns the X coordinate for an indicator group at a given baseFret.
+ * baseFret=0 → near nut; baseFret>0 → left of barre fret line.
+ */
+export function indicatorX(baseFret: number, minFret: number): number {
+  if (baseFret === 0) return L.LEFT_PAD + L.NUT_W + 6;
+  return fretLineX(baseFret - minFret) - L.FRET_SP / 2 - 8;
+}
+
+/**
  * Standard fret marker positions on a guitar.
  */
 export const FRET_MARKERS: number[] = [3, 5, 7, 9, 12, 15];
