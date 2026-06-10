@@ -42,10 +42,10 @@ Chain strategy: pending
 - [x] 2.1 Data + lookup: `src/lib/data/caged-shapes.json` (120 pre-computed shapes), `src/lib/data/chords.ts` (getShapes, getAllRoots, getAllQualities, validate), `scripts/generate-caged-shapes.ts` (regeneration script)
 - [x] 2.2 Validation: `tests/unit/data/chords.test.ts` — 36 tests: 120 shape count, CAGED order, null consistency, baseFret anchoring, rootString validation, interval correctness, known open chord verification, uniqueness. Run: `pnpm vitest run`
 
-## Phase 3: Fretboard SVG — PR 3
+## Phase 3: Fretboard SVG — PR 3 ✅ COMPLETE
 
-- [ ] 3.1 SVG component: `src/lib/components/Fretboard.svelte` — strings, fret lines, markers (3/5/7/9/12/15), note dots (root=blue/R=11, tone=green/R=8, other=outline/R=5), barre indicator, open(O)/muted(X) markers, interval/note labels, viewBox scaling
-- [ ] 3.2 Tests: `tests/components/Fretboard.test.ts` — SVG element count, note colors, barre line, labels, a11y aria-label. Dep: 3.1 (needs @testing-library/svelte in devDeps). Run: `pnpm vitest run`
+- [x] 3.1 SVG component: `src/lib/components/Fretboard.svelte` — strings, fret lines, markers (3/5/7/9/12/15), note dots (root=blue/R=11, tone=green/R=8, other=outline/R=5), barre indicator, open(O)/muted(×) markers, interval/note labels, viewBox scaling
+- [x] 3.2 Tests: `tests/components/Fretboard.test.ts` — 27 tests: SVG rendering, string/fret line count, fret markers, note colors (root/tone/other), interval/note/both labels, open/muted indicators, barre indicator, viewBox calculation, width override. Dep: 3.1. Run: `pnpm vitest run`
 
 ## Phase 4: CAGED Tool + Home — PR 4
 
