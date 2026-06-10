@@ -120,7 +120,7 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Quality card -->
       <div class="rounded-xl border border-gray-200 bg-white p-4">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Quality</div>
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Type</div>
         <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5" role="radiogroup" aria-label="Quality">
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
