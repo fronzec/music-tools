@@ -15,10 +15,25 @@
   </head>
   <body>
     <div id="app">
-      <div class="flex min-h-screen items-center justify-center bg-white">
+      <div class="flex min-h-screen items-center justify-center bg-white" data-loading>
         <p class="text-gray-400">Loading Music Tools…</p>
       </div>
     </div>
+    <script>
+      // Catch errors before Svelte mounts so we can see what failed
+      window.__MUSIC_TOOLS_ERRORS__ = [];
+      window.addEventListener('error', function(e) {
+        window.__MUSIC_TOOLS_ERRORS__.push(e.message || String(e));
+        var app = document.getElementById('app');
+        if (app && app.querySelector('[data-loading]')) {
+          app.innerHTML = '<div style="padding:2rem;color:red;font-family:monospace"><h2>Startup Error</h2><pre>' +
+            window.__MUSIC_TOOLS_ERRORS__.join('\\n') + '</pre></div>';
+        }
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        window.__MUSIC_TOOLS_ERRORS__.push('Promise: ' + (e.reason?.message || String(e.reason)));
+      });
+    </script>
     <script type="module" src="/src/main.ts"></script>
     <noscript>
       <div class="flex min-h-screen items-center justify-center bg-white p-8">

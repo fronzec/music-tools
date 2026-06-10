@@ -16,14 +16,6 @@
   let labelMode = $state<LabelMode>('intervals');
 
   let shapes = $derived(getShapes(selectedRoot, selectedQuality));
-
-  // ── Focus management ─────────────────────────────────────────────
-  let firstChordBtn: HTMLButtonElement | undefined = $state();
-
-  $effect(() => {
-    // Focus the first chord button when the tool mounts
-    firstChordBtn?.focus();
-  });
 </script>
 
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
@@ -47,39 +39,21 @@
     <div>
       <div class="mb-2 text-sm font-medium text-gray-600" id="chord-label">Chord</div>
       <div class="flex flex-wrap gap-1.5" role="group" aria-labelledby="chord-label">
-        {#each CHROMATIC as note, i (note)}
-          {#if i === 0}
-            <button
-              aria-label="Select {note} chord"
-              aria-pressed={selectedRoot === note}
-              bind:this={firstChordBtn}
-              class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200"
-              class:bg-blue-600={selectedRoot === note}
-              class:text-white={selectedRoot === note}
-              class:shadow-sm={selectedRoot === note}
-              class:bg-gray-100={selectedRoot !== note}
-              class:text-gray-700={selectedRoot !== note}
-              class:hover:bg-gray-200={selectedRoot !== note}
-              onclick={() => (selectedRoot = note)}
-            >
-              {note}
-            </button>
-          {:else}
-            <button
-              aria-label="Select {note} chord"
-              aria-pressed={selectedRoot === note}
-              class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200"
-              class:bg-blue-600={selectedRoot === note}
-              class:text-white={selectedRoot === note}
-              class:shadow-sm={selectedRoot === note}
-              class:bg-gray-100={selectedRoot !== note}
-              class:text-gray-700={selectedRoot !== note}
-              class:hover:bg-gray-200={selectedRoot !== note}
-              onclick={() => (selectedRoot = note)}
-            >
-              {note}
-            </button>
-          {/if}
+        {#each CHROMATIC as note (note)}
+          <button
+            aria-label="Select {note} chord"
+            aria-pressed={selectedRoot === note}
+            class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200"
+            class:bg-blue-600={selectedRoot === note}
+            class:text-white={selectedRoot === note}
+            class:shadow-sm={selectedRoot === note}
+            class:bg-gray-100={selectedRoot !== note}
+            class:text-gray-700={selectedRoot !== note}
+            class:hover:bg-gray-200={selectedRoot !== note}
+            onclick={() => (selectedRoot = note)}
+          >
+            {note}
+          </button>
         {/each}
       </div>
     </div>

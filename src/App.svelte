@@ -4,34 +4,33 @@
   import CagedTool from '$lib/components/CagedTool.svelte';
 
   let currentView: ViewName = $state('home');
-  let error: string | null = $state(null);
 
   function navigate(view: ViewName) {
-    error = null;
     currentView = view;
   }
 </script>
 
+{#snippet errorFallback(err: Error)}
+  <div class="mx-auto max-w-lg p-8 text-center">
+    <h1 class="mb-4 text-2xl font-bold text-red-600">Something went wrong</h1>
+    <pre class="mb-6 text-left text-sm text-gray-600 bg-gray-100 p-4 rounded overflow-auto">{err.message}</pre>
+    <button
+      class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+      onclick={() => navigate('home')}
+    >
+      Back to Home
+    </button>
+  </div>
+{/snippet}
+
 <main class="min-h-screen bg-white text-gray-900">
-  {#if error}
-    <div class="mx-auto max-w-lg p-8 text-center">
-      <h1 class="mb-4 text-2xl font-bold text-gray-900">
-        Something went wrong
-      </h1>
-      <p class="mb-6 text-gray-600">{error}</p>
-      <button
-        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-        onclick={() => {
-          error = null;
-          currentView = 'home';
-        }}
-      >
-        Back to Home
-      </button>
-    </div>
-  {:else if currentView === 'home'}
-    <HomePage {navigate} />
+  {#if currentView === 'home'}
+    <svelte:boundary failed={errorFallback}>
+      <HomePage {navigate} />
+    </svelte:boundary>
   {:else if currentView === 'caged'}
-    <CagedTool {navigate} />
+    <svelte:boundary failed={errorFallback}>
+      <CagedTool {navigate} />
+    </svelte:boundary>
   {/if}
 </main>
