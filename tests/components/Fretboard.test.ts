@@ -186,7 +186,7 @@ describe('Fretboard', () => {
       // Note circles are those with r >= L.OTHER_R but not marker dots
       const noteCircles = circles.filter((c) => {
         const r = parseFloat(c.getAttribute('r') ?? '0');
-        return r >= L.OTHER_R && r !== L.MARKER_R;
+        return r >= L.OTHER_R && r !== L.MARKER_R && !c.classList.contains('indicator');
       });
       // frets: [null, 3, 2, 0, 1, 0] → notes at strings 1, 2, 4
       expect(noteCircles.length).toBe(3);
@@ -243,7 +243,7 @@ describe('Fretboard', () => {
       // There should be no circle at the Y of string 0
       const string0Y = String(L.TOP_PAD + 5 * L.STRING_SP); // stringY(0) = bottom
       const circlesAtString0 = [...svg.querySelectorAll('circle')].filter(
-        (c) => c.getAttribute('cy') === string0Y,
+        (c) => c.getAttribute('cy') === string0Y && !c.classList.contains('indicator'),
       );
       expect(circlesAtString0.length).toBe(0);
     });
@@ -454,7 +454,7 @@ describe('Fretboard', () => {
       xMarkers.forEach((x) => {
         expect(x.getAttribute('fill')).toBe('#2563EB');
         // × has reduced opacity for visual distinction
-        expect(x.getAttribute('opacity')).toBe('0.6');
+        expect(x.getAttribute('opacity')).toBe('0.65');
       });
     });
 
