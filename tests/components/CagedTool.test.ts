@@ -138,4 +138,107 @@ describe('CagedTool', () => {
       expect(notesBtn.classList.contains('bg-white')).toBe(true);
     });
   });
+
+  describe('accessibility: chord buttons', () => {
+    it('chord buttons have aria-label attributes', () => {
+      renderTool();
+      const buttons = screen.getAllByRole('button');
+      const chordBtns = buttons.filter((b) => {
+        const label = b.getAttribute('aria-label');
+        return label && label.startsWith('Select ');
+      });
+      // Should have at least the first "C" chord button with aria-label
+      expect(chordBtns.length).toBeGreaterThanOrEqual(1);
+      expect(chordBtns[0].getAttribute('aria-label')).toContain('Select');
+    });
+
+    it('active chord button has aria-pressed="true"', () => {
+      renderTool();
+      const cBtn = screen.getByText('C', { exact: true });
+      expect(cBtn.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('inactive chord button has aria-pressed="false"', () => {
+      renderTool();
+      const gSharpBtn = screen.getByText('G#', { exact: true });
+      expect(gSharpBtn.getAttribute('aria-pressed')).toBe('false');
+    });
+  });
+
+  describe('accessibility: quality toggle', () => {
+    it('quality toggle has radiogroup role', () => {
+      const { container } = renderTool();
+      const radiogroup = container.querySelector('[role="radiogroup"]');
+      expect(radiogroup).toBeTruthy();
+    });
+
+    it('Major button has role="radio" and aria-checked="true" by default', () => {
+      renderTool();
+      const majorBtn = screen.getByText('Major', { exact: true });
+      expect(majorBtn.getAttribute('role')).toBe('radio');
+      expect(majorBtn.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('Minor button has role="radio" and aria-checked="false" by default', () => {
+      renderTool();
+      const minorBtn = screen.getByText('Minor', { exact: true });
+      expect(minorBtn.getAttribute('role')).toBe('radio');
+      expect(minorBtn.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('changes aria-checked when toggling quality', async () => {
+      renderTool();
+      const minorBtn = screen.getByText('Minor', { exact: true });
+      await minorBtn.click();
+
+      expect(minorBtn.getAttribute('aria-checked')).toBe('true');
+      const majorBtn = screen.getByText('Major', { exact: true });
+      expect(majorBtn.getAttribute('aria-checked')).toBe('false');
+    });
+  });
+
+  describe('accessibility: label mode toggle', () => {
+    it('label toggle buttons have radio role', () => {
+      renderTool();
+      const intervalsBtn = screen.getByText('Intervals', { exact: true });
+      const notesBtn = screen.getByText('Notes', { exact: true });
+      expect(intervalsBtn.getAttribute('role')).toBe('radio');
+      expect(notesBtn.getAttribute('role')).toBe('radio');
+    });
+  });
+
+  describe('accessibility: back button', () => {
+    it('back button has aria-label', () => {
+      renderTool();
+      const backBtn = screen.getByText('← Back to Home');
+      expect(backBtn.getAttribute('aria-label')).toBe('Back to Home');
+    });
+  });
+
+  describe('accessibility: heading', () => {
+    it('has an h1 heading for screen reader navigation', () => {
+      const { container } = renderTool();
+      const h1 = container.querySelector('h1');
+      expect(h1).toBeTruthy();
+      expect(h1!.textContent).toContain('CAGED Chord Visualizer');
+      expect(h1!.getAttribute('id')).toBe('caged-heading');
+    });
+  });
+
+  describe('responsive grid', () => {
+    it('shape grid has responsive column classes', () => {
+      const { container } = renderTool();
+      // The shape grid is the outer grid (not the chord button group)
+      const grids = container.querySelectorAll('.grid');
+      // Filter to the shape grid (contains ShapeCard wrappers)
+      const shapeGrid = [...grids].find((g) =>
+        g.className.includes('gap-4'),
+      );
+      expect(shapeGrid).toBeTruthy();
+      const classList = shapeGrid!.className;
+      expect(classList).toContain('grid-cols-1');
+      expect(classList).toContain('sm:grid-cols-2');
+      expect(classList).toContain('lg:grid-cols-3');
+    });
+  });
 });

@@ -80,4 +80,39 @@ describe('HomePage', () => {
       expect(cagedBtn!.textContent).toContain('CAGED');
     });
   });
+
+  describe('accessibility', () => {
+    it('CAGED card button has aria-label', () => {
+      renderPage();
+      const cagedBtn = screen.getByRole('button', { name: /CAGED/i });
+      expect(cagedBtn.getAttribute('aria-label')).toContain('CAGED');
+    });
+
+    it('CAGED card button is keyboard-focusable', () => {
+      renderPage();
+      const cagedBtn = screen.getByRole('button', { name: /CAGED/i });
+      expect(cagedBtn).toBeTruthy();
+      // Buttons are naturally focusable
+      expect(cagedBtn.tagName).toBe('BUTTON');
+    });
+
+    it('title is an h1 heading', () => {
+      const { container } = renderPage();
+      const h1 = container.querySelector('h1');
+      expect(h1).toBeTruthy();
+      expect(h1!.textContent).toContain('Music Tools');
+    });
+  });
+
+  describe('responsive grid', () => {
+    it('has grid layout with responsive column classes', () => {
+      const { container } = renderPage();
+      const grid = container.querySelector('.grid');
+      expect(grid).toBeTruthy();
+      const classList = grid!.className;
+      expect(classList).toContain('grid-cols-1');
+      expect(classList).toContain('md:grid-cols-2');
+      expect(classList).toContain('lg:grid-cols-3');
+    });
+  });
 });
