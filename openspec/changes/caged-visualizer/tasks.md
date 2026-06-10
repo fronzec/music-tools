@@ -47,16 +47,16 @@ Chain strategy: pending
 - [x] 3.1 SVG component: `src/lib/components/Fretboard.svelte` — strings, fret lines, markers (3/5/7/9/12/15), note dots (root=blue/R=11, tone=green/R=8, other=outline/R=5), barre indicator, open(O)/muted(×) markers, interval/note labels, viewBox scaling
 - [x] 3.2 Tests: `tests/components/Fretboard.test.ts` — 27 tests: SVG rendering, string/fret line count, fret markers, note colors (root/tone/other), interval/note/both labels, open/muted indicators, barre indicator, viewBox calculation, width override. Dep: 3.1. Run: `pnpm vitest run`
 
-## Phase 4: CAGED Tool + Home — PR 4
+## Phase 4: CAGED Tool + Home — PR 4 ✅ COMPLETE
 
-- [ ] 4.1 State: `src/lib/state/caged-state.svelte.ts` — $state(selectedRoot=C, selectedQuality=major, labelMode=intervals, currentView=home), $derived(shapes)
-- [ ] 4.2 ChordSelector.svelte: 12 chromatic note buttons, selected highlight (bg-blue-500), onSelect callback
-- [ ] 4.3 MajorMinorToggle.svelte: segmented pill toggle Major/Minor, active indicator
-- [ ] 4.4 ShapeCard.svelte: shape label ("C shape") + Fretboard component
-- [ ] 4.5 CagedTool.svelte: orchestrator — selector + toggle + 5 ShapeCards + label toggle
-- [ ] 4.6 ToolCard.svelte: icon/title/description card, active (hover scale) / inactive (opacity-50) states
-- [ ] 4.7 HomePage.svelte: responsive card grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3)
-- [ ] 4.8 Tests: `tests/components/ChordSelector.test.ts` (click G#→onSelect('G#')) + `tests/components/ShapeCard.test.ts` (label+Fretboard renders). Run: `pnpm vitest run`
+- [x] 4.1 State: Inline `$state` in CagedTool.svelte (selectedRoot=C, selectedQuality=major, labelMode=intervals) + `$derived(shapes)` from getShapes. No separate state module needed — follows App.svelte pattern.
+- [x] 4.2 ChordSelector: 12 chromatic note buttons with active highlight (bg-blue-600 text-white), integrated inline in CagedTool.svelte
+- [x] 4.3 MajorMinorToggle: Segmented pill toggle Major/Minor with active indicator (bg-white shadow-sm), integrated inline in CagedTool.svelte
+- [x] 4.4 ShapeCard.svelte: Created — shape label ("C shape"), fret range label ("frets 1–3"), embedded Fretboard component
+- [x] 4.5 CagedTool.svelte: Orchestrator — chord selector + quality toggle + label mode toggle + 5 ShapeCards grid + back button
+- [x] 4.6 ToolCard: Integrated into HomePage.svelte inline — active card (button with hover:shadow-md), placeholder cards (opacity-60, non-clickable)
+- [x] 4.7 HomePage.svelte: Responsive card grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3), title+subtitle, 1 active card + 2 placeholders
+- [x] 4.8 Tests: `tests/components/CagedTool.test.ts` (14 tests) + `tests/components/HomePage.test.ts` (10 tests). Run: `pnpm vitest run` — 134 total passing
 
 ## Phase 5: Polish
 
