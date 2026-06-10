@@ -11,7 +11,7 @@ import { L } from '$lib/theory/layout';
  *
  * frets:      [null, 3, 2, 0, 1, 0]    (string 5 muted, then 3rd, 2nd, open, 1st, open)
  * intervals:  [null, "R", "3", "5", "R", "3"]
- * baseFret:   1 (open position)
+ * baseFret:   0 (open position)
  * rootString: 1 (string index 1 = B string, 1st fret = C)
  */
 function makeCShape(overrides: Partial<ChordShape> = {}): ChordShape {
@@ -21,7 +21,7 @@ function makeCShape(overrides: Partial<ChordShape> = {}): ChordShape {
     shape: 'C',
     frets: [null, 3, 2, 0, 1, 0],
     intervals: [null, 'R', '3', '5', 'R', '3'],
-    baseFret: 1,
+    baseFret: 0,
     rootString: 1,
     ...overrides,
   };
@@ -137,7 +137,7 @@ describe('Fretboard', () => {
       const shape = makeCShape({
         frets: [0, 2, 2, 1, 0, 0],
         intervals: ['R', '5', 'R', '3', '5', 'R'],
-        baseFret: 1,
+        baseFret: 0,
       });
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const circles = [...container.querySelectorAll('circle')];
@@ -154,7 +154,7 @@ describe('Fretboard', () => {
       const shape = makeCShape({
         frets: [0, 15, 12, 0, 0, 0],
         intervals: ['R', '3', '5', 'R', '3', '5'],
-        baseFret: 1,
+        baseFret: 0,
       });
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const circles = [...container.querySelectorAll('circle')];
@@ -168,7 +168,7 @@ describe('Fretboard', () => {
       const shape = makeCShape({
         frets: [0, 15, 12, 0, 0, 0],
         intervals: ['R', '3', '5', 'R', '3', '5'],
-        baseFret: 1,
+        baseFret: 0,
       });
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const circles = [...container.querySelectorAll('circle')];
@@ -272,7 +272,7 @@ describe('Fretboard', () => {
       // Actually: standard tuning for string 1 (B string) = semitone 11
       // fretted at 3: semitone 11+3 = 14 mod 12 = 2 = D
       // But the C-shape has interval "R" at string 1, fret 3 → should be C
-      // Hmm, wait. The test shape is C major C-shape with baseFret=1, frets=[null, 3, 2, 0, 1, 0]
+      // Hmm, wait. The test shape is C major C-shape with baseFret=0, frets=[null, 3, 2, 0, 1, 0]
       // STANDARD_TUNING[1] = 11 (B), fret 3 → 11+3=14 mod 12=2 = D
       // But the shape says interval "R" at string 1, meaning it should be C.
       // This means either the tuning constant is wrong, or the shape data is wrong, or the string indexing is different.
@@ -290,7 +290,7 @@ describe('Fretboard', () => {
       // That's wrong! Standard is E A D G B E (low to high).
       // But high to low: E B G D A E.
       // 
-      // For C major C-shape at baseFret=1:
+      // For C major C-shape at baseFret=0:
       // String 0 (high E): null → muted
       // String 1 (B): fret 3 → B+3 = 14 mod 12 = 2 = D. But interval should be R=C.
       // This doesn't work. Unless the tuning is:
@@ -323,7 +323,7 @@ describe('Fretboard', () => {
       // Index 0 = high E, index 5 = low E, values = [4, 11, 7, 2, 9, 4]
       //
       // With this tuning:
-      // C major C-shape, baseFret=1, frets=[null, 3, 2, 0, 1, 0]
+      // C major C-shape, baseFret=0, frets=[null, 3, 2, 0, 1, 0]
       // String 0 (high E, 4): null → muted ✓
       // String 1 (B, 11): fret 3 → 11+3=14 mod 12=2=D. But should be C!
       //
@@ -370,7 +370,7 @@ describe('Fretboard', () => {
       //
       // But what if the shape data uses a different convention?
       // Looking at the E major E-shape (the most obvious open chord):
-      // frets=[0, 2, 2, 1, 0, 0], intervals=["R", "5", "R", "3", "5", "R"], baseFret=1
+      // frets=[0, 2, 2, 1, 0, 0], intervals=["R", "5", "R", "3", "5", "R"], baseFret=0
       // This is the classic E major open chord. 
       // With EADGBE low-to-high:
       // String 0 (low E): 0 → open E = R ✓

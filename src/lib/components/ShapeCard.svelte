@@ -11,10 +11,10 @@
 
   /**
    * Computes the fret range label (e.g., "frets 1–3").
-   * For open shapes (baseFret === 1): frets are absolute positions.
-   * For barre shapes (baseFret > 1): frets are relative to baseFret.
+   * For open shapes (baseFret === 0): frets are absolute positions.
+   * For barre shapes (baseFret > 0): frets are relative to baseFret.
    */
-  let isBarre = $derived(shape.baseFret > 1);
+  let isBarre = $derived(shape.baseFret > 0);
 
   let fretRange = $derived.by(() => {
     const absFrets = shape.frets

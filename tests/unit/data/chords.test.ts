@@ -125,12 +125,12 @@ describe('baseFret', () => {
     }
   });
 
-  it('shapes with baseFret > 1 have min non-null fret anchored at 0', () => {
+  it('shapes with baseFret > 0 have min non-null fret anchored at 0', () => {
     // Barre-position shapes must have at least one note on the barre (relative fret 0)
     for (const root of getAllRoots()) {
       for (const quality of getAllQualities()) {
         for (const shape of getShapes(root, quality)) {
-          if (shape.baseFret > 1) {
+          if (shape.baseFret > 0) {
             const nonNullFrets = shape.frets.filter((f): f is number => f !== null);
             const minFret = Math.min(...nonNullFrets);
             expect(
@@ -278,43 +278,43 @@ describe('known open chords', () => {
   it('C major C-shape matches open C (x32010)', () => {
     const shape = getShapes('C', 'major').find((s) => s.shape === 'C')!;
     expect(shape.frets).toEqual([null, 3, 2, 0, 1, 0]);
-    expect(shape.baseFret).toBe(1);
+    expect(shape.baseFret).toBe(0);
   });
 
   it('A major A-shape matches open A (x02220)', () => {
     const shape = getShapes('A', 'major').find((s) => s.shape === 'A')!;
     expect(shape.frets).toEqual([null, 0, 2, 2, 2, 0]);
-    expect(shape.baseFret).toBe(1);
+    expect(shape.baseFret).toBe(0);
   });
 
   it('G major G-shape matches open G (320003)', () => {
     const shape = getShapes('G', 'major').find((s) => s.shape === 'G')!;
     expect(shape.frets).toEqual([3, 2, 0, 0, 0, 3]);
-    expect(shape.baseFret).toBe(1);
+    expect(shape.baseFret).toBe(0);
   });
 
   it('E major E-shape matches open E (022100)', () => {
     const shape = getShapes('E', 'major').find((s) => s.shape === 'E')!;
     expect(shape.frets).toEqual([0, 2, 2, 1, 0, 0]);
-    expect(shape.baseFret).toBe(1);
+    expect(shape.baseFret).toBe(0);
   });
 
   it('D major D-shape matches open D (xx0232)', () => {
     const shape = getShapes('D', 'major').find((s) => s.shape === 'D')!;
     expect(shape.frets).toEqual([null, null, 0, 2, 3, 2]);
-    expect(shape.baseFret).toBe(1);
+    expect(shape.baseFret).toBe(0);
   });
 
   it('E minor E-shape matches open Em (022000)', () => {
     const shape = getShapes('E', 'minor').find((s) => s.shape === 'E')!;
     expect(shape.frets).toEqual([0, 2, 2, 0, 0, 0]);
-    expect(shape.baseFret).toBe(1);
+    expect(shape.baseFret).toBe(0);
   });
 
   it('A minor A-shape matches open Am (x02210)', () => {
     const shape = getShapes('A', 'minor').find((s) => s.shape === 'A')!;
     expect(shape.frets).toEqual([null, 0, 2, 2, 1, 0]);
-    expect(shape.baseFret).toBe(1);
+    expect(shape.baseFret).toBe(0);
   });
 });
 

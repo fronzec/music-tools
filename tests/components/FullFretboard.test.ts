@@ -27,17 +27,17 @@ function makeShape(
 
 /** Open C-shaped C major chord. */
 function makeCShape(): ChordShape {
-  return makeShape('C', 1, [null, 3, 2, 0, 1, 0], [null, 'R', '3', '5', 'R', '3']);
+  return makeShape('C', 0, [null, 3, 2, 0, 1, 0], [null, 'R', '3', '5', 'R', '3']);
 }
 
 /** Open A-shaped C major chord. */
 function makeAShape(): ChordShape {
-  return makeShape('A', 1, [null, 0, 2, 2, 2, 0], [null, 'R', '5', 'R', '3', '5']);
+  return makeShape('A', 0, [null, 0, 2, 2, 2, 0], [null, 'R', '5', 'R', '3', '5']);
 }
 
 /** Open G-shaped C major chord. */
 function makeGShape(): ChordShape {
-  return makeShape('G', 1, [3, 2, 0, 0, 0, 3], ['R', '3', '5', 'R', '3', 'R']);
+  return makeShape('G', 0, [3, 2, 0, 0, 0, 3], ['R', '3', '5', 'R', '3', 'R']);
 }
 
 /** Open E-shaped C major chord (barre at 8). */

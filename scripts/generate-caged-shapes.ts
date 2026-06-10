@@ -171,7 +171,9 @@ function computeShape(
   const nonNullFrets = absoluteFrets.filter((f): f is number => f !== null);
   const minFret = nonNullFrets.length > 0 ? Math.min(...nonNullFrets) : 0;
 
-  const baseFret = minFret === 0 ? 1 : minFret;
+  // baseFret = 0 for open position (minFret === 0), otherwise the actual barre fret.
+  // This distinguishes open chords from barre-at-fret-1 (e.g., C# major C-shape).
+  const baseFret = minFret === 0 ? 0 : minFret;
   const frets = absoluteFrets.map((f) =>
     f === null ? null : minFret === 0 ? f : f - minFret,
   );

@@ -42,7 +42,7 @@
    * Determines whether to show O/X indicators.
    */
   let isOpenPosition = $derived(
-    visibleShapeData.some((s) => s.baseFret <= 1),
+    visibleShapeData.some((s) => s.baseFret === 0),
   );
 
   // ── ViewBox ─────────────────────────────────────────────────────
@@ -103,7 +103,7 @@
       const shape = shapes.find((s) => s.shape === shapeType);
       if (!shape || !visibleShapes.has(shapeType)) continue;
 
-      const isBarre = shape.baseFret > 1;
+      const isBarre = shape.baseFret > 0;
       for (let i = 0; i < 6; i++) {
         const fret = shape.frets[i];
         if (fret === null) continue;
@@ -271,7 +271,7 @@
     {@const shape = shapes.find((s) => s.shape === shapeType)}
     {#if shape && visibleShapes.has(shapeType)}
       {@const color = SHAPE_COLORS[shapeType]}
-      {@const isBarre = shape.baseFret > 1}
+      {@const isBarre = shape.baseFret > 0}
 
       <!-- Barre indicator -->
       {#if isBarre}

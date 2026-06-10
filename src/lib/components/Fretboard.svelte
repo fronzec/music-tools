@@ -24,7 +24,7 @@
   // ── Fret range calculation ──────────────────────────────────────
   // In open position (baseFret === 1): frets are absolute (0 = open, 1 = 1st fret, …)
   // In barre position (baseFret >  1): frets are relative (0 = barre at baseFret)
-  let isBarre = $derived(shape.baseFret > 1);
+  let isBarre = $derived(shape.baseFret > 0);
 
   let nonNullFrets = $derived(shape.frets.filter((f): f is number => f !== null));
   let maxFret = $derived(nonNullFrets.length > 0 ? Math.max(...nonNullFrets) : 0);

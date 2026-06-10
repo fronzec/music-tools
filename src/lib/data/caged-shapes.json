@@ -113,7 +113,7 @@
           "R",
           "3"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 1
       }
     ],
@@ -466,7 +466,7 @@
           "R",
           "b3"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 1
       }
     ]
@@ -562,7 +562,7 @@
           "R",
           "3"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 2
       },
       {
@@ -679,7 +679,7 @@
           "R",
           "b3"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 2
       },
       {
@@ -965,7 +965,7 @@
           "5",
           "R"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 0
       },
       {
@@ -1082,7 +1082,7 @@
           "5",
           "R"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 0
       },
       {
@@ -1719,7 +1719,7 @@
           "3",
           "R"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 3
       },
       {
@@ -2072,7 +2072,7 @@
           "b3",
           "R"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 3
       },
       {
@@ -2168,7 +2168,7 @@
           "3",
           "5"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 1
       },
       {
@@ -2285,7 +2285,7 @@
           "b3",
           "5"
         ],
-        "baseFret": 1,
+        "baseFret": 0,
         "rootString": 1
       },
       {
