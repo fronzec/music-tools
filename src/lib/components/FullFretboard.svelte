@@ -356,40 +356,40 @@
         />
       {/if}
     {:else}
-      <!-- Overlapping notes: split rendering (top/bottom halves) -->
+      <!-- Overlapping notes: split rendering (left/right halves) -->
       {@const r = entry.isRoot ? FL.ROOT_DIAMOND_R : L.TONE_R}
       {@const c1 = notes[0]!.color}
       {@const c2 = notes[1]!.color}
       {#if entry.isRoot}
-        <!-- Split diamond: top half = c1, bottom half = c2 -->
+        <!-- Split diamond: left half = c1, right half = c2 -->
         <polygon
-          points={diamondPoints(cx, cy, r)}
+          points={`${cx},${cy - r} ${cx},${cy + r} ${cx - r},${cy}`}
           fill={c1}
           stroke="white"
           stroke-width="1"
         />
         <polygon
-          points={`${cx},${cy + r} ${cx + r},${cy} ${cx},${cy} ${cx - r},${cy}`}
+          points={`${cx},${cy - r} ${cx},${cy + r} ${cx + r},${cy}`}
           fill={c2}
           stroke="white"
           stroke-width="1"
         />
-        <!-- Divider line -->
-        <line x1={cx + r} y1={cy} x2={cx - r} y2={cy} stroke="white" stroke-width="2" />
+        <!-- Vertical divider -->
+        <line x1={cx} y1={cy - r + 2} x2={cx} y2={cy + r - 2} stroke="white" stroke-width="2" />
       {:else}
-        <!-- Split circle: top half = c1, bottom half = c2 -->
+        <!-- Split circle: left half = c1, right half = c2 -->
         <path
-          d={`M ${cx - r},${cy} A ${r},${r} 0 0,0 ${cx + r},${cy} Z`}
+          d={`M ${cx},${cy - r} A ${r},${r} 0 0,1 ${cx},${cy + r} Z`}
           fill={c1}
           opacity={FL.NOTE_OPACITY}
         />
         <path
-          d={`M ${cx - r},${cy} A ${r},${r} 0 0,1 ${cx + r},${cy} Z`}
+          d={`M ${cx},${cy - r} A ${r},${r} 0 0,0 ${cx},${cy + r} Z`}
           fill={c2}
           opacity={FL.NOTE_OPACITY}
         />
-        <!-- Divider line -->
-        <line x1={cx - r - 1} y1={cy} x2={cx + r + 1} y2={cy} stroke="white" stroke-width="2" />
+        <!-- Vertical divider -->
+        <line x1={cx} y1={cy - r - 1} x2={cx} y2={cy + r + 1} stroke="white" stroke-width="2" />
       {/if}
       <!-- Show note name if any entry is root -->
       {#if notes.some((n) => n.isRoot)}
