@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       $lib: resolve('./src/lib'),
     },
+    conditions: ['browser'],
   },
   test: {
     environment: 'jsdom',
