@@ -91,6 +91,64 @@
    */
   let positionMap = $derived(buildPositionMap(shapes, visibleShapes));
 
+  // ── Animated rendering ───────────────────────────────────────────
+
+  /**
+   * Flat note list keyed by `${shape}-${stringIndex}` for stable DOM keys.
+   * Iterates CAGED_ORDER × string indices, producing one entry per note.
+   */
+  let allNotes = $derived.by(() => {
+    const result: Array<{
+      stableKey: string;
+      shape: CagedShape;
+      color: string;
+      isRoot: boolean;
+      interval: string | null;
+      absFret: number;
+      stringIndex: number;
+    }> = [];
+
+    for (const shapeType of CAGED_ORDER) {
+      const shape = shapes.find((s) => s.shape === shapeType);
+      if (!shape || !visibleShapes.has(shapeType)) continue;
+
+      const isBarre = shape.baseFret > 0;
+      for (let i = 0; i < 6; i++) {
+        const fret = shape.frets[i];
+        if (fret === null) continue;
+        result.push({
+          stableKey: `${shapeType}-${i}`,
+          shape: shapeType,
+          color: SHAPE_COLORS[shapeType],
+          isRoot: shape.intervals[i] === 'R',
+          interval: shape.intervals[i],
+          absFret: isBarre ? shape.baseFret + fret : fret,
+          stringIndex: i,
+        });
+      }
+    }
+
+    return result;
+  });
+
+  /**
+   * Groups notes by `absFret,stringIndex` for overlap detection.
+   * Used to render concentric rings when 2+ shapes share a position.
+   */
+  let overlapGroups = $derived.by(() => {
+    type AnimatedNote = typeof allNotes extends (infer T)[] ? T : never;
+    const groups = new Map<string, AnimatedNote[]>();
+    for (const note of allNotes) {
+      const key = `${note.absFret},${note.stringIndex}`;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(note);
+    }
+    return groups;
+  });
+
+  // ── Reduced motion ───────────────────────────────────────────────
+  let reducedMotion = $state(typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
   // ── Accessibility ───────────────────────────────────────────────
 
   let ariaLabel = $derived.by(() => {
@@ -246,15 +304,20 @@
           {@const bx = noteX(shape.baseFret, minFret) - L.FRET_SP / 4}
           {@const by = stringY(barreFirst) - L.BARRE_H / 2}
           {@const bh = stringY(barreLast) - stringY(barreFirst) + L.BARRE_H}
-          <rect
-            x={bx}
-            y={by}
-            width={L.FRET_SP / 2}
-            height={bh}
-            fill={color}
-            opacity={FL.BARRE_OPACITY}
-            rx="2"
-          />
+          <g
+            style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+            transform="translate({bx}, {by})"
+          >
+            <rect
+              x="0"
+              y="0"
+              width={L.FRET_SP / 2}
+              height={bh}
+              fill={color}
+              opacity={FL.BARRE_OPACITY}
+              rx="2"
+            />
+          </g>
         {/if}
       {/if}
 
@@ -286,63 +349,83 @@
     {/if}
   {/each}
 
-  <!-- Note rendering with overlap detection -->
-  {#each [...positionMap.entries()] as [_key, notes] (_key)}
-    {@const entry = notes[0]!}
-    {@const cx = noteX(entry.absFret, minFret)}
-    {@const cy = stringY(entry.stringIndex)}
-    {@const label = getLabel(entry.stringIndex, entry.absFret, entry.interval)}
+  <!-- Note rendering with shape-keyed animation -->
+  {#each allNotes as note (note.stableKey)}
+    {@const cx = noteX(note.absFret, minFret)}
+    {@const cy = stringY(note.stringIndex)}
+    {@const posKey = `${note.absFret},${note.stringIndex}`}
+    {@const overlaps = overlapGroups.get(posKey) ?? []}
+    {@const overlapIndex = overlaps.findIndex(o => o.stableKey === note.stableKey)}
+    {@const label = getLabel(note.stringIndex, note.absFret, note.interval)}
+    {@const isRootPos = overlaps.length > 1 ? (overlaps[0]?.isRoot ?? note.isRoot) : note.isRoot}
+    {@const baseR = isRootPos ? FL.ROOT_DIAMOND_R : L.TONE_R}
 
-    {#if notes.length === 1}
-      <!-- Single note: normal rendering -->
-      {#if entry.isRoot}
-        <polygon
-          points={diamondPoints(cx, cy, FL.ROOT_DIAMOND_R)}
-          fill={entry.color}
-          stroke="white"
-          stroke-width="2"
-        />
-        <text
-          x={cx}
-          y={cy + 4}
-          text-anchor="middle"
-          font-size="8"
-          fill="white"
-          font-weight="bold"
-          style="pointer-events:none"
-        >{getNoteName(entry.stringIndex, entry.absFret)}</text>
-      {:else}
-        <circle
-          cx={cx}
-          cy={cy}
-          r={L.TONE_R}
-          fill={entry.color}
-          opacity={FL.NOTE_OPACITY}
-          stroke="white"
-          stroke-width="1.5"
-        />
-      {/if}
-    {:else}
-      <!-- Overlapping notes: concentric rings so all colors are visible -->
-      {@const r = entry.isRoot ? FL.ROOT_DIAMOND_R : L.TONE_R}
-      <!-- Innermost note: first shape -->
-      {#if entry.isRoot}
-        <polygon
-          points={diamondPoints(cx, cy, r - 3)}
-          fill={notes[0]!.color}
-          stroke="white"
-          stroke-width="1"
-        />
-      {:else}
-        <circle cx={cx} cy={cy} r={r - 3} fill={notes[0]!.color} opacity={FL.NOTE_OPACITY} />
-      {/if}
-      <!-- Outer ring(s): subsequent shapes -->
-      {#each notes.slice(1) as note, j}
-        {@const ringR = r - 1 + j * 2}
-        {#if entry.isRoot}
-          <!-- Diamond ring via thick stroke polygon -->
+    <g
+      class="fretboard-note-group"
+      style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+      transform="translate({cx}, {cy})"
+    >
+      {#if overlaps.length === 1}
+        <!-- Single note -->
+        {#if note.isRoot}
           <polygon
-            points={diamondPoints(cx, cy, ringR)}
+            points={diamondPoints(0, 0, baseR)}
+            fill={note.color}
+            stroke="white"
+            stroke-width="2"
+          />
+          <text
+            x="0" y="4"
+            text-anchor="middle"
+            font-size="8"
+            fill="white"
+            font-weight="bold"
+            style="pointer-events:none"
+          >{getNoteName(note.stringIndex, note.absFret)}</text>
+        {:else}
+          <circle
+            cx="0" cy="0"
+            r={L.TONE_R}
+            fill={note.color}
+            opacity={FL.NOTE_OPACITY}
+            stroke="white"
+            stroke-width="1.5"
+          />
+        {/if}
+      {:else if overlapIndex === 0}
+        <!-- Innermost of overlapping notes -->
+        {#if note.isRoot}
+          <polygon
+            points={diamondPoints(0, 0, baseR - 3)}
+            fill={note.color}
+            stroke="white"
+            stroke-width="1"
+          />
+        {:else}
+          <circle
+            cx="0" cy="0"
+            r={baseR - 3}
+            fill={note.color}
+            opacity={FL.NOTE_OPACITY}
+          />
+        {/if}
+        <!-- Note name if any note in overlaps is root -->
+        {#if overlaps.some((n) => n.isRoot)}
+          <text
+            x="0" y="4"
+            text-anchor="middle"
+            font-size="8"
+            fill="white"
+            font-weight="bold"
+            style="pointer-events:none"
+          >{getNoteName(note.stringIndex, note.absFret)}</text>
+        {/if}
+      {:else}
+        <!-- Concentric ring for overlapping shapes -->
+        {@const ringR = baseR - 1 + (overlapIndex - 1) * 2}
+        {#if note.isRoot}
+          <polygon
+            points={diamondPoints(0, 0, ringR)}
             fill="none"
             stroke={note.color}
             stroke-width="3"
@@ -350,8 +433,7 @@
           />
         {:else}
           <circle
-            cx={cx}
-            cy={cy}
+            cx="0" cy="0"
             r={ringR}
             fill="none"
             stroke={note.color}
@@ -359,77 +441,65 @@
             opacity={FL.NOTE_OPACITY}
           />
         {/if}
-      {/each}
-      <!-- Show note name if any entry is root -->
-      {#if notes.some((n) => n.isRoot)}
+      {/if}
+
+      <!-- Highlight diff ring (only on first note of a position to avoid duplicates) -->
+      {#if overlapIndex === 0 && highlightPositions?.has(posKey)}
+        {@const diff = highlightPositions.get(posKey)!}
+        {@const ringR = baseR + 4}
+        {#if diff.type === 'different'}
+          {#if isRootPos}
+            <polygon
+              points={diamondPoints(0, 0, ringR)}
+              fill="none"
+              stroke="#F59E0B"
+              stroke-width="2"
+              stroke-dasharray="3 2"
+              opacity="0.6"
+            />
+          {:else}
+            <circle
+              cx="0" cy="0" r={ringR}
+              fill="none"
+              stroke="#F59E0B"
+              stroke-width="2"
+              stroke-dasharray="3 2"
+              opacity="0.6"
+            />
+          {/if}
+        {:else if diff.type === 'same'}
+          {#if isRootPos}
+            <polygon
+              points={diamondPoints(0, 0, ringR)}
+              fill="none"
+              stroke="#22C55E"
+              stroke-width="1.5"
+              opacity="0.5"
+            />
+          {:else}
+            <circle
+              cx="0" cy="0" r={ringR}
+              fill="none"
+              stroke="#22C55E"
+              stroke-width="1.5"
+              opacity="0.5"
+            />
+          {/if}
+        {/if}
+      {/if}
+
+      <!-- Label (only on first note of a position to avoid duplicates) -->
+      {#if (overlaps.length === 1 || overlapIndex === 0) && label}
         <text
-          x={cx}
-          y={cy + 4}
+          x="0"
+          y={-(FL.ROOT_DIAMOND_R + 4)}
           text-anchor="middle"
-          font-size="8"
-          fill="white"
+          font-size={L.LABEL_FS}
+          fill="#374151"
           font-weight="bold"
-          style="pointer-events:none"
-        >{getNoteName(entry.stringIndex, entry.absFret)}</text>
+        >{label}</text>
       {/if}
-    {/if}
-
-    <!-- Highlight diff ring -->
-    {#if highlightPositions?.has(_key)}
-      {@const diff = highlightPositions.get(_key)!}
-      {@const ringR = (entry.isRoot ? FL.ROOT_DIAMOND_R : L.TONE_R) + 4}
-      {#if diff.type === 'different'}
-        {#if entry.isRoot}
-          <polygon
-            points={diamondPoints(cx, cy, ringR)}
-            fill="none"
-            stroke="#F59E0B"
-            stroke-width="2"
-            stroke-dasharray="3 2"
-            opacity="0.6"
-          />
-        {:else}
-          <circle
-            cx={cx} cy={cy} r={ringR}
-            fill="none"
-            stroke="#F59E0B"
-            stroke-width="2"
-            stroke-dasharray="3 2"
-            opacity="0.6"
-          />
-        {/if}
-      {:else if diff.type === 'same'}
-        {#if entry.isRoot}
-          <polygon
-            points={diamondPoints(cx, cy, ringR)}
-            fill="none"
-            stroke="#22C55E"
-            stroke-width="1.5"
-            opacity="0.5"
-          />
-        {:else}
-          <circle
-            cx={cx} cy={cy} r={ringR}
-            fill="none"
-            stroke="#22C55E"
-            stroke-width="1.5"
-            opacity="0.5"
-          />
-        {/if}
-      {/if}
-    {/if}
-
-    <!-- Label -->
-    {#if label}
-      <text
-        x={cx}
-        y={cy - FL.ROOT_DIAMOND_R - 4}
-        text-anchor="middle"
-        font-size={L.LABEL_FS}
-        fill="#374151"
-        font-weight="bold"
-      >{label}</text>
-    {/if}
+    </g>
   {/each}
 
   <!-- Fret numbers (below bottom string) -->
@@ -445,3 +515,11 @@
     >{n}</text>
   {/each}
 </svg>
+
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    .fretboard-note-group {
+      transition: none !important;
+    }
+  }
+</style>
