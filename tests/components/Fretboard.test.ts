@@ -241,7 +241,7 @@ describe('Fretboard', () => {
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const svg = container.querySelector('svg')!;
       // There should be no circle at the Y of string 0
-      const string0Y = String(L.TOP_PAD); // stringY(0) = TOP_PAD
+      const string0Y = String(L.TOP_PAD + 5 * L.STRING_SP); // stringY(0) = bottom
       const circlesAtString0 = [...svg.querySelectorAll('circle')].filter(
         (c) => c.getAttribute('cy') === string0Y,
       );

@@ -16,10 +16,11 @@ export const L = {
 } as const;
 
 /**
- * Returns the Y coordinate for string i (0 = high E at top, 5 = low E at bottom).
+ * Returns the Y coordinate for string i (0 = low E at bottom, 5 = high E at top).
+ * Follows tablature convention: 1st string (high E) at top, 6th string (low E) at bottom.
  */
 export function stringY(i: number): number {
-  return L.TOP_PAD + i * L.STRING_SP;
+  return L.TOP_PAD + (5 - i) * L.STRING_SP;
 }
 
 /**

@@ -32,16 +32,16 @@ describe('layout constants', () => {
 });
 
 describe('stringY', () => {
-  it('returns TOP_PAD for string 0 (high E)', () => {
-    expect(stringY(0)).toBe(L.TOP_PAD);
+  it('returns TOP_PAD + 5 * STRING_SP for string 0 (low E at bottom)', () => {
+    expect(stringY(0)).toBe(L.TOP_PAD + 5 * L.STRING_SP);
   });
 
-  it('returns TOP_PAD + 1 * STRING_SP for string 1', () => {
-    expect(stringY(1)).toBe(L.TOP_PAD + L.STRING_SP);
+  it('returns TOP_PAD + 4 * STRING_SP for string 1', () => {
+    expect(stringY(1)).toBe(L.TOP_PAD + 4 * L.STRING_SP);
   });
 
-  it('returns TOP_PAD + 5 * STRING_SP for string 5 (low E)', () => {
-    expect(stringY(5)).toBe(L.TOP_PAD + 5 * L.STRING_SP);
+  it('returns TOP_PAD for string 5 (high E at top)', () => {
+    expect(stringY(5)).toBe(L.TOP_PAD);
   });
 });
 
