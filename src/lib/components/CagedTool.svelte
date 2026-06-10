@@ -7,6 +7,7 @@
   import ShapeCard from './ShapeCard.svelte';
   import FullFretboard from './FullFretboard.svelte';
   import DualFretboard from './DualFretboard.svelte';
+  import LegendPanel from './LegendPanel.svelte';
 
   interface Props {
     navigate: (view: ViewName) => void;
@@ -19,6 +20,7 @@
   let selectedQuality = $state<ChordQuality>('major');
   let labelMode = $state<LabelMode>('intervals');
   let viewMode = $state<'full' | 'grid' | 'dual'>('full');
+  let legendOpen = $state(false);
   let visibleShapes = new SvelteSet(CAGED_ORDER);
   let secondRoot = $state<NoteName>('G');
   let secondVisibleShapes = new SvelteSet(CAGED_ORDER);
@@ -241,6 +243,27 @@
       </button>
     </div>
   </div>
+
+  <!-- Legend toggle button -->
+  <div class="mb-6">
+    <button
+      class="rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200"
+      class:bg-blue-600={legendOpen}
+      class:text-white={legendOpen}
+      class:bg-gray-100={!legendOpen}
+      class:text-gray-700={!legendOpen}
+      class:hover:bg-gray-200={!legendOpen}
+      aria-expanded={legendOpen}
+      aria-controls="legend-panel"
+      aria-label="Toggle legend"
+      onclick={() => (legendOpen = !legendOpen)}
+    >
+      Legend
+    </button>
+  </div>
+
+  <!-- Legend panel -->
+  <LegendPanel open={legendOpen} viewMode={viewMode} />
 
   <!-- Shape toggle bar (only in Full Neck mode) -->
   {#if viewMode === 'full'}
