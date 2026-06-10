@@ -428,6 +428,14 @@
             stroke="white"
             stroke-width="1.5"
           />
+          <text
+            x="0" y="3"
+            text-anchor="middle"
+            font-size="7"
+            fill="white"
+            font-weight="bold"
+            style="pointer-events:none"
+          >{getNoteName(note.stringIndex, note.absFret)}</text>
         {/if}
       {:else if overlapIndex === 0}
         <!-- Innermost of overlapping notes -->
@@ -445,6 +453,14 @@
             fill={note.color}
             opacity={FL.NOTE_OPACITY}
           />
+          <text
+            x="0" y="3"
+            text-anchor="middle"
+            font-size="7"
+            fill="white"
+            font-weight="bold"
+            style="pointer-events:none"
+          >{getNoteName(note.stringIndex, note.absFret)}</text>
         {/if}
         <!-- Note name if any note in overlaps is root -->
         {#if overlaps.some((n) => n.isRoot)}
