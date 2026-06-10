@@ -362,41 +362,45 @@
         />
       {/if}
     {:else}
-      <!-- Overlapping notes: split rendering (left/right halves) -->
+      <!-- Overlapping notes: concentric rings so all colors are visible -->
       {@const r = entry.isRoot ? FL.ROOT_DIAMOND_R : L.TONE_R}
-      {@const c1 = notes[0]!.color}
-      {@const c2 = notes[1]!.color}
+      <!-- Innermost note: first shape -->
       {#if entry.isRoot}
-        <!-- Split diamond: left half = c1, right half = c2 -->
         <polygon
-          points={`${cx},${cy - r} ${cx},${cy + r} ${cx - r},${cy}`}
-          fill={c1}
+          points={diamondPoints(cx, cy, r - 3)}
+          fill={notes[0]!.color}
           stroke="white"
           stroke-width="1"
         />
-        <polygon
-          points={`${cx},${cy - r} ${cx},${cy + r} ${cx + r},${cy}`}
-          fill={c2}
-          stroke="white"
-          stroke-width="1"
-        />
-        <!-- Vertical divider -->
-        <line x1={cx} y1={cy - r + 2} x2={cx} y2={cy + r - 2} stroke="white" stroke-width="2" />
       {:else}
-        <!-- Split circle: left half = c1, right half = c2 -->
-        <path
-          d={`M ${cx},${cy - r} A ${r},${r} 0 0,1 ${cx},${cy + r} Z`}
-          fill={c1}
-          opacity={FL.NOTE_OPACITY}
-        />
-        <path
-          d={`M ${cx},${cy - r} A ${r},${r} 0 0,0 ${cx},${cy + r} Z`}
-          fill={c2}
-          opacity={FL.NOTE_OPACITY}
-        />
-        <!-- Vertical divider -->
-        <line x1={cx} y1={cy - r - 1} x2={cx} y2={cy + r + 1} stroke="white" stroke-width="2" />
+        <circle cx={cx} cy={cy} r={r - 3} fill={notes[0]!.color} opacity={FL.NOTE_OPACITY} />
       {/if}
+      <!-- Outer ring(s): subsequent shapes -->
+      {#each notes.slice(1) as note, j}
+        {@const ringR = r - 1 + j * 2}
+        {#if entry.isRoot}
+          <!-- Diamond ring via thick stroke polygon -->
+          <polygon
+            points={diamondPoints(cx, cy, ringR)}
+            fill="none"
+            stroke={note.color}
+            stroke-width="3"
+            opacity={0.9}
+          />
+        {:else}
+          <circle
+            cx={cx}
+            cy={cy}
+            r={ringR}
+            fill="none"
+            stroke={note.color}
+            stroke-width="3"
+            opacity={FL.NOTE_OPACITY}
+          />
+        {/if}
+      {/each}
+      <!-- Thin white ring to separate innermost from rings -->
+      <circle cx={cx} cy={cy} r={r - 2} fill="none" stroke="white" stroke-width="1.5" opacity="0.6" />
       <!-- Show note name if any entry is root -->
       {#if notes.some((n) => n.isRoot)}
         <text
