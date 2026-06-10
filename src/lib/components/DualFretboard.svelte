@@ -3,6 +3,7 @@
   import { CHROMATIC, CAGED_ORDER } from '$lib/types/chord';
   import { getShapes } from '$lib/data/chords';
   import { SHAPE_COLORS } from '$lib/theory/layout';
+  import { buildPositionMap, type DiffEntry } from '$lib/theory/fretboard';
   import FullFretboard from './FullFretboard.svelte';
 
   interface Props {
@@ -31,6 +32,30 @@
 
   let shapes1 = $derived(getShapes(root1, quality));
   let shapes2 = $derived(getShapes(root2, quality));
+
+  let diffPositions = $derived.by(() => {
+    const result = new Map<string, DiffEntry>();
+    const map1 = buildPositionMap(shapes1, visibleShapes1);
+    const map2 = buildPositionMap(shapes2, visibleShapes2);
+
+    for (const [key, entries1] of map1) {
+      const entries2 = map2.get(key);
+      if (!entries2) continue;
+
+      const interval1 = entries1[0]!.interval;
+      const interval2 = entries2[0]!.interval;
+
+      if (interval1 === null || interval2 === null) continue;
+
+      result.set(key, {
+        type: interval1 === interval2 ? 'same' : 'different',
+        interval1,
+        interval2,
+      });
+    }
+
+    return result;
+  });
 
   function toggleShape1(shape: CagedShape) {
     if (visibleShapes1.has(shape)) {
@@ -98,7 +123,7 @@
       {/each}
     </div>
 
-    <FullFretboard shapes={shapes1} visibleShapes={visibleShapes1} {labelMode} {width} />
+    <FullFretboard shapes={shapes1} visibleShapes={visibleShapes1} {labelMode} {width} highlightPositions={diffPositions} />
   </section>
 
   <!-- Bottom fretboard -->
@@ -149,6 +174,6 @@
       {/each}
     </div>
 
-    <FullFretboard shapes={shapes2} visibleShapes={visibleShapes2} {labelMode} {width} />
+    <FullFretboard shapes={shapes2} visibleShapes={visibleShapes2} {labelMode} {width} highlightPositions={diffPositions} />
   </section>
 </div>

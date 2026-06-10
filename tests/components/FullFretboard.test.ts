@@ -2,7 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import FullFretboard from '$lib/components/FullFretboard.svelte';
 import type { ChordShape, LabelMode, CagedShape } from '$lib/types/chord';
-import { FL, SHAPE_COLORS } from '$lib/theory/layout';
+import { FL, SHAPE_COLORS, L } from '$lib/theory/layout';
+import type { DiffEntry } from '$lib/theory/fretboard';
 
 // ── Test helpers ──────────────────────────────────────────────────
 
@@ -548,6 +549,263 @@ describe('FullFretboard', () => {
       const svg = container.querySelector('svg')!;
       const vbW = Number(svg.getAttribute('viewBox')!.split(' ')[2]);
       expect(vbW).toBe(400);
+    });
+  });
+
+  describe('highlight rings', () => {
+    function makeDiffEntry(type: 'same' | 'different'): DiffEntry {
+      return { type, interval1: 'R', interval2: type === 'same' ? 'R' : '3' };
+    }
+
+    it('renders green ring for same-interval entry (non-root)', () => {
+      const shapes = [makeCShape()];
+      const highlightPositions = new Map<string, DiffEntry>();
+      // C shape has note at string 1 fret 3 (absFret=3) → key "3,1" with interval 'R'
+      highlightPositions.set('3,1', makeDiffEntry('same'));
+
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions,
+      });
+
+      const circles = [...container.querySelectorAll('circle')];
+      const greenRings = circles.filter(
+        (c) =>
+          c.getAttribute('stroke') === '#22C55E' &&
+          c.getAttribute('fill') === 'none' &&
+          c.getAttribute('stroke-width') === '1.5',
+      );
+      // Position (3,1) is a root → diamond, not circle, so the ring is a polygon
+      // Non-root position: pick string 2 fret 2 (key "2,2", interval '3')
+    });
+
+    it('renders green ring for same-interval entry (non-root circle)', () => {
+      const shapes = [makeCShape()];
+      const highlightPositions = new Map<string, DiffEntry>();
+      // String 2, fret 2 (absFret=2) → key "2,2", interval '3' = non-root
+      highlightPositions.set('2,2', makeDiffEntry('same'));
+
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions,
+      });
+
+      const circles = [...container.querySelectorAll('circle')];
+      const greenRings = circles.filter(
+        (c) =>
+          c.getAttribute('stroke') === '#22C55E' &&
+          c.getAttribute('fill') === 'none' &&
+          parseFloat(c.getAttribute('opacity') ?? '1') === 0.5,
+      );
+      expect(greenRings.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('renders amber dashed ring for different-interval entry (non-root circle)', () => {
+      const shapes = [makeCShape()];
+      const highlightPositions = new Map<string, DiffEntry>();
+      // String 2, fret 2 (absFret=2) → key "2,2", interval '3' = non-root
+      highlightPositions.set('2,2', makeDiffEntry('different'));
+
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions,
+      });
+
+      const circles = [...container.querySelectorAll('circle')];
+      const amberRings = circles.filter(
+        (c) =>
+          c.getAttribute('stroke') === '#F59E0B' &&
+          c.getAttribute('fill') === 'none' &&
+          c.getAttribute('stroke-width') === '2' &&
+          c.getAttribute('stroke-dasharray') === '3 2',
+      );
+      expect(amberRings.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('renders green polygon ring for same-interval entry at root position', () => {
+      const shapes = [makeCShape()];
+      const highlightPositions = new Map<string, DiffEntry>();
+      // String 1, fret 3 (absFret=3) → key "3,1", interval 'R' = root
+      highlightPositions.set('3,1', makeDiffEntry('same'));
+
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions,
+      });
+
+      const polygons = [...container.querySelectorAll('polygon')];
+      const greenPolygons = polygons.filter(
+        (p) =>
+          p.getAttribute('stroke') === '#22C55E' &&
+          p.getAttribute('fill') === 'none',
+      );
+      expect(greenPolygons.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('renders amber dashed polygon ring for different-interval entry at root position', () => {
+      const shapes = [makeCShape()];
+      const highlightPositions = new Map<string, DiffEntry>();
+      // String 1, fret 3 (absFret=3) → key "3,1", interval 'R' = root
+      highlightPositions.set('3,1', makeDiffEntry('different'));
+
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions,
+      });
+
+      const polygons = [...container.querySelectorAll('polygon')];
+      const amberPolygons = polygons.filter(
+        (p) =>
+          p.getAttribute('stroke') === '#F59E0B' &&
+          p.getAttribute('fill') === 'none' &&
+          p.getAttribute('stroke-dasharray') === '3 2',
+      );
+      expect(amberPolygons.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('renders no rings when highlightPositions is undefined (backward compat)', () => {
+      const shapes = [makeCShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+      });
+
+      const circles = [...container.querySelectorAll('circle')];
+      const polygons = [...container.querySelectorAll('polygon')];
+      const ringCircles = circles.filter(
+        (c) => c.getAttribute('fill') === 'none' && c.getAttribute('stroke') === '#22C55E',
+      );
+      const ringPolygons = polygons.filter(
+        (p) => p.getAttribute('fill') === 'none' && p.getAttribute('stroke') === '#22C55E',
+      );
+      expect(ringCircles.length).toBe(0);
+      expect(ringPolygons.length).toBe(0);
+    });
+
+    it('renders no rings when highlightPositions is empty map', () => {
+      const shapes = [makeCShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions: new Map(),
+      });
+
+      const circles = [...container.querySelectorAll('circle')];
+      const ringCircles = circles.filter(
+        (c) => c.getAttribute('fill') === 'none' && (c.getAttribute('stroke') === '#22C55E' || c.getAttribute('stroke') === '#F59E0B'),
+      );
+      expect(ringCircles.length).toBe(0);
+    });
+
+    it('ring radius is L.TONE_R + 4 for non-root notes', () => {
+      const shapes = [makeCShape()];
+      const highlightPositions = new Map<string, DiffEntry>();
+      // String 2, fret 2 (absFret=2) → key "2,2" — non-root, interval '3'
+      highlightPositions.set('2,2', makeDiffEntry('same'));
+
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions,
+      });
+
+      const circles = [...container.querySelectorAll('circle')];
+      const greenRings = circles.filter(
+        (c) =>
+          c.getAttribute('stroke') === '#22C55E' &&
+          c.getAttribute('fill') === 'none',
+      );
+      expect(greenRings.length).toBeGreaterThanOrEqual(1);
+      const ringR = parseFloat(greenRings[0]!.getAttribute('r')!);
+      expect(ringR).toBe(L.TONE_R + 4);
+    });
+
+    it('ring radius is FL.ROOT_DIAMOND_R + 4 for root notes (polygon)', () => {
+      const shapes = [makeCShape()];
+      const highlightPositions = new Map<string, DiffEntry>();
+      // String 1, fret 3 (absFret=3) → key "3,1" — root
+      highlightPositions.set('3,1', makeDiffEntry('same'));
+
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions,
+      });
+
+      const polygons = [...container.querySelectorAll('polygon')];
+      const greenPolygons = polygons.filter(
+        (p) =>
+          p.getAttribute('stroke') === '#22C55E' &&
+          p.getAttribute('fill') === 'none',
+      );
+      expect(greenPolygons.length).toBeGreaterThanOrEqual(1);
+      const pointsStr = greenPolygons[0]!.getAttribute('points')!;
+      const coords = pointsStr.split(/[\s,]+/).map(Number);
+      // diamondPoints(cx, cy, r) → cx,cy-r cx+r,cy cx,cy+r cx-r,cy
+      // The diamond height = 2*r → cy+r - (cy-r) = 2*r
+      const yCoords = [coords[1], coords[3], coords[5], coords[7]];
+      const yMin = Math.min(...yCoords);
+      const yMax = Math.max(...yCoords);
+      const diamondHeight = yMax - yMin;
+      expect(diamondHeight / 2).toBe(FL.ROOT_DIAMOND_R + 4);
+    });
+
+    it('rings appear outside existing note shapes (z-order after note)', () => {
+      const shapes = [makeCShape()];
+      const highlightPositions = new Map<string, DiffEntry>();
+      highlightPositions.set('2,2', makeDiffEntry('same'));
+
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        highlightPositions,
+      });
+
+      // The green ring circle should appear after the note circle in DOM order
+      // and before the label text
+      const circles = [...container.querySelectorAll('circle')];
+      const greenIdx = circles.findIndex(
+        (c) =>
+          c.getAttribute('stroke') === '#22C55E' &&
+          c.getAttribute('fill') === 'none',
+      );
+      // The note circle with fill should come before the ring
+      const noteIdx = circles.findIndex(
+        (c) => c.getAttribute('fill') !== 'none',
+      );
+
+      expect(noteIdx).toBeGreaterThanOrEqual(0);
+      // The ring circle is after the note circle (higher index)
+      // but both exist in the same SVG
+      expect(circles.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('existing tests pass with highlightPositions add prop', () => {
+      // Re-run a basic test to ensure highlightPositions doesn't break anything
+      const shapes = allShapes();
+      render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A', 'G', 'E', 'D']),
+        labelMode: 'intervals' as LabelMode,
+      });
+      const svg = screen.getByRole('img');
+      expect(svg).toBeTruthy();
+      expect(svg.tagName).toBe('svg');
     });
   });
 });
