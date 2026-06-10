@@ -1,0 +1,63 @@
+# openspec/config.yaml
+schema: spec-driven
+
+context: |
+  Tech stack: Svelte 5 (runes mode) + Vite + TypeScript + Tailwind CSS
+  Architecture: SPA with interactive SVG fretboard, CAGED system chord visualizer
+  Testing: Vitest (planned, not installed), Playwright (planned, not installed)
+  Style: Component-first Svelte 5 with $state/$derived runes, Tailwind utility classes
+
+rules:
+  proposal:
+    - Include clear scope boundary for each change
+    - Describe user impact before implementation approach
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Include interactive SVG behavior specs
+  design:
+    - Document SVG coordinate system and fretboard layout
+    - Describe component tree and data flow
+    - Include architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    rules:
+      - Follow existing code patterns
+    tdd: false
+    test_command: 'pnpm vitest run'
+  verify:
+    test_command: 'pnpm vitest run'
+    build_command: 'pnpm build'
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
+
+testing:
+  strict_tdd: false
+  frameworks:
+    unit:
+      name: Vitest
+      installed: false
+      command: 'pnpm vitest run'
+    e2e:
+      name: Playwright
+      installed: false
+      command: 'pnpx playwright test'
+  coverage:
+    available: false
+    command: 'pnpm vitest run --coverage'
+  quality:
+    linter:
+      name: ESLint
+      installed: false
+      command: 'pnpm eslint .'
+    type_checker:
+      name: TypeScript (tsc)
+      installed: true
+      command: 'pnpm tsc --noEmit'
+    formatter:
+      name: Prettier
+      installed: false
+      command: 'pnpm prettier --check .'
