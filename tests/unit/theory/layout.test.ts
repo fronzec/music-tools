@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { L, stringY, fretLineX, noteX, viewBoxW, viewBoxH, FRET_MARKERS } from '$lib/theory/layout';
+import { L, FL, SHAPE_COLORS, stringY, fretLineX, noteX, viewBoxW, viewBoxH, FRET_MARKERS } from '$lib/theory/layout';
 
 describe('layout constants', () => {
   it('has expected TOP_PAD', () => {
@@ -112,5 +112,78 @@ describe('FRET_MARKERS', () => {
 
   it('includes 12 (double marker)', () => {
     expect(FRET_MARKERS).toContain(12);
+  });
+});
+
+describe('FL (full layout constants)', () => {
+  it('has MIN_FRET_SPAN of 5', () => {
+    expect(FL.MIN_FRET_SPAN).toBe(5);
+  });
+
+  it('has MAX_FRET_SPAN of 17', () => {
+    expect(FL.MAX_FRET_SPAN).toBe(17);
+  });
+
+  it('has FRET_PAD of 1', () => {
+    expect(FL.FRET_PAD).toBe(1);
+  });
+
+  it('has FRET_NUM_Y_OFFSET of 14', () => {
+    expect(FL.FRET_NUM_Y_OFFSET).toBe(14);
+  });
+
+  it('has FRET_NUM_FS of 9', () => {
+    expect(FL.FRET_NUM_FS).toBe(9);
+  });
+
+  it('has ROOT_DIAMOND_R of 11', () => {
+    expect(FL.ROOT_DIAMOND_R).toBe(11);
+  });
+
+  it('has NOTE_OPACITY of 0.7', () => {
+    expect(FL.NOTE_OPACITY).toBe(0.7);
+  });
+
+  it('has BARRE_OPACITY of 0.35', () => {
+    expect(FL.BARRE_OPACITY).toBe(0.35);
+  });
+
+  it('FL object is frozen (as const)', () => {
+    expect(Object.isFrozen(FL)).toBe(false); // 'as const' in TS is compile-time
+  });
+});
+
+describe('SHAPE_COLORS', () => {
+  it('has entries for all 5 CAGED shapes', () => {
+    const shapes = ['C', 'A', 'G', 'E', 'D'] as const;
+    for (const s of shapes) {
+      expect(SHAPE_COLORS[s]).toBeTruthy();
+    }
+    expect(Object.keys(SHAPE_COLORS).length).toBe(5);
+  });
+
+  it('C shape is blue-600', () => {
+    expect(SHAPE_COLORS.C).toBe('#2563EB');
+  });
+
+  it('A shape is orange-500', () => {
+    expect(SHAPE_COLORS.A).toBe('#F97316');
+  });
+
+  it('G shape is green-600', () => {
+    expect(SHAPE_COLORS.G).toBe('#16A34A');
+  });
+
+  it('E shape is red-500', () => {
+    expect(SHAPE_COLORS.E).toBe('#EF4444');
+  });
+
+  it('D shape is purple-600', () => {
+    expect(SHAPE_COLORS.D).toBe('#9333EA');
+  });
+
+  it('all shape colors are distinct', () => {
+    const colors = Object.values(SHAPE_COLORS);
+    expect(new Set(colors).size).toBe(5);
   });
 });

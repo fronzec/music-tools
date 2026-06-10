@@ -10,6 +10,16 @@ describe('CagedTool', () => {
     return { navigate, ...result };
   }
 
+  /** Get a chord selector button by note name. */
+  function getChordBtn(note: string): HTMLElement {
+    return screen.getByRole('button', { name: `Select ${note} chord` });
+  }
+
+  /** Get a shape toggle button by shape name. */
+  function getShapeToggle(shape: string): HTMLElement {
+    return screen.getByRole('button', { name: `Toggle ${shape} shape` });
+  }
+
   describe('initial render', () => {
     it('renders the title', () => {
       renderTool();
@@ -28,7 +38,7 @@ describe('CagedTool', () => {
         'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
       ];
       for (const note of chromatic) {
-        expect(screen.getByText(note, { exact: true })).toBeTruthy();
+        expect(getChordBtn(note)).toBeTruthy();
       }
     });
 
@@ -44,55 +54,137 @@ describe('CagedTool', () => {
       expect(screen.getByText('Notes', { exact: true })).toBeTruthy();
     });
 
-    it('renders 5 shape cards by default (C major)', () => {
-      const { container } = renderTool();
-      // Each ShapeCard renders the shape name (e.g., "C shape")
-      const shapeLabels = ['C shape', 'A shape', 'G shape', 'E shape', 'D shape'];
-      for (const label of shapeLabels) {
-        expect(screen.getByText(label)).toBeTruthy();
-      }
-      // Check for fret range labels (should be 5)
-      const fretRangeTexts = [...container.querySelectorAll('div')].filter((d) =>
-        d.textContent?.startsWith('frets'),
-      );
-      expect(fretRangeTexts.length).toBe(5);
+    it('renders view mode toggle buttons', () => {
+      renderTool();
+      expect(screen.getByText('Full Neck', { exact: true })).toBeTruthy();
+      expect(screen.getByText('Shape Grid', { exact: true })).toBeTruthy();
     });
 
-    it('renders 5 Fretboard components inside shape cards', () => {
+    it('defaults to Full Neck view mode', () => {
+      renderTool();
+      const fullBtn = screen.getByText('Full Neck', { exact: true });
+      expect(fullBtn.classList.contains('bg-white')).toBe(true);
+    });
+
+    it('renders shape toggle buttons in Full Neck mode', () => {
+      renderTool();
+      const shapes = ['C', 'A', 'G', 'E', 'D'];
+      for (const shape of shapes) {
+        const btn = getShapeToggle(shape);
+        expect(btn).toBeTruthy();
+        expect(btn.getAttribute('aria-pressed')).toBe('true');
+      }
+    });
+
+    it('renders FullFretboard SVG in full mode by default', () => {
       const { container } = renderTool();
       const svgs = container.querySelectorAll('svg');
+      expect(svgs.length).toBe(1);
+    });
+
+    it('shape toggle bar is visible in full mode', () => {
+      renderTool();
+      const toggleLabel = screen.getByText('Shapes', { exact: true });
+      expect(toggleLabel).toBeTruthy();
+    });
+
+    it('shape toggle bar hidden in grid mode', async () => {
+      renderTool();
+      const gridBtn = screen.getByText('Shape Grid', { exact: true });
+      await gridBtn.click();
+      expect(() => screen.getByText('Shapes', { exact: true })).toThrow();
+    });
+  });
+
+  describe('view mode toggle', () => {
+    it('switches to grid mode when clicking Shape Grid', async () => {
+      const { container } = renderTool();
+      const gridBtn = screen.getByText('Shape Grid', { exact: true });
+      await gridBtn.click();
+
+      const shapeGrid = container.querySelector('.grid');
+      expect(shapeGrid).toBeTruthy();
+      const svgs = container.querySelectorAll('svg');
       expect(svgs.length).toBe(5);
+    });
+
+    it('switches back to full mode when clicking Full Neck', async () => {
+      const { container } = renderTool();
+      const gridBtn = screen.getByText('Shape Grid', { exact: true });
+      await gridBtn.click();
+      const fullBtn = screen.getByText('Full Neck', { exact: true });
+      await fullBtn.click();
+
+      const svgs = container.querySelectorAll('svg');
+      expect(svgs.length).toBe(1);
+    });
+  });
+
+  describe('shape toggle bar', () => {
+    it('toggles a shape off when clicking its button', async () => {
+      const { container } = renderTool();
+      const cBtn = getShapeToggle('C');
+
+      await cBtn.click();
+
+      expect(cBtn.getAttribute('aria-pressed')).toBe('false');
+      const svgs = container.querySelectorAll('svg');
+      expect(svgs.length).toBe(1);
+    });
+
+    it('toggles a shape back on', async () => {
+      renderTool();
+      const cBtn = getShapeToggle('C');
+
+      await cBtn.click();
+      expect(cBtn.getAttribute('aria-pressed')).toBe('false');
+
+      await cBtn.click();
+      expect(cBtn.getAttribute('aria-pressed')).toBe('true');
     });
   });
 
   describe('interaction: chord selector', () => {
     it('highlights C as active by default', () => {
       renderTool();
-      const cButton = screen.getByText('C', { exact: true });
+      const cButton = getChordBtn('C');
       expect(cButton.classList.contains('bg-blue-600')).toBe(true);
     });
 
     it('changes selected root when clicking a chord button', async () => {
       renderTool();
-      const gSharpButton = screen.getByText('G#', { exact: true });
+      const gSharpButton = getChordBtn('G#');
       await gSharpButton.click();
 
-      // G# should now be highlighted
       expect(gSharpButton.classList.contains('bg-blue-600')).toBe(true);
 
-      // C should no longer be highlighted
-      const cButton = screen.getByText('C', { exact: true });
+      const cButton = getChordBtn('C');
       expect(cButton.classList.contains('bg-blue-600')).toBe(false);
     });
 
-    it('updates shape cards when root changes', async () => {
+    it('updates shapes when root changes', async () => {
       const { container } = renderTool();
-      const gButton = screen.getByText('G', { exact: true });
+      const gButton = getChordBtn('G');
       await gButton.click();
 
-      // Should still have 5 shape labels and 5 SVGs
       const svgs = container.querySelectorAll('svg');
-      expect(svgs.length).toBe(5);
+      expect(svgs.length).toBe(1);
+    });
+
+    it('resets shape visibility on chord change', async () => {
+      renderTool();
+      // Toggle off C shape first
+      const cToggle = getShapeToggle('C');
+      await cToggle.click();
+      expect(cToggle.getAttribute('aria-pressed')).toBe('false');
+
+      // Now change chord to G (which resets visibility)
+      const gButton = getChordBtn('G');
+      await gButton.click();
+
+      // C toggle should be back to active since visibility reset
+      const cAfter = getShapeToggle('C');
+      expect(cAfter.getAttribute('aria-pressed')).toBe('true');
     });
   });
 
@@ -102,18 +194,16 @@ describe('CagedTool', () => {
       const minorBtn = screen.getByText('Minor', { exact: true });
       await minorBtn.click();
 
-      // Minor button should be active (white background = selected state)
       expect(minorBtn.classList.contains('bg-white')).toBe(true);
     });
 
-    it('updates shape cards when quality changes', async () => {
+    it('updates shapes when quality changes', async () => {
       const { container } = renderTool();
       const minorBtn = screen.getByText('Minor', { exact: true });
       await minorBtn.click();
 
-      // Should still render 5 shape cards
       const svgs = container.querySelectorAll('svg');
-      expect(svgs.length).toBe(5);
+      expect(svgs.length).toBe(1);
     });
   });
 
@@ -134,42 +224,64 @@ describe('CagedTool', () => {
       const notesBtn = screen.getByText('Notes', { exact: true });
       await notesBtn.click();
 
-      // Notes button should be active
       expect(notesBtn.classList.contains('bg-white')).toBe(true);
+    });
+  });
+
+  describe('grid mode shape cards', () => {
+    it('renders 5 shape cards in grid mode', async () => {
+      const { container } = renderTool();
+      const gridBtn = screen.getByText('Shape Grid', { exact: true });
+      await gridBtn.click();
+
+      const shapeLabels = ['C shape', 'A shape', 'G shape', 'E shape', 'D shape'];
+      for (const label of shapeLabels) {
+        expect(screen.getByText(label)).toBeTruthy();
+      }
+      const fretRangeTexts = [...container.querySelectorAll('div')].filter((d) =>
+        d.textContent?.startsWith('frets'),
+      );
+      expect(fretRangeTexts.length).toBe(5);
+    });
+
+    it('renders 5 Fretboard SVGs inside shape cards in grid mode', async () => {
+      const { container } = renderTool();
+      const gridBtn = screen.getByText('Shape Grid', { exact: true });
+      await gridBtn.click();
+
+      const svgs = container.querySelectorAll('svg');
+      expect(svgs.length).toBe(5);
     });
   });
 
   describe('accessibility: chord buttons', () => {
     it('chord buttons have aria-label attributes', () => {
       renderTool();
-      const buttons = screen.getAllByRole('button');
-      const chordBtns = buttons.filter((b) => {
+      const chordBtns = screen.getAllByRole('button').filter((b) => {
         const label = b.getAttribute('aria-label');
         return label && label.startsWith('Select ');
       });
-      // Should have at least the first "C" chord button with aria-label
       expect(chordBtns.length).toBeGreaterThanOrEqual(1);
-      expect(chordBtns[0].getAttribute('aria-label')).toContain('Select');
     });
 
     it('active chord button has aria-pressed="true"', () => {
       renderTool();
-      const cBtn = screen.getByText('C', { exact: true });
-      expect(cBtn.getAttribute('aria-pressed')).toBe('true');
+      const chordC = getChordBtn('C');
+      expect(chordC.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('inactive chord button has aria-pressed="false"', () => {
       renderTool();
-      const gSharpBtn = screen.getByText('G#', { exact: true });
-      expect(gSharpBtn.getAttribute('aria-pressed')).toBe('false');
+      const chordGSharp = getChordBtn('G#');
+      expect(chordGSharp.getAttribute('aria-pressed')).toBe('false');
     });
   });
 
   describe('accessibility: quality toggle', () => {
     it('quality toggle has radiogroup role', () => {
       const { container } = renderTool();
-      const radiogroup = container.querySelector('[role="radiogroup"]');
-      expect(radiogroup).toBeTruthy();
+      const radiogroups = container.querySelectorAll('[role="radiogroup"]');
+      expect(radiogroups.length).toBeGreaterThanOrEqual(1);
     });
 
     it('Major button has role="radio" and aria-checked="true" by default', () => {
@@ -225,12 +337,37 @@ describe('CagedTool', () => {
     });
   });
 
-  describe('responsive grid', () => {
-    it('shape grid has responsive column classes', () => {
+  describe('accessibility: view mode toggle', () => {
+    it('view toggle has radiogroup role', () => {
       const { container } = renderTool();
-      // The shape grid is the outer grid (not the chord button group)
+      const radiogroups = container.querySelectorAll('[role="radiogroup"]');
+      expect(radiogroups.length).toBe(3);
+    });
+
+    it('Full Neck button has aria-checked="true" by default', () => {
+      renderTool();
+      const fullBtn = screen.getByText('Full Neck', { exact: true });
+      expect(fullBtn.getAttribute('role')).toBe('radio');
+      expect(fullBtn.getAttribute('aria-checked')).toBe('true');
+    });
+  });
+
+  describe('accessibility: shape toggle bar', () => {
+    it('shape toggle buttons have aria-pressed', () => {
+      renderTool();
+      const cBtn = getShapeToggle('C');
+      expect(cBtn.getAttribute('aria-pressed')).toBe('true');
+      expect(cBtn.getAttribute('aria-label')).toContain('Toggle');
+    });
+  });
+
+  describe('responsive grid', () => {
+    it('shape grid has responsive column classes when in grid mode', async () => {
+      const { container } = renderTool();
+      const gridBtn = screen.getByText('Shape Grid', { exact: true });
+      await gridBtn.click();
+
       const grids = container.querySelectorAll('.grid');
-      // Filter to the shape grid (contains ShapeCard wrappers)
       const shapeGrid = [...grids].find((g) =>
         g.className.includes('gap-4'),
       );

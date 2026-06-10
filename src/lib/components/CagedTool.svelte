@@ -1,8 +1,11 @@
 <script lang="ts">
-  import type { NoteName, ChordQuality, LabelMode, ViewName } from '$lib/types/chord';
-  import { CHROMATIC } from '$lib/types/chord';
+  import type { NoteName, ChordQuality, LabelMode, ViewName, CagedShape } from '$lib/types/chord';
+  import { CHROMATIC, CAGED_ORDER } from '$lib/types/chord';
+  import { SvelteSet } from 'svelte/reactivity';
   import { getShapes } from '$lib/data/chords';
+  import { SHAPE_COLORS } from '$lib/theory/layout';
   import ShapeCard from './ShapeCard.svelte';
+  import FullFretboard from './FullFretboard.svelte';
 
   interface Props {
     navigate: (view: ViewName) => void;
@@ -14,8 +17,25 @@
   let selectedRoot = $state<NoteName>('C');
   let selectedQuality = $state<ChordQuality>('major');
   let labelMode = $state<LabelMode>('intervals');
+  let viewMode = $state<'full' | 'grid'>('full');
+  let visibleShapes = new SvelteSet(CAGED_ORDER);
 
   let shapes = $derived(getShapes(selectedRoot, selectedQuality));
+
+  function toggleShape(shape: CagedShape) {
+    if (visibleShapes.has(shape)) {
+      visibleShapes.delete(shape);
+    } else {
+      visibleShapes.add(shape);
+    }
+  }
+
+  // Reset visible shapes to all when root or quality changes
+  $effect(() => {
+    void shapes;
+    visibleShapes.clear();
+    for (const s of CAGED_ORDER) visibleShapes.add(s);
+  });
 </script>
 
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
@@ -133,10 +153,82 @@
     </div>
   </div>
 
-  <!-- Shape grid -->
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    {#each shapes as shape (shape.shape)}
-      <ShapeCard {shape} {labelMode} />
-    {/each}
+  <!-- View mode toggle -->
+  <div class="mb-6 flex flex-wrap items-center gap-3">
+    <div class="text-sm font-medium text-gray-600" id="view-mode-label">View</div>
+    <div
+      class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5"
+      role="radiogroup"
+      aria-labelledby="view-mode-label"
+    >
+      <button
+        class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+        class:bg-white={viewMode === 'full'}
+        class:text-gray-900={viewMode === 'full'}
+        class:shadow-sm={viewMode === 'full'}
+        class:text-gray-500={viewMode !== 'full'}
+        class:hover:text-gray-700={viewMode !== 'full'}
+        role="radio"
+        aria-checked={viewMode === 'full'}
+        aria-label="Full Neck view"
+        onclick={() => (viewMode = 'full')}
+      >
+        Full Neck
+      </button>
+      <button
+        class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+        class:bg-white={viewMode === 'grid'}
+        class:text-gray-900={viewMode === 'grid'}
+        class:shadow-sm={viewMode === 'grid'}
+        class:text-gray-500={viewMode !== 'grid'}
+        class:hover:text-gray-700={viewMode !== 'grid'}
+        role="radio"
+        aria-checked={viewMode === 'grid'}
+        aria-label="Shape Grid view"
+        onclick={() => (viewMode = 'grid')}
+      >
+        Shape Grid
+      </button>
+    </div>
   </div>
+
+  <!-- Shape toggle bar (only in Full Neck mode) -->
+  {#if viewMode === 'full'}
+    <div class="mb-6 flex flex-wrap items-center gap-3">
+      <div class="text-sm font-medium text-gray-600" id="shape-toggle-label">Shapes</div>
+      <div class="flex flex-wrap gap-2" role="group" aria-labelledby="shape-toggle-label">
+        {#each CAGED_ORDER as shapeName (shapeName)}
+          {@const color = SHAPE_COLORS[shapeName]}
+          {@const isActive = visibleShapes.has(shapeName)}
+          <button
+            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
+            class:border={true}
+            style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
+            aria-label="Toggle {shapeName} shape"
+            aria-pressed={isActive}
+            onclick={() => toggleShape(shapeName)}
+          >
+            <span
+              class="inline-block h-3 w-3 rounded-full"
+              style="background-color: {color}"
+              class:ring-1={!isActive}
+              class:ring-white={!isActive}
+            ></span>
+            {shapeName}
+          </button>
+        {/each}
+      </div>
+    </div>
+  {/if}
+
+  <!-- Content area -->
+  {#if viewMode === 'full'}
+    <FullFretboard shapes={shapes} {visibleShapes} {labelMode} />
+  {:else}
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {#each shapes as shape (shape.shape)}
+        <ShapeCard {shape} {labelMode} />
+      {/each}
+    </div>
+  {/if}
 </div>
