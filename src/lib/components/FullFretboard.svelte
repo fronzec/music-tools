@@ -544,9 +544,9 @@
       <!-- Label (only on first note of a position to avoid duplicates) -->
       {#if (overlaps.length === 1 || overlapIndex === 0) && label}
         <text
-          x="0"
-          y={-(FL.ROOT_DIAMOND_R + 4)}
-          text-anchor="middle"
+          x="7"
+          y="-11"
+          text-anchor="start"
           font-size={L.LABEL_FS}
           fill="#374151"
           font-weight="bold"

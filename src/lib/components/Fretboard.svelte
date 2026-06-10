@@ -253,7 +253,7 @@
 
         {#if label}
           <g
-            transform="translate({cx},{cy - L.ROOT_R - 4})"
+            transform="translate({cx + 7},{cy - 11})"
             style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
           >
             <text
