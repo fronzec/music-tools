@@ -1,3 +1,5 @@
+import type { CagedShape } from '$lib/types/chord';
+
 export const L = {
   TOP_PAD: 28,
   BOTTOM_PAD: 16,
@@ -14,6 +16,35 @@ export const L = {
   LABEL_FS: 10,
   MARKER_R: 3,
 } as const;
+
+/** Layout constants for the FullFretboard multi-shape overlay. */
+export const FL = {
+  /** Minimum number of fret columns to display. */
+  MIN_FRET_SPAN: 5,
+  /** Maximum number of fret columns to display. */
+  MAX_FRET_SPAN: 17,
+  /** Extra fret column for right padding. */
+  FRET_PAD: 1,
+  /** Vertical offset for fret numbers below the bottom string. */
+  FRET_NUM_Y_OFFSET: 14,
+  /** Font size for fret numbers. */
+  FRET_NUM_FS: 9,
+  /** Radius for root note diamond (same visual weight as ROOT_R). */
+  ROOT_DIAMOND_R: 11,
+  /** Opacity for non-root note circles. */
+  NOTE_OPACITY: 0.7,
+  /** Opacity for barre indicator rectangles. */
+  BARRE_OPACITY: 0.35,
+} as const;
+
+/** Per-shape colors for the CAGED full-neck overlay. */
+export const SHAPE_COLORS: Record<CagedShape, string> = {
+  C: '#2563EB', // blue-600
+  A: '#F97316', // orange-500
+  G: '#16A34A', // green-600
+  E: '#EF4444', // red-500
+  D: '#9333EA', // purple-600
+};
 
 /**
  * Returns the Y coordinate for string i (0 = low E at bottom, 5 = high E at top).
