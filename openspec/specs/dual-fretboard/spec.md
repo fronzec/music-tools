@@ -8,7 +8,8 @@ Define the DualFretboard component: a layout wrapper that renders two FullFretbo
 
 | Requirement | Rule | Happy Path | Edge Cases |
 |---|---|---|---|
-| **DualFretboard Component** | MUST accept two `ChordShape[]` arrays, two `Set<CagedShape>` visible sets, and shared `labelMode` and `quality` | Both fretboards render with correct shapes | Empty shapes array → empty fretboard with background only |
+| **DualFretboard Component** | MUST accept two `ChordShape[]` arrays, two `Set<CagedShape>` visible sets, shared `labelMode` and `quality`; computes `diffPositions` via `$derived.by()` and passes `highlightPositions` to both `FullFretboard` instances | Both fretboards render with correct shapes and diff rings on shared positions | Empty shapes array → empty fretboard with background only; no highlights |
+| **Diff Computation** | MUST compute `diffPositions` by intersecting position maps from both fretboards using `buildPositionMap()` from `src/lib/theory/fretboard.ts`; shared keys classified as `'same'` (matching intervals) or `'different'` (mismatching) | C major vs G major → shared (5,2) with same interval = `'same'`, shared (3,4) with different intervals = `'different'` | No overlap → empty `diffPositions` map |
 | **Vertical Stacking** | MUST render two `FullFretboard` instances stacked vertically with `~gap-3` (Tailwind `gap-3`, ~0.75rem/12px) | Top and bottom fretboards visible with gap | Container overflow handled by `overflow-auto` on wrapper |
 | **Per-Fretboard Shape Toggles** | MUST render a colored pill toggle bar per fretboard (C/A/G/E/D order) | Clicking pill toggles shape for that fretboard only | All shapes off → empty fretboard with "No shapes selected" message |
 | **Per-Fretboard Root Selectors** | MUST render a 12-note chromatic button row per fretboard with distinct labels (e.g. "From" / "To") | Selecting root updates only that fretboard | Same root on both is allowed (e.g. C vs C) |
@@ -17,7 +18,8 @@ Define the DualFretboard component: a layout wrapper that renders two FullFretbo
 | **Accessibility** | MUST assign distinct `aria-label` to each `FullFretboard` instance | Top: "{root} {quality} — top fretboard"; Bottom: "{root} {quality} — bottom fretboard" | Empty state: "Empty fretboard — no shapes selected" per instance |
 | **Empty State Handling** | MUST render empty state when `visibleShapes` is empty for either fretboard | Background (strings, frets, markers) still visible | Both empty → both show "No shapes selected" |
 | **Grid/Dual Mutual Exclusion** | Dual mode MUST always render full neck view; grid layout is NOT available in dual mode | Dual mode shows two full necks | Switching to grid mode hides dual and shows 5 mini-fretboards |
-| **Zero FullFretboard Changes** | DualFretboard MUST NOT modify `FullFretboard.svelte` props interface or internal behavior | FullFretboard remains unchanged | All existing FullFretboard specs continue to apply |
+| **Zero FullFretboard Changes** | DualFretboard MUST pass all required props to `FullFretboard` and MAY pass optional `highlightPositions` without changing the required interface | FullFretboard remains backward compatible when `highlightPositions` is absent | All existing FullFretboard specs continue to apply |
+| **Per-Fretboard Diff Highlights** | Each `FullFretboard` instance in `DualFretboard` MUST receive the same `highlightPositions` map; classification based on interval comparison, not note name | Same position classified `'same'` → both show green ring; classified `'different'` → both show dashed amber ring | Each fretboard still renders its own note label and color |
 
 ## Scenarios
 
@@ -94,6 +96,38 @@ Define the DualFretboard component: a layout wrapper that renders two FullFretbo
 - THEN both fretboards show C major shapes
 - AND this is explicitly allowed (useful for comparing different shape subsets)
 
+### Scenario: Dual C major vs G major with diff highlights
+
+- GIVEN `selectedRoot` is C, `secondRoot` is G, `selectedQuality` is major
+- WHEN `viewMode` is `'dual'`
+- THEN shared positions with matching intervals display green rings on both fretboards
+- AND shared positions with mismatching intervals display dashed amber rings on both fretboards
+- AND unique positions render normally without any ring
+
+### Scenario: Independent shape toggles with diff update
+
+- GIVEN `viewMode` is `'dual'` with all shapes visible on both fretboards
+- WHEN user toggles off C shape on the top fretboard only
+- THEN top fretboard hides C shape notes
+- AND `diffPositions` recalculates to reflect new overlap
+- AND bottom fretboard diff highlights update accordingly
+
+### Scenario: Same root on both sides with identical shapes
+
+- GIVEN `viewMode` is `'dual'` with both roots set to C
+- WHEN both fretboards show identical C major shapes
+- THEN `diffPositions` contains only `type: 'same'` entries
+- AND all shared positions render green rings
+- AND no amber rings appear
+
+### Scenario: Empty state on one fretboard (with highlights)
+
+- GIVEN `viewMode` is `'dual'`
+- WHEN user toggles off all shapes on the bottom fretboard
+- THEN `diffPositions` becomes empty (no shared positions)
+- AND bottom fretboard shows "No shapes selected" with no highlights
+- AND top fretboard continues to show its shapes but without any highlight rings
+
 ## Notes
 
 - **Layout**: Vertical stack only; horizontal side-by-side is out of scope for mobile
@@ -102,3 +136,6 @@ Define the DualFretboard component: a layout wrapper that renders two FullFretbo
 - **Shared controls**: Quality and label mode selectors appear once, above both fretboards or between the two root selector rows
 - **Z-order**: Per-FullFretboard spec (C → A → G → E → D), last shape on top
 - **No changes to FullFretboard**: The wrapper passes all props; FullFretboard remains unchanged per proposal
+- **Shared utility**: `src/lib/theory/fretboard.ts` exports `buildPositionMap()` and `NoteEntry` type; imported by both `FullFretboard` and `DualFretboard`
+- **Reactivity**: `diffPositions` uses `$derived.by()` so it recalculates when either `shapes1`, `shapes2`, `visibleShapes1`, or `visibleShapes2` changes
+- **Grid/Dual Mutual Exclusion**: Dual mode still always renders full neck view; grid layout remains unavailable in dual mode
