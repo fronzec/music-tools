@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NoteName, ChordQuality, LabelMode, ViewName, CagedShape } from '$lib/types/chord';
+  import type { NoteName, ChordQuality, ViewName, CagedShape } from '$lib/types/chord';
   import { CHROMATIC, CAGED_ORDER } from '$lib/types/chord';
   import { SvelteSet } from 'svelte/reactivity';
   import { getShapes } from '$lib/data/chords';
@@ -18,7 +18,6 @@
   // ── State ────────────────────────────────────────────────────────
   let selectedRoot = $state<NoteName>('C');
   let selectedQuality = $state<ChordQuality>('major');
-  let labelMode = $state<LabelMode>('intervals');
   let viewMode = $state<'full' | 'grid' | 'dual'>('full');
   let legendOpen = $state(false);
   let visibleShapes = new SvelteSet(CAGED_ORDER);
@@ -147,35 +146,6 @@
         </div>
       </div>
 
-      <!-- Labels card -->
-      <div class="rounded-xl border border-gray-200 bg-white p-4">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Labels</div>
-        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5" role="radiogroup" aria-label="Label mode">
-          <button
-            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-            class:bg-white={labelMode === 'intervals'}
-            class:text-gray-900={labelMode === 'intervals'}
-            class:shadow-sm={labelMode === 'intervals'}
-            class:text-gray-500={labelMode !== 'intervals'}
-            class:hover:text-gray-700={labelMode !== 'intervals'}
-            role="radio"
-            aria-checked={labelMode === 'intervals'}
-            onclick={() => (labelMode = 'intervals')}
-          >Intervals</button>
-          <button
-            class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-            class:bg-white={labelMode === 'notes'}
-            class:text-gray-900={labelMode === 'notes'}
-            class:shadow-sm={labelMode === 'notes'}
-            class:text-gray-500={labelMode !== 'notes'}
-            class:hover:text-gray-700={labelMode !== 'notes'}
-            role="radio"
-            aria-checked={labelMode === 'notes'}
-            onclick={() => (labelMode = 'notes')}
-          >Notes</button>
-        </div>
-      </div>
-
       <!-- View mode card -->
       <div class="rounded-xl border border-gray-200 bg-white p-4">
         <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">View</div>
@@ -269,13 +239,13 @@
 
   <!-- Content area -->
   {#if viewMode === 'full'}
-    <FullFretboard shapes={shapes} {visibleShapes} {labelMode} />
+    <FullFretboard shapes={shapes} {visibleShapes} labelMode="both" />
   {:else if viewMode === 'dual'}
     <DualFretboard
       root1={selectedRoot}
       root2={secondRoot}
       quality={selectedQuality}
-      labelMode={labelMode}
+      labelMode="both"
       visibleShapes1={visibleShapes}
       visibleShapes2={secondVisibleShapes}
       onRoot1Change={(r) => (selectedRoot = r)}
@@ -284,7 +254,7 @@
   {:else}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {#each shapes as shape (shape.shape)}
-        <ShapeCard {shape} {labelMode} />
+        <ShapeCard {shape} labelMode="both" />
       {/each}
     </div>
   {/if}

@@ -48,12 +48,6 @@ describe('CagedTool', () => {
       expect(screen.getByText('Minor', { exact: true })).toBeTruthy();
     });
 
-    it('renders label mode toggle buttons', () => {
-      renderTool();
-      expect(screen.getByText('Intervals', { exact: true })).toBeTruthy();
-      expect(screen.getByText('Notes', { exact: true })).toBeTruthy();
-    });
-
     it('renders view mode toggle buttons', () => {
       renderTool();
       expect(screen.getByText('Full Neck', { exact: true })).toBeTruthy();
@@ -218,16 +212,6 @@ describe('CagedTool', () => {
     });
   });
 
-  describe('interaction: label mode toggle', () => {
-    it('toggles label mode to notes', async () => {
-      renderTool();
-      const notesBtn = screen.getByText('Notes', { exact: true });
-      await notesBtn.click();
-
-      expect(notesBtn.classList.contains('bg-white')).toBe(true);
-    });
-  });
-
   describe('grid mode shape cards', () => {
     it('renders 5 shape cards in grid mode', async () => {
       const { container } = renderTool();
@@ -309,16 +293,6 @@ describe('CagedTool', () => {
     });
   });
 
-  describe('accessibility: label mode toggle', () => {
-    it('label toggle buttons have radio role', () => {
-      renderTool();
-      const intervalsBtn = screen.getByText('Intervals', { exact: true });
-      const notesBtn = screen.getByText('Notes', { exact: true });
-      expect(intervalsBtn.getAttribute('role')).toBe('radio');
-      expect(notesBtn.getAttribute('role')).toBe('radio');
-    });
-  });
-
   describe('accessibility: back button', () => {
     it('back button has aria-label', () => {
       renderTool();
@@ -341,7 +315,7 @@ describe('CagedTool', () => {
     it('view toggle has radiogroup role', () => {
       const { container } = renderTool();
       const radiogroups = container.querySelectorAll('[role="radiogroup"]');
-      expect(radiogroups.length).toBe(3);
+      expect(radiogroups.length).toBe(2);
     });
 
     it('Full Neck button has aria-checked="true" by default', () => {
