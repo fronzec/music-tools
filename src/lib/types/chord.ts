@@ -51,4 +51,5 @@ export const CHROMATIC: NoteName[] = [
   'B',
 ];
 
-export const STANDARD_TUNING: number[] = [4, 11, 7, 2, 9, 4];
+/** Semitone offsets in the same order as frets[]: low E, A, D, G, B, high E */
+export const STANDARD_TUNING: number[] = [4, 9, 2, 7, 11, 4];
