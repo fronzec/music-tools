@@ -48,4 +48,4 @@ Chain strategy: pending
 
 - [x] 4.1 `pnpm test` — all unit + integration tests pass
 - [x] 4.2 `pnpm build` — no TypeScript or Svelte errors
-- [ ] 4.3 Manual visual: toggle between modes, toggle shapes on/off, verify colors/diamonds/labels
+- [x] 4.3 Manual visual: toggle between modes, toggle shapes on/off, verify colors/diamonds/labels
