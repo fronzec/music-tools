@@ -121,6 +121,12 @@
       }
     }
 
+    // Sort entries within each position for consistent left/right color order
+    // across all strings where the same two shapes overlap.
+    for (const notes of map.values()) {
+      notes.sort((a, b) => CAGED_ORDER.indexOf(a.shape) - CAGED_ORDER.indexOf(b.shape));
+    }
+
     return map;
   });
 
