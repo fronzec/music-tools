@@ -86,6 +86,29 @@
     return [...groups.values()];
   });
 
+  // Flat list for stable-keyed rendering (enables CSS transitions)
+  let flatIndicators = $derived.by(() => {
+    const result: Array<{
+      key: string;
+      cx: number;
+      cy: number;
+      color: string;
+      type: 'open' | 'muted';
+    }> = [];
+    for (const group of positionIndicators) {
+      group.indicators.forEach((indicator, j) => {
+        result.push({
+          key: indicator.shape + '-' + group.stringIndex,
+          cx: indicatorX(group.baseFret, minFret) - 8 + j * 20,
+          cy: stringY(group.stringIndex),
+          color: indicator.color,
+          type: indicator.type,
+        });
+      });
+    }
+    return result;
+  });
+
   // ── ViewBox ─────────────────────────────────────────────────────
 
   let vbW = $derived(width ?? viewBoxW(displaySpan));
@@ -363,26 +386,21 @@
     {/if}
   {/each}
 
-  <!-- Open/Muted indicators — animated per shape, keyed by shape-string -->
-  {#each positionIndicators as group (group.baseFret + '-' + group.stringIndex)}
-    {#each group.indicators as indicator, j (indicator.shape + '-' + group.stringIndex)}
-      {@const cx = indicatorX(group.baseFret, minFret) - 8 + j * 20}
-      {@const cy = stringY(group.stringIndex)}
-
-      <g
-        style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
-        transform="translate({cx}, {cy})"
-      >
-        <rect x="-9" y="-8" width="18" height="16" rx="5" class="indicator-badge"
-              fill={indicator.color}
-              opacity={indicator.type === 'muted' ? 0.4 : 0.85} />
-        <text x="0" y="3" text-anchor="middle"
-              font-size="11" fill="white"
-              font-weight="bold">
-          {indicator.type === 'open' ? 'O' : '×'}
-        </text>
-      </g>
-    {/each}
+  <!-- Open/Muted indicators — flat list with stable shape-string keys -->
+  {#each flatIndicators as indicator (indicator.key)}
+    <g
+      style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+      transform="translate({indicator.cx}, {indicator.cy})"
+    >
+      <rect x="-9" y="-8" width="18" height="16" rx="5" class="indicator-badge"
+            fill={indicator.color}
+            opacity={indicator.type === 'muted' ? 0.4 : 0.85} />
+      <text x="0" y="3" text-anchor="middle"
+            font-size="11" fill="white"
+            font-weight="bold">
+        {indicator.type === 'open' ? 'O' : '×'}
+      </text>
+    </g>
   {/each}
 
   <!-- Note rendering with shape-keyed animation -->
