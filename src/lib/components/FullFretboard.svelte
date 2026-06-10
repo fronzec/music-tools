@@ -366,7 +366,7 @@
   <!-- Open/Muted indicators — per-(baseFret, stringIndex) groups -->
   {#each positionIndicators as group (group.baseFret + '-' + group.stringIndex)}
     {@const cx = indicatorX(group.baseFret, minFret) - 8}
-    {@const cy = stringY(group.stringIndex) - 6}
+    {@const cy = stringY(group.stringIndex) + 5}
 
     <g
       style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
