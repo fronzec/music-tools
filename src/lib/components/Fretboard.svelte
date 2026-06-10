@@ -191,7 +191,7 @@
     {#if fret === 0 && !isBarre}
       <text
         x={indicatorXPos}
-        y={stringY(i) - L.ROOT_R - 2}
+        y={stringY(i) + 2}
         text-anchor="middle"
         font-size={L.LABEL_FS + 2}
         fill={SHAPE_COLORS[shape.shape]}
@@ -200,7 +200,7 @@
     {:else if fret === null}
       <text
         x={indicatorXPos}
-        y={stringY(i) - L.ROOT_R - 2}
+        y={stringY(i) + 2}
         text-anchor="middle"
         font-size={L.LABEL_FS + 2}
         fill={SHAPE_COLORS[shape.shape]}
