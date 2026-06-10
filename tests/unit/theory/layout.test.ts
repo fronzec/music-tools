@@ -116,12 +116,12 @@ describe('FRET_MARKERS', () => {
 });
 
 describe('FL (full layout constants)', () => {
-  it('has MIN_FRET_SPAN of 5', () => {
-    expect(FL.MIN_FRET_SPAN).toBe(5);
+  it('has MIN_FRET_SPAN of 12', () => {
+    expect(FL.MIN_FRET_SPAN).toBe(12);
   });
 
-  it('has MAX_FRET_SPAN of 17', () => {
-    expect(FL.MAX_FRET_SPAN).toBe(17);
+  it('has MAX_FRET_SPAN of 14', () => {
+    expect(FL.MAX_FRET_SPAN).toBe(14);
   });
 
   it('has FRET_PAD of 1', () => {
@@ -140,8 +140,8 @@ describe('FL (full layout constants)', () => {
     expect(FL.ROOT_DIAMOND_R).toBe(11);
   });
 
-  it('has NOTE_OPACITY of 0.7', () => {
-    expect(FL.NOTE_OPACITY).toBe(0.7);
+  it('has NOTE_OPACITY of 0.75', () => {
+    expect(FL.NOTE_OPACITY).toBe(0.75);
   });
 
   it('has BARRE_OPACITY of 0.35', () => {

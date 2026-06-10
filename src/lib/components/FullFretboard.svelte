@@ -276,7 +276,7 @@
           {@const isRoot = interval === 'R'}
           {@const label = getLabel(i, absFret, interval)}
 
-          <!-- Root: diamond -->
+          <!-- Root: diamond with note name inside -->
           {#if isRoot}
             <polygon
               points={diamondPoints(cx, cy, FL.ROOT_DIAMOND_R)}
@@ -284,9 +284,26 @@
               stroke="white"
               stroke-width="2"
             />
+            <text
+              x={cx}
+              y={cy + 4}
+              text-anchor="middle"
+              font-size="8"
+              fill="white"
+              font-weight="bold"
+              style="pointer-events:none"
+            >{getNoteName(i, absFret)}</text>
           {:else}
-            <!-- Non-root: circle -->
-            <circle cx={cx} cy={cy} r={L.TONE_R} fill={color} opacity={FL.NOTE_OPACITY} />
+            <!-- Non-root: circle with white border for overlap contrast -->
+            <circle
+              cx={cx}
+              cy={cy}
+              r={L.TONE_R}
+              fill={color}
+              opacity={FL.NOTE_OPACITY}
+              stroke="white"
+              stroke-width="1.5"
+            />
           {/if}
 
           <!-- Label -->

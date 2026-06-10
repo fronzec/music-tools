@@ -20,9 +20,9 @@ export const L = {
 /** Layout constants for the FullFretboard multi-shape overlay. */
 export const FL = {
   /** Minimum number of fret columns to display. */
-  MIN_FRET_SPAN: 5,
+  MIN_FRET_SPAN: 12,
   /** Maximum number of fret columns to display. */
-  MAX_FRET_SPAN: 17,
+  MAX_FRET_SPAN: 14,
   /** Extra fret column for right padding. */
   FRET_PAD: 1,
   /** Vertical offset for fret numbers below the bottom string. */
@@ -32,7 +32,7 @@ export const FL = {
   /** Radius for root note diamond (same visual weight as ROOT_R). */
   ROOT_DIAMOND_R: 11,
   /** Opacity for non-root note circles. */
-  NOTE_OPACITY: 0.7,
+  NOTE_OPACITY: 0.75,
   /** Opacity for barre indicator rectangles. */
   BARRE_OPACITY: 0.35,
 } as const;
