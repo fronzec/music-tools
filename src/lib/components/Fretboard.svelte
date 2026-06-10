@@ -184,29 +184,19 @@
   <!-- Open (O) / muted (×) indicators -->
   {#each [0, 1, 2, 3, 4, 5] as i (i)}
     {@const fret = shape.frets[i]!}
-    {@const indicatorXPos = isBarre
+    {@const indicatorXPos = (isBarre
       ? fretLineX(0) - L.FRET_SP / 2 - 8
-      : L.LEFT_PAD + L.NUT_W / 2}
+      : L.LEFT_PAD + L.NUT_W / 2) - 8}
 
     {#if fret === 0 && !isBarre}
-      <circle cx={indicatorXPos} cy={stringY(i)}
-              r={L.TONE_R} fill="none" class="indicator"
-              stroke={SHAPE_COLORS[shape.shape]}
-              stroke-width="2" opacity="0.85"
-              style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
-      <text x={indicatorXPos} y={stringY(i) + 3}
-            text-anchor="middle" font-size="10"
+      <text x={indicatorXPos} y={stringY(i)}
+            text-anchor="middle" font-size="11"
             fill={SHAPE_COLORS[shape.shape]}
-            font-weight="bold"
+            font-weight="bold" opacity="0.9"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>O</text>
     {:else if fret === null}
-      <circle cx={indicatorXPos} cy={stringY(i)}
-              r={L.TONE_R} fill="none" class="indicator"
-              stroke={SHAPE_COLORS[shape.shape]}
-              stroke-width="1.5" opacity="0.5"
-              style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
-      <text x={indicatorXPos} y={stringY(i) + 3}
-            text-anchor="middle" font-size="10"
+      <text x={indicatorXPos} y={stringY(i)}
+            text-anchor="middle" font-size="11"
             fill={SHAPE_COLORS[shape.shape]}
             font-weight="bold" opacity="0.65"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>×</text>

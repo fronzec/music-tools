@@ -365,7 +365,7 @@
 
   <!-- Open/Muted indicators — per-(baseFret, stringIndex) groups -->
   {#each positionIndicators as group (group.baseFret + '-' + group.stringIndex)}
-    {@const cx = indicatorX(group.baseFret, minFret)}
+    {@const cx = indicatorX(group.baseFret, minFret) - 8}
     {@const cy = stringY(group.stringIndex)}
 
     <g
@@ -373,22 +373,13 @@
       transform="translate({cx}, {cy})"
     >
       {#each group.indicators as indicator, j}
-        {@const ix = j * (L.TONE_R * 2 + 6)}
-        {#if indicator.type === 'open'}
-          <circle cx={ix} cy="0" r={L.TONE_R}
-                  fill="none" stroke={indicator.color}
-                  stroke-width="2" opacity="0.85" />
-          <text x={ix} y="3" text-anchor="middle"
-                font-size="10" fill={indicator.color}
-                font-weight="bold">O</text>
-        {:else}
-          <circle cx={ix} cy="0" r={L.TONE_R}
-                  fill="none" stroke={indicator.color}
-                  stroke-width="1.5" opacity="0.5" />
-          <text x={ix} y="3" text-anchor="middle"
-                font-size="10" fill={indicator.color}
-                font-weight="bold" opacity="0.65">×</text>
-        {/if}
+        {@const ix = j * (L.TONE_R * 2 + 4)}
+        <text x={ix} y="0" text-anchor="middle"
+              font-size="11" fill={indicator.color}
+              font-weight="bold"
+              opacity={indicator.type === 'muted' ? 0.65 : 0.9}>
+          {indicator.type === 'open' ? 'O' : '×'}
+        </text>
       {/each}
     </g>
   {/each}
