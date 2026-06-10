@@ -19,9 +19,9 @@ export const L = {
 
 /** Layout constants for the FullFretboard multi-shape overlay. */
 export const FL = {
-  /** Minimum number of fret columns to display. */
-  MIN_FRET_SPAN: 12,
-  /** Maximum number of fret columns to display. */
+  /** Fixed number of fret columns — always 14 for consistent width. */
+  MIN_FRET_SPAN: 14,
+  /** Fixed number of fret columns — always 14 for consistent width. */
   MAX_FRET_SPAN: 14,
   /** Extra fret column for right padding. */
   FRET_PAD: 1,

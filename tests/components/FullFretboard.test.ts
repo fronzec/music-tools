@@ -173,8 +173,8 @@ describe('FullFretboard', () => {
       const fretLines = lines.filter(
         (l) => l.getAttribute('x1') === l.getAttribute('x2'),
       );
-      // At least 12+1 fret lines for MIN_FRET_SPAN
-      expect(fretLines.length).toBeGreaterThanOrEqual(13);
+      // At least 14+1 fret lines for fixed 14-fret span
+      expect(fretLines.length).toBeGreaterThanOrEqual(15);
     });
   });
 
@@ -333,7 +333,7 @@ describe('FullFretboard', () => {
 
   describe('fret range calculation', () => {
     it('computes narrow span for open shapes', () => {
-      const shapes = [makeCShape()]; // frets 0-3, displaySpan clamped to MIN_FRET_SPAN=12
+      const shapes = [makeCShape()]; // frets 0-3, displaySpan always 14
       const { container } = render(FullFretboard, {
         shapes,
         visibleShapes: new Set<CagedShape>(['C']),
@@ -341,7 +341,7 @@ describe('FullFretboard', () => {
       });
       const svg = container.querySelector('svg')!;
       const vbW = Number(svg.getAttribute('viewBox')!.split(' ')[2]);
-      // fretSpan≥12 → vbW = LEFT_PAD + NUT_W + 12*FRET_SP + RIGHT_PAD = 12+6+600+16 = 634
+      // Always 14 frets → vbW = LEFT_PAD + NUT_W + 14*FRET_SP + RIGHT_PAD = 12+6+700+16 = 734
       expect(vbW).toBeGreaterThan(250);
     });
 

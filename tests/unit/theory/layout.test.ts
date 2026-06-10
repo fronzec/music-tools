@@ -116,8 +116,8 @@ describe('FRET_MARKERS', () => {
 });
 
 describe('FL (full layout constants)', () => {
-  it('has MIN_FRET_SPAN of 12', () => {
-    expect(FL.MIN_FRET_SPAN).toBe(12);
+  it('has MIN_FRET_SPAN of 14', () => {
+    expect(FL.MIN_FRET_SPAN).toBe(14);
   });
 
   it('has MAX_FRET_SPAN of 14', () => {
