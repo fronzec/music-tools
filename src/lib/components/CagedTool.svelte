@@ -239,13 +239,13 @@
 
   <!-- Content area -->
   {#if viewMode === 'full'}
-    <FullFretboard shapes={shapes} {visibleShapes} labelMode="both" />
+    <FullFretboard shapes={shapes} {visibleShapes} labelMode="intervals" />
   {:else if viewMode === 'dual'}
     <DualFretboard
       root1={selectedRoot}
       root2={secondRoot}
       quality={selectedQuality}
-      labelMode="both"
+      labelMode="intervals"
       visibleShapes1={visibleShapes}
       visibleShapes2={secondVisibleShapes}
       onRoot1Change={(r) => (selectedRoot = r)}
@@ -254,7 +254,7 @@
   {:else}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {#each shapes as shape (shape.shape)}
-        <ShapeCard {shape} labelMode="both" />
+        <ShapeCard {shape} labelMode="intervals" />
       {/each}
     </div>
   {/if}
