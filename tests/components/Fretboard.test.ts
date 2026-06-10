@@ -447,14 +447,20 @@ describe('Fretboard', () => {
       const oMarkers = texts.filter((t) => t.textContent === 'O');
       const xMarkers = texts.filter((t) => t.textContent === '×');
 
-      // O and × use shape color (not old gray)
+      // O and × use shape color on the badge rect (not old gray)
       oMarkers.forEach((o) => {
-        expect(o.getAttribute('fill')).toBe('#2563EB'); // SHAPE_COLORS.C
+        const rect = o.previousElementSibling as Element;
+        expect(rect).toBeTruthy();
+        expect(rect.classList.contains('indicator-badge')).toBe(true);
+        expect(rect.getAttribute('fill')).toBe('#2563EB'); // SHAPE_COLORS.C
       });
       xMarkers.forEach((x) => {
-        expect(x.getAttribute('fill')).toBe('#2563EB');
-        // × has reduced opacity for visual distinction
-        expect(x.getAttribute('opacity')).toBe('0.65');
+        const rect = x.previousElementSibling as Element;
+        expect(rect).toBeTruthy();
+        expect(rect.classList.contains('indicator-badge')).toBe(true);
+        expect(rect.getAttribute('fill')).toBe('#2563EB');
+        // × badge has reduced opacity for visual distinction
+        expect(rect.getAttribute('opacity')).toBe('0.4');
       });
     });
 
@@ -472,7 +478,8 @@ describe('Fretboard', () => {
       const xMarkers = texts.filter((t) => t.textContent === '×');
       // String 3 is null → ×
       expect(xMarkers.length).toBe(1);
-      expect(xMarkers[0]!.getAttribute('fill')).toBe('#16A34A'); // G color
+      const rect = xMarkers[0]!.previousElementSibling as Element;
+      expect(rect.getAttribute('fill')).toBe('#16A34A'); // G color
     });
 
     it('barre-position indicator X uses barre-area offset', () => {
@@ -502,8 +509,8 @@ describe('Fretboard', () => {
     it('does not render a rect element for open positions', () => {
       const shape = makeCShape();
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
-      const rect = container.querySelector('rect');
-      expect(rect).toBeFalsy();
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge'));
+      expect(rects.length).toBe(0);
     });
 
     it('shows base fret label for barre positions', () => {

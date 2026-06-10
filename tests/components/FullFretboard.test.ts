@@ -384,7 +384,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['C']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = container.querySelectorAll('rect');
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge'));
       expect(rects.length).toBe(0);
     });
 
@@ -486,14 +486,16 @@ describe('FullFretboard', () => {
       const oMarkers = texts.filter((t) => t.textContent === 'O');
       const xMarkers = texts.filter((t) => t.textContent === '×');
 
-      // O uses C shape color
+      // O uses C shape color (on the badge rect)
       oMarkers.forEach((o) => {
-        expect(o.getAttribute('fill')).toBe(SHAPE_COLORS.C);
+        const rect = o.previousElementSibling as Element;
+        expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
       });
-      // × uses C shape color (not old gray)
+      // × uses C shape color (not old gray), reduced opacity on the badge
       xMarkers.forEach((x) => {
-        expect(x.getAttribute('fill')).toBe(SHAPE_COLORS.C);
-        expect(x.getAttribute('opacity')).toBe('0.65');
+        const rect = x.previousElementSibling as Element;
+        expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
+        expect(rect.getAttribute('opacity')).toBe('0.4');
       });
     });
 
@@ -513,10 +515,11 @@ describe('FullFretboard', () => {
       expect(total).toBeGreaterThan(3);
       expect(total).toBeLessThan(30);
 
-      // Every O/× uses a known shape color, never generic gray
+      // Every O/× badge uses a known shape color, never generic gray
       const shapeColors = Object.values(SHAPE_COLORS);
       [...oMarkers, ...xMarkers].forEach((ind) => {
-        const fill = ind.getAttribute('fill')!;
+        const rect = ind.previousElementSibling as Element;
+        const fill = rect.getAttribute('fill')!;
         expect(shapeColors).toContain(fill);
       });
     });
@@ -532,10 +535,11 @@ describe('FullFretboard', () => {
       const oMarkers = texts.filter((t) => t.textContent === 'O');
       const xMarkers = texts.filter((t) => t.textContent === '×');
 
-      // Every O/× uses a known shape color, never generic gray
+      // Every O/× badge uses a known shape color, never generic gray
       const shapeColors = Object.values(SHAPE_COLORS);
       [...oMarkers, ...xMarkers].forEach((ind) => {
-        const fill = ind.getAttribute('fill')!;
+        const rect = ind.previousElementSibling as Element;
+        const fill = rect.getAttribute('fill')!;
         expect(shapeColors).toContain(fill);
       });
 
@@ -571,7 +575,8 @@ describe('FullFretboard', () => {
       const xMarkers = texts.filter((t) => t.textContent === '×');
       // String 3 is null → should show ×
       expect(xMarkers.length).toBe(1);
-      expect(xMarkers[0]!.getAttribute('fill')).toBe(SHAPE_COLORS.G);
+      const rect = xMarkers[0]!.previousElementSibling as Element;
+      expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.G);
     });
 
     it('indicators are grouped by (baseFret, stringIndex)', () => {

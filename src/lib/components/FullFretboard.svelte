@@ -373,11 +373,13 @@
       transform="translate({cx}, {cy})"
     >
       {#each group.indicators as indicator, j}
-        {@const ix = j * (L.TONE_R * 2 + 4)}
-        <text x={ix} y="0" text-anchor="middle"
-              font-size="14" fill={indicator.color}
-              font-weight="bold"
-              opacity={indicator.type === 'muted' ? 0.65 : 0.9}>
+        {@const ix = j * 20}
+        <rect x={ix - 9} y="-8" width="18" height="16" rx="5" class="indicator-badge"
+              fill={indicator.color}
+              opacity={indicator.type === 'muted' ? 0.4 : 0.85} />
+        <text x={ix} y="3" text-anchor="middle"
+              font-size="11" fill="white"
+              font-weight="bold">
           {indicator.type === 'open' ? 'O' : '×'}
         </text>
       {/each}

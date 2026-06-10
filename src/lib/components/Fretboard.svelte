@@ -189,16 +189,22 @@
       : L.LEFT_PAD + L.NUT_W / 2) - 8}
 
     {#if fret === 0 && !isBarre}
-      <text x={indicatorXPos} y={stringY(i) + 5}
-            text-anchor="middle" font-size="14"
-            fill={SHAPE_COLORS[shape.shape]}
-            font-weight="bold" opacity="0.9"
+      <rect x={indicatorXPos - 9} y={stringY(i) - 3} width="18" height="16" rx="5" class="indicator-badge"
+            fill={SHAPE_COLORS[shape.shape]} opacity="0.85"
+            style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
+      <text x={indicatorXPos} y={stringY(i) + 8}
+            text-anchor="middle" font-size="11"
+            fill="white"
+            font-weight="bold"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>O</text>
     {:else if fret === null}
-      <text x={indicatorXPos} y={stringY(i) + 5}
-            text-anchor="middle" font-size="14"
-            fill={SHAPE_COLORS[shape.shape]}
-            font-weight="bold" opacity="0.65"
+      <rect x={indicatorXPos - 9} y={stringY(i) - 3} width="18" height="16" rx="5" class="indicator-badge"
+            fill={SHAPE_COLORS[shape.shape]} opacity="0.4"
+            style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
+      <text x={indicatorXPos} y={stringY(i) + 8}
+            text-anchor="middle" font-size="11"
+            fill="white"
+            font-weight="bold"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>×</text>
     {/if}
   {/each}
