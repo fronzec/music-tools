@@ -29,37 +29,21 @@
     shapes.filter((s) => visibleShapes.has(s.shape)),
   );
 
-  let minFret = $derived.by(() => {
-    if (visibleShapeData.length === 0) return 0;
-    return Math.min(
-      ...visibleShapeData.map((s) => {
-        if (s.baseFret <= 1) return 0;
-        return s.baseFret;
-      }),
-    );
-  });
+  /**
+   * Always start from the nut (fret 0) — fretboard never shifts.
+   * Shapes at higher positions just appear further right.
+   */
+  let minFret = $derived(0);
 
-  let maxFret = $derived.by(() => {
-    if (visibleShapeData.length === 0) return FL.MIN_FRET_SPAN - 1;
-    return Math.max(
-      ...visibleShapeData.map((s) => {
-        const absFrets = s.frets.filter((f): f is number => f !== null);
-        if (absFrets.length === 0) {
-          return s.baseFret > 1 ? s.baseFret : 0;
-        }
-        return s.baseFret > 1
-          ? s.baseFret + Math.max(...absFrets)
-          : Math.max(...absFrets);
-      }),
-    );
-  });
+  let displaySpan = $derived(FL.MIN_FRET_SPAN); // always 14
 
-  let displaySpan = $derived.by(() => {
-    const span = maxFret - minFret + 1 + FL.FRET_PAD;
-    return Math.max(FL.MIN_FRET_SPAN, Math.min(FL.MAX_FRET_SPAN, span));
-  });
-
-  let isOpenPosition = $derived(minFret === 0);
+  /**
+   * Open position only if at least one visible shape is at/near the nut.
+   * Determines whether to show O/X indicators.
+   */
+  let isOpenPosition = $derived(
+    visibleShapeData.some((s) => s.baseFret <= 1),
+  );
 
   // ── ViewBox ─────────────────────────────────────────────────────
 
