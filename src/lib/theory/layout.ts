@@ -39,6 +39,10 @@ export const FL = {
   ANIM_DURATION: '0.3s',
   /** CSS transition timing function for animated shape changes. */
   ANIM_EASING: 'ease-out',
+  /** Center-to-center horizontal spacing between per-shape O/× indicators. */
+  INDICATOR_SP: 14,
+  /** Font size for O/× indicator text. */
+  INDICATOR_FS: 9,
 } as const;
 
 /** Per-shape colors for the CAGED full-neck overlay. */

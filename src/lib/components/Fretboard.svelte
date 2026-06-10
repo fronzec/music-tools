@@ -5,6 +5,7 @@
   import {
     L,
     FL,
+    SHAPE_COLORS,
     stringY,
     fretLineX,
     noteX,
@@ -189,7 +190,7 @@
         y={stringY(i) - L.ROOT_R - 2}
         text-anchor="middle"
         font-size={L.LABEL_FS + 2}
-        fill="#6B7280"
+        fill={SHAPE_COLORS[shape.shape]}
         font-weight="bold"
       >O</text>
     {:else if fret === null}
@@ -198,7 +199,8 @@
         y={stringY(i) - L.ROOT_R - 2}
         text-anchor="middle"
         font-size={L.LABEL_FS + 2}
-        fill="#9CA3AF"
+        fill={SHAPE_COLORS[shape.shape]}
+        opacity="0.6"
         font-weight="bold"
       >×</text>
     {/if}
