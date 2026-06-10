@@ -399,8 +399,6 @@
           />
         {/if}
       {/each}
-      <!-- Thin white ring to separate innermost from rings -->
-      <circle cx={cx} cy={cy} r={r - 2} fill="none" stroke="white" stroke-width="1.5" opacity="0.6" />
       <!-- Show note name if any entry is root -->
       {#if notes.some((n) => n.isRoot)}
         <text
