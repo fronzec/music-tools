@@ -58,8 +58,8 @@ Chain strategy: pending
 - [x] 4.7 HomePage.svelte: Responsive card grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3), title+subtitle, 1 active card + 2 placeholders
 - [x] 4.8 Tests: `tests/components/CagedTool.test.ts` (14 tests) + `tests/components/HomePage.test.ts` (10 tests). Run: `pnpm vitest run` — 134 total passing
 
-## Phase 5: Polish
+## Phase 5: Polish ✅ COMPLETE
 
-- [ ] 5.1 Responsive: verify mobile (stacked mini-fretboards) vs desktop (grid); horizontal scroll fallback
-- [ ] 5.2 a11y: ARIA on Fretboard (role="img", aria-label describing chord + shape), keyboard nav for note buttons
-- [ ] 5.3 Final integration: `pnpm build && pnpm vitest run` — zero errors, static site emits
+- [x] 5.1 Responsive: verified and polished all breakpoints — `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` on shape grid + card grid, responsive padding/gaps, `max-w` scaling on ShapeCard
+- [x] 5.2 a11y: Full ARIA pass — `aria-label`/`aria-pressed` on chord buttons, `role="radiogroup"`/`role="radio"`/`aria-checked` on quality and label toggles, `role="img"` + `aria-label` + `<title>`/`<desc>` on Fretboard SVG, `aria-label` on CAGED card and back button, `id` heading for screen readers, `role="group"` on chord selector, focus-visible ring in CSS base layer, auto-focus first chord button on tool mount
+- [x] 5.3 Final integration: `pnpm build && pnpm vitest run` — zero errors, static site emits. Added `<title>`, `<meta>`, emoji favicon, `<noscript>` fallback, loading placeholder, error boundary in App.svelte.

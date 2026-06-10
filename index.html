@@ -3,10 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>music-tools</title>
+    <meta
+      name="description"
+      content="Interactive tools for learning music theory and guitar. Explore the CAGED system, scales, and more."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎸</text></svg>"
+    />
+    <title>Music Tools — Interactive Music Learning</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div class="flex min-h-screen items-center justify-center bg-white">
+        <p class="text-gray-400">Loading Music Tools…</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
+    <noscript>
+      <div class="flex min-h-screen items-center justify-center bg-white p-8">
+        <p class="text-center text-gray-600">
+          Music Tools requires JavaScript to run. Please enable JavaScript in
+          your browser settings.
+        </p>
+      </div>
+    </noscript>
   </body>
 </html>
