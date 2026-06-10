@@ -1,0 +1,2834 @@
+{
+  "C": {
+    "major": [
+      {
+        "root": "C",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 8,
+        "rootString": 0
+      },
+      {
+        "root": "C",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 3,
+        "rootString": 1
+      },
+      {
+        "root": "C",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 5,
+        "rootString": 3
+      },
+      {
+        "root": "C",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 10,
+        "rootString": 2
+      },
+      {
+        "root": "C",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 1,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "C",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 8,
+        "rootString": 0
+      },
+      {
+        "root": "C",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 3,
+        "rootString": 1
+      },
+      {
+        "root": "C",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 4,
+        "rootString": 3
+      },
+      {
+        "root": "C",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 10,
+        "rootString": 2
+      },
+      {
+        "root": "C",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 11,
+        "rootString": 1
+      }
+    ]
+  },
+  "C#": {
+    "major": [
+      {
+        "root": "C#",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 9,
+        "rootString": 0
+      },
+      {
+        "root": "C#",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 4,
+        "rootString": 1
+      },
+      {
+        "root": "C#",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 6,
+        "rootString": 3
+      },
+      {
+        "root": "C#",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 11,
+        "rootString": 2
+      },
+      {
+        "root": "C#",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 1,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "C#",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 9,
+        "rootString": 0
+      },
+      {
+        "root": "C#",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 4,
+        "rootString": 1
+      },
+      {
+        "root": "C#",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 5,
+        "rootString": 3
+      },
+      {
+        "root": "C#",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 11,
+        "rootString": 2
+      },
+      {
+        "root": "C#",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 1,
+        "rootString": 1
+      }
+    ]
+  },
+  "D": {
+    "major": [
+      {
+        "root": "D",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 10,
+        "rootString": 0
+      },
+      {
+        "root": "D",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 5,
+        "rootString": 1
+      },
+      {
+        "root": "D",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 7,
+        "rootString": 3
+      },
+      {
+        "root": "D",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 1,
+        "rootString": 2
+      },
+      {
+        "root": "D",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 2,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "D",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 10,
+        "rootString": 0
+      },
+      {
+        "root": "D",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 5,
+        "rootString": 1
+      },
+      {
+        "root": "D",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 6,
+        "rootString": 3
+      },
+      {
+        "root": "D",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 1,
+        "rootString": 2
+      },
+      {
+        "root": "D",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 1,
+        "rootString": 1
+      }
+    ]
+  },
+  "D#": {
+    "major": [
+      {
+        "root": "D#",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 11,
+        "rootString": 0
+      },
+      {
+        "root": "D#",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 6,
+        "rootString": 1
+      },
+      {
+        "root": "D#",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 8,
+        "rootString": 3
+      },
+      {
+        "root": "D#",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 1,
+        "rootString": 2
+      },
+      {
+        "root": "D#",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 3,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "D#",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 11,
+        "rootString": 0
+      },
+      {
+        "root": "D#",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 6,
+        "rootString": 1
+      },
+      {
+        "root": "D#",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 7,
+        "rootString": 3
+      },
+      {
+        "root": "D#",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 1,
+        "rootString": 2
+      },
+      {
+        "root": "D#",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 2,
+        "rootString": 1
+      }
+    ]
+  },
+  "E": {
+    "major": [
+      {
+        "root": "E",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 1,
+        "rootString": 0
+      },
+      {
+        "root": "E",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 7,
+        "rootString": 1
+      },
+      {
+        "root": "E",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 9,
+        "rootString": 3
+      },
+      {
+        "root": "E",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 2,
+        "rootString": 2
+      },
+      {
+        "root": "E",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 4,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "E",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 1,
+        "rootString": 0
+      },
+      {
+        "root": "E",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 7,
+        "rootString": 1
+      },
+      {
+        "root": "E",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 8,
+        "rootString": 3
+      },
+      {
+        "root": "E",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 2,
+        "rootString": 2
+      },
+      {
+        "root": "E",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 3,
+        "rootString": 1
+      }
+    ]
+  },
+  "F": {
+    "major": [
+      {
+        "root": "F",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 1,
+        "rootString": 0
+      },
+      {
+        "root": "F",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 8,
+        "rootString": 1
+      },
+      {
+        "root": "F",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 10,
+        "rootString": 3
+      },
+      {
+        "root": "F",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 3,
+        "rootString": 2
+      },
+      {
+        "root": "F",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 5,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "F",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 1,
+        "rootString": 0
+      },
+      {
+        "root": "F",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 8,
+        "rootString": 1
+      },
+      {
+        "root": "F",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 9,
+        "rootString": 3
+      },
+      {
+        "root": "F",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 3,
+        "rootString": 2
+      },
+      {
+        "root": "F",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 4,
+        "rootString": 1
+      }
+    ]
+  },
+  "F#": {
+    "major": [
+      {
+        "root": "F#",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 2,
+        "rootString": 0
+      },
+      {
+        "root": "F#",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 9,
+        "rootString": 1
+      },
+      {
+        "root": "F#",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 11,
+        "rootString": 3
+      },
+      {
+        "root": "F#",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 4,
+        "rootString": 2
+      },
+      {
+        "root": "F#",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 6,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "F#",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 2,
+        "rootString": 0
+      },
+      {
+        "root": "F#",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 9,
+        "rootString": 1
+      },
+      {
+        "root": "F#",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 10,
+        "rootString": 3
+      },
+      {
+        "root": "F#",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 4,
+        "rootString": 2
+      },
+      {
+        "root": "F#",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 5,
+        "rootString": 1
+      }
+    ]
+  },
+  "G": {
+    "major": [
+      {
+        "root": "G",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 3,
+        "rootString": 0
+      },
+      {
+        "root": "G",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 10,
+        "rootString": 1
+      },
+      {
+        "root": "G",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 1,
+        "rootString": 3
+      },
+      {
+        "root": "G",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 5,
+        "rootString": 2
+      },
+      {
+        "root": "G",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 7,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "G",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 3,
+        "rootString": 0
+      },
+      {
+        "root": "G",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 10,
+        "rootString": 1
+      },
+      {
+        "root": "G",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 11,
+        "rootString": 3
+      },
+      {
+        "root": "G",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 5,
+        "rootString": 2
+      },
+      {
+        "root": "G",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 6,
+        "rootString": 1
+      }
+    ]
+  },
+  "G#": {
+    "major": [
+      {
+        "root": "G#",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 4,
+        "rootString": 0
+      },
+      {
+        "root": "G#",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 11,
+        "rootString": 1
+      },
+      {
+        "root": "G#",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 1,
+        "rootString": 3
+      },
+      {
+        "root": "G#",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 6,
+        "rootString": 2
+      },
+      {
+        "root": "G#",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 8,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "G#",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 4,
+        "rootString": 0
+      },
+      {
+        "root": "G#",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 11,
+        "rootString": 1
+      },
+      {
+        "root": "G#",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 1,
+        "rootString": 3
+      },
+      {
+        "root": "G#",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 6,
+        "rootString": 2
+      },
+      {
+        "root": "G#",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 7,
+        "rootString": 1
+      }
+    ]
+  },
+  "A": {
+    "major": [
+      {
+        "root": "A",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 5,
+        "rootString": 0
+      },
+      {
+        "root": "A",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 1,
+        "rootString": 1
+      },
+      {
+        "root": "A",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 2,
+        "rootString": 3
+      },
+      {
+        "root": "A",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 7,
+        "rootString": 2
+      },
+      {
+        "root": "A",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 9,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "A",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 5,
+        "rootString": 0
+      },
+      {
+        "root": "A",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 1,
+        "rootString": 1
+      },
+      {
+        "root": "A",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 1,
+        "rootString": 3
+      },
+      {
+        "root": "A",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 7,
+        "rootString": 2
+      },
+      {
+        "root": "A",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 8,
+        "rootString": 1
+      }
+    ]
+  },
+  "A#": {
+    "major": [
+      {
+        "root": "A#",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 6,
+        "rootString": 0
+      },
+      {
+        "root": "A#",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 1,
+        "rootString": 1
+      },
+      {
+        "root": "A#",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 3,
+        "rootString": 3
+      },
+      {
+        "root": "A#",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 8,
+        "rootString": 2
+      },
+      {
+        "root": "A#",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 10,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "A#",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 6,
+        "rootString": 0
+      },
+      {
+        "root": "A#",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 1,
+        "rootString": 1
+      },
+      {
+        "root": "A#",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 2,
+        "rootString": 3
+      },
+      {
+        "root": "A#",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 8,
+        "rootString": 2
+      },
+      {
+        "root": "A#",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 9,
+        "rootString": 1
+      }
+    ]
+  },
+  "B": {
+    "major": [
+      {
+        "root": "B",
+        "quality": "major",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          1,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "3",
+          "5",
+          "R"
+        ],
+        "baseFret": 7,
+        "rootString": 0
+      },
+      {
+        "root": "B",
+        "quality": "major",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "3",
+          "5"
+        ],
+        "baseFret": 2,
+        "rootString": 1
+      },
+      {
+        "root": "B",
+        "quality": "major",
+        "shape": "G",
+        "frets": [
+          3,
+          2,
+          0,
+          0,
+          0,
+          3
+        ],
+        "intervals": [
+          "R",
+          "3",
+          "5",
+          "R",
+          "3",
+          "R"
+        ],
+        "baseFret": 4,
+        "rootString": 3
+      },
+      {
+        "root": "B",
+        "quality": "major",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          2
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 9,
+        "rootString": 2
+      },
+      {
+        "root": "B",
+        "quality": "major",
+        "shape": "C",
+        "frets": [
+          null,
+          3,
+          2,
+          0,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "3",
+          "5",
+          "R",
+          "3"
+        ],
+        "baseFret": 11,
+        "rootString": 1
+      }
+    ],
+    "minor": [
+      {
+        "root": "B",
+        "quality": "minor",
+        "shape": "E",
+        "frets": [
+          0,
+          2,
+          2,
+          0,
+          0,
+          0
+        ],
+        "intervals": [
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5",
+          "R"
+        ],
+        "baseFret": 7,
+        "rootString": 0
+      },
+      {
+        "root": "B",
+        "quality": "minor",
+        "shape": "A",
+        "frets": [
+          null,
+          0,
+          2,
+          2,
+          1,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "5",
+          "R",
+          "b3",
+          "5"
+        ],
+        "baseFret": 2,
+        "rootString": 1
+      },
+      {
+        "root": "B",
+        "quality": "minor",
+        "shape": "G",
+        "frets": [
+          4,
+          2,
+          1,
+          1,
+          0,
+          4
+        ],
+        "intervals": [
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3",
+          "R"
+        ],
+        "baseFret": 3,
+        "rootString": 3
+      },
+      {
+        "root": "B",
+        "quality": "minor",
+        "shape": "D",
+        "frets": [
+          null,
+          null,
+          0,
+          2,
+          3,
+          1
+        ],
+        "intervals": [
+          null,
+          null,
+          "R",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 9,
+        "rootString": 2
+      },
+      {
+        "root": "B",
+        "quality": "minor",
+        "shape": "C",
+        "frets": [
+          null,
+          4,
+          2,
+          1,
+          2,
+          0
+        ],
+        "intervals": [
+          null,
+          "R",
+          "b3",
+          "5",
+          "R",
+          "b3"
+        ],
+        "baseFret": 10,
+        "rootString": 1
+      }
+    ]
+  }
+}
