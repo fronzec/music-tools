@@ -366,7 +366,7 @@
   <!-- Open/Muted indicators — per-(baseFret, stringIndex) groups -->
   {#each positionIndicators as group (group.baseFret + '-' + group.stringIndex)}
     {@const cx = indicatorX(group.baseFret, minFret) - 8}
-    {@const cy = stringY(group.stringIndex)}
+    {@const cy = stringY(group.stringIndex) - 6}
 
     <g
       style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
@@ -375,7 +375,7 @@
       {#each group.indicators as indicator, j}
         {@const ix = j * (L.TONE_R * 2 + 4)}
         <text x={ix} y="0" text-anchor="middle"
-              font-size="11" fill={indicator.color}
+              font-size="14" fill={indicator.color}
               font-weight="bold"
               opacity={indicator.type === 'muted' ? 0.65 : 0.9}>
           {indicator.type === 'open' ? 'O' : '×'}

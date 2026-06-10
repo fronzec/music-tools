@@ -189,14 +189,14 @@
       : L.LEFT_PAD + L.NUT_W / 2) - 8}
 
     {#if fret === 0 && !isBarre}
-      <text x={indicatorXPos} y={stringY(i)}
-            text-anchor="middle" font-size="11"
+      <text x={indicatorXPos} y={stringY(i) - 6}
+            text-anchor="middle" font-size="14"
             fill={SHAPE_COLORS[shape.shape]}
             font-weight="bold" opacity="0.9"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>O</text>
     {:else if fret === null}
-      <text x={indicatorXPos} y={stringY(i)}
-            text-anchor="middle" font-size="11"
+      <text x={indicatorXPos} y={stringY(i) - 6}
+            text-anchor="middle" font-size="14"
             fill={SHAPE_COLORS[shape.shape]}
             font-weight="bold" opacity="0.65"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>×</text>
