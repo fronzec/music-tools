@@ -81,6 +81,49 @@
     }
   }
 
+  // ── Overlap detection ────────────────────────────────────────────
+
+  type NoteEntry = {
+    shape: CagedShape;
+    color: string;
+    isRoot: boolean;
+    interval: string | null;
+    absFret: number;
+    stringIndex: number;
+  };
+
+  /**
+   * Groups notes by (absFret, stringIndex). Positions with 2+ shapes
+   * overlapping are rendered as split halves so both colors are visible.
+   */
+  let positionMap = $derived.by(() => {
+    const map = new Map<string, NoteEntry[]>();
+
+    for (const shapeType of CAGED_ORDER) {
+      const shape = shapes.find((s) => s.shape === shapeType);
+      if (!shape || !visibleShapes.has(shapeType)) continue;
+
+      const isBarre = shape.baseFret > 1;
+      for (let i = 0; i < 6; i++) {
+        const fret = shape.frets[i];
+        if (fret === null) continue;
+        const absFret = isBarre ? shape.baseFret + fret : fret;
+        const key = `${absFret},${i}`;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key)!.push({
+          shape: shapeType,
+          color: SHAPE_COLORS[shapeType],
+          isRoot: shape.intervals[i] === 'R',
+          interval: shape.intervals[i],
+          absFret,
+          stringIndex: i,
+        });
+      }
+    }
+
+    return map;
+  });
+
   // ── Accessibility ───────────────────────────────────────────────
 
   let ariaLabel = $derived.by(() => {
@@ -248,62 +291,6 @@
         {/if}
       {/if}
 
-      <!-- Notes per string -->
-      {#each [0, 1, 2, 3, 4, 5] as i (i)}
-        {@const fret = shape.frets[i]}
-        {@const interval = shape.intervals[i]}
-
-        {#if fret !== null}
-          {@const absFret = isBarre ? shape.baseFret + fret : fret}
-          {@const cx = noteX(absFret, minFret)}
-          {@const cy = stringY(i)}
-          {@const isRoot = interval === 'R'}
-          {@const label = getLabel(i, absFret, interval)}
-
-          <!-- Root: diamond with note name inside -->
-          {#if isRoot}
-            <polygon
-              points={diamondPoints(cx, cy, FL.ROOT_DIAMOND_R)}
-              fill={color}
-              stroke="white"
-              stroke-width="2"
-            />
-            <text
-              x={cx}
-              y={cy + 4}
-              text-anchor="middle"
-              font-size="8"
-              fill="white"
-              font-weight="bold"
-              style="pointer-events:none"
-            >{getNoteName(i, absFret)}</text>
-          {:else}
-            <!-- Non-root: circle with white border for overlap contrast -->
-            <circle
-              cx={cx}
-              cy={cy}
-              r={L.TONE_R}
-              fill={color}
-              opacity={FL.NOTE_OPACITY}
-              stroke="white"
-              stroke-width="1.5"
-            />
-          {/if}
-
-          <!-- Label -->
-          {#if label}
-            <text
-              x={cx}
-              y={cy - FL.ROOT_DIAMOND_R - 4}
-              text-anchor="middle"
-              font-size={L.LABEL_FS}
-              fill="#374151"
-              font-weight="bold"
-            >{label}</text>
-          {/if}
-        {/if}
-      {/each}
-
       <!-- Open (O) / muted (×) indicators at nut -->
       {#if isOpenPosition}
         {#each [0, 1, 2, 3, 4, 5] as i (i)}
@@ -329,6 +316,105 @@
           {/if}
         {/each}
       {/if}
+    {/if}
+  {/each}
+
+  <!-- Note rendering with overlap detection -->
+  {#each [...positionMap.entries()] as [_key, notes] (_key)}
+    {@const entry = notes[0]!}
+    {@const cx = noteX(entry.absFret, minFret)}
+    {@const cy = stringY(entry.stringIndex)}
+    {@const label = getLabel(entry.stringIndex, entry.absFret, entry.interval)}
+
+    {#if notes.length === 1}
+      <!-- Single note: normal rendering -->
+      {#if entry.isRoot}
+        <polygon
+          points={diamondPoints(cx, cy, FL.ROOT_DIAMOND_R)}
+          fill={entry.color}
+          stroke="white"
+          stroke-width="2"
+        />
+        <text
+          x={cx}
+          y={cy + 4}
+          text-anchor="middle"
+          font-size="8"
+          fill="white"
+          font-weight="bold"
+          style="pointer-events:none"
+        >{getNoteName(entry.stringIndex, entry.absFret)}</text>
+      {:else}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={L.TONE_R}
+          fill={entry.color}
+          opacity={FL.NOTE_OPACITY}
+          stroke="white"
+          stroke-width="1.5"
+        />
+      {/if}
+    {:else}
+      <!-- Overlapping notes: split rendering (top/bottom halves) -->
+      {@const r = entry.isRoot ? FL.ROOT_DIAMOND_R : L.TONE_R}
+      {@const c1 = notes[0]!.color}
+      {@const c2 = notes[1]!.color}
+      {#if entry.isRoot}
+        <!-- Split diamond: top half = c1, bottom half = c2 -->
+        <polygon
+          points={diamondPoints(cx, cy, r)}
+          fill={c1}
+          stroke="white"
+          stroke-width="1"
+        />
+        <polygon
+          points={`${cx},${cy + r} ${cx + r},${cy} ${cx},${cy} ${cx - r},${cy}`}
+          fill={c2}
+          stroke="white"
+          stroke-width="1"
+        />
+        <!-- Divider line -->
+        <line x1={cx + r} y1={cy} x2={cx - r} y2={cy} stroke="white" stroke-width="2" />
+      {:else}
+        <!-- Split circle: top half = c1, bottom half = c2 -->
+        <path
+          d={`M ${cx - r},${cy} A ${r},${r} 0 0,0 ${cx + r},${cy} Z`}
+          fill={c1}
+          opacity={FL.NOTE_OPACITY}
+        />
+        <path
+          d={`M ${cx - r},${cy} A ${r},${r} 0 0,1 ${cx + r},${cy} Z`}
+          fill={c2}
+          opacity={FL.NOTE_OPACITY}
+        />
+        <!-- Divider line -->
+        <line x1={cx - r - 1} y1={cy} x2={cx + r + 1} y2={cy} stroke="white" stroke-width="2" />
+      {/if}
+      <!-- Show note name if any entry is root -->
+      {#if notes.some((n) => n.isRoot)}
+        <text
+          x={cx}
+          y={cy + 4}
+          text-anchor="middle"
+          font-size="8"
+          fill="white"
+          font-weight="bold"
+          style="pointer-events:none"
+        >{getNoteName(entry.stringIndex, entry.absFret)}</text>
+      {/if}
+    {/if}
+
+    <!-- Label -->
+    {#if label}
+      <text
+        x={cx}
+        y={cy - FL.ROOT_DIAMOND_R - 4}
+        text-anchor="middle"
+        font-size={L.LABEL_FS}
+        fill="#374151"
+        font-weight="bold"
+      >{label}</text>
     {/if}
   {/each}
 
