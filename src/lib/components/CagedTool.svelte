@@ -6,6 +6,7 @@
   import { SHAPE_COLORS } from '$lib/theory/layout';
   import ShapeCard from './ShapeCard.svelte';
   import FullFretboard from './FullFretboard.svelte';
+  import DualFretboard from './DualFretboard.svelte';
 
   interface Props {
     navigate: (view: ViewName) => void;
@@ -17,8 +18,10 @@
   let selectedRoot = $state<NoteName>('C');
   let selectedQuality = $state<ChordQuality>('major');
   let labelMode = $state<LabelMode>('intervals');
-  let viewMode = $state<'full' | 'grid'>('full');
+  let viewMode = $state<'full' | 'grid' | 'dual'>('full');
   let visibleShapes = new SvelteSet(CAGED_ORDER);
+  let secondRoot = $state<NoteName>('G');
+  let secondVisibleShapes = new SvelteSet(CAGED_ORDER);
 
   let shapes = $derived(getShapes(selectedRoot, selectedQuality));
 
@@ -35,6 +38,14 @@
     void shapes;
     visibleShapes.clear();
     for (const s of CAGED_ORDER) visibleShapes.add(s);
+  });
+
+  // Reset second visible shapes when entering dual mode
+  $effect(() => {
+    if (viewMode === 'dual') {
+      secondVisibleShapes.clear();
+      for (const s of CAGED_ORDER) secondVisibleShapes.add(s);
+    }
   });
 </script>
 
@@ -77,6 +88,31 @@
         {/each}
       </div>
     </div>
+
+    <!-- Second root selector (dual mode only) -->
+    {#if viewMode === 'dual'}
+      <div>
+        <div class="mb-2 text-sm font-medium text-gray-600" id="second-root-label">To</div>
+        <div class="flex flex-wrap gap-1.5" role="group" aria-labelledby="second-root-label">
+          {#each CHROMATIC as note (note)}
+            <button
+              aria-label="Select {note} as second root"
+              aria-pressed={secondRoot === note}
+              class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200"
+              class:bg-blue-600={secondRoot === note}
+              class:text-white={secondRoot === note}
+              class:shadow-sm={secondRoot === note}
+              class:bg-gray-100={secondRoot !== note}
+              class:text-gray-700={secondRoot !== note}
+              class:hover:bg-gray-200={secondRoot !== note}
+              onclick={() => (secondRoot = note)}
+            >
+              {note}
+            </button>
+          {/each}
+        </div>
+      </div>
+    {/if}
 
     <!-- Major/Minor toggle -->
     <div class="flex flex-wrap items-center gap-3">
@@ -189,6 +225,20 @@
       >
         Shape Grid
       </button>
+      <button
+        class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+        class:bg-white={viewMode === 'dual'}
+        class:text-gray-900={viewMode === 'dual'}
+        class:shadow-sm={viewMode === 'dual'}
+        class:text-gray-500={viewMode !== 'dual'}
+        class:hover:text-gray-700={viewMode !== 'dual'}
+        role="radio"
+        aria-checked={viewMode === 'dual'}
+        aria-label="Dual Compare view"
+        onclick={() => (viewMode = 'dual')}
+      >
+        Dual Compare
+      </button>
     </div>
   </div>
 
@@ -224,6 +274,17 @@
   <!-- Content area -->
   {#if viewMode === 'full'}
     <FullFretboard shapes={shapes} {visibleShapes} {labelMode} />
+  {:else if viewMode === 'dual'}
+    <DualFretboard
+      root1={selectedRoot}
+      root2={secondRoot}
+      quality={selectedQuality}
+      labelMode={labelMode}
+      visibleShapes1={visibleShapes}
+      visibleShapes2={secondVisibleShapes}
+      onRoot1Change={(r) => (selectedRoot = r)}
+      onRoot2Change={(r) => (secondRoot = r)}
+    />
   {:else}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {#each shapes as shape (shape.shape)}
