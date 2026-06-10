@@ -14,7 +14,7 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 | **Root Note Diamonds** | MUST render roots as diamonds; others as circles | Distinct shape per root | Overlapping roots show both colors |
 | **Fret Numbers** | MUST render numbers below 6th string | Sequential from min fret | Barre offset: first visible = base fret label |
 | **Barre Indicators** | MUST render per-shape colored barre rects and animate them when root changes via CSS transition on `<g>` wrapper | Barre at baseFret > 1, animates via CSS transition | Multiple barres visible simultaneously |
-| **Open/Muted Strings** | MUST compute and render one deduplicated set of O/× indicators per string, aggregated across all visible shapes, as a compact horizontal row centered at the nut area; MUST shape-color each indicator via `SHAPE_COLORS[shape]`; MUST render only when `isOpenPosition` is true | All five shapes at open position → horizontal row of colored O/× per string; CAGED order (C→A→G→E→D) left to right | No visible shapes at open position → no indicators; barre-only position → no indicators |
+| **Open/Muted Strings** | MUST compute and render per-(baseFret, stringIndex) groups of O/× indicators across all visible shapes; MUST remove the `isOpenPosition` guard so ALL visible shapes display indicators regardless of `baseFret`; each group MUST be positioned at its shape's base position: `baseFret=0` → near nut area (`indicatorX(0, minFret)`), `baseFret>0` → left of the barre fret line (`indicatorX(baseFret, minFret)`); multiple shapes sharing the same `baseFret` and `stringIndex` MUST stack horizontally with `INDICATOR_SP` (14px) spacing; indicator groups MUST animate alongside their shape's notes on root change via CSS `transition: transform` matching `ANIM_DURATION` and `ANIM_EASING`; MUST honor `prefers-reduced-motion: reduce` by disabling indicator transitions; indicator visual properties (O/× glyphs, `SHAPE_COLORS`, `INDICATOR_FS`, opacity) MUST remain unchanged | All five shapes at open position → indicators at nut area per shape; barre shapes → indicators left of barre line; mixed positions → separate groups per baseFret; root change → indicators slide smoothly with shapes | No visible shapes → no indicators; all-fretted string on all shapes → no indicator group; `prefers-reduced-motion` → instant snap (no transition)
 | **Shape Visibility** | MUST accept `visibleShapes: Set<CagedShape>` | Toggle on/off adds/removes shape | — |
 | **Label Mode** | MUST support `labelMode: 'intervals' \| 'notes' \| 'both'`; labels animate alongside their parent notes via the same `<g>` transition | R, 3, 5; C, E, G; C (R) | — |
 | **Scale-to-Fit** | MUST scale via SVG viewBox to container width | Fills container | No horizontal scroll |
@@ -24,7 +24,7 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 | **highlightPositions Prop** | MUST accept optional `highlightPositions?: Map<string, { type: 'same' \| 'different' }>` prop; highlight rings MUST render at correct positions alongside animated notes (inside the same `<g>` translation) | Present with `'same'` → green ring; present with `'different'` → amber dashed ring; absent → no change | Absent → fully backward compatible (no visual change) |
 | **Highlight Ring Visual Properties** | MUST render rings: same = green (`#22C55E`) solid `stroke-width="1.5"` opacity 0.5, different = amber (`#F59E0B`) dashed `stroke-dasharray="3 2"` `stroke-width="2"` opacity 0.6, outside note shape; root diamond gets polygon ring, non-root circle gets circle ring | Root with `'same'` → green diamond ring polygon; non-root with `'different'` → dashed amber circle ring | Position not in `highlightPositions` → no ring renders |
 | **Animation Constants** | MUST define `ANIM_DURATION` (300ms) and `ANIM_EASING` ('ease-out') in `src/lib/theory/layout.ts` FL constants | Used in FullFretboard `<g>` transition: `transition: transform 300ms ease-out` | — |
-| **Static Elements** | MUST NOT animate fret lines, string lines, fret numbers, O/× indicators, nut markers, or fret markers | Fret lines, string lines remain static during root changes | — |
+| **Static Elements** | MUST NOT animate fret lines, string lines, fret numbers, nut markers, or fret markers | Fret lines, string lines remain static during root changes | — |
 
 ## Scenarios
 
@@ -137,39 +137,66 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 - WHEN `FullFretboard` renders a note `<g>` element
 - THEN the inline style is `transition: transform {{ANIM_DURATION}}ms {{ANIM_EASING}}`
 
-### Scenario: Open indicators — all five shapes, horizontal row
+### Scenario: All shapes at open position — per-string indicators at nut
 
 - GIVEN all five CAGED shapes visible with `baseFret === 0`
 - AND high E string is open (fret 0) in C, A, G, E and muted (fret null) in D
 - WHEN FullFretboard renders
-- THEN high E string shows a horizontal row: [O C-color] [O A-color] [O G-color] [O E-color] [× D-color]
-- AND indicators are spaced 12px apart, center-to-center
+- THEN high E string shows a horizontal row at the nut: [O C-color] [O A-color] [O G-color] [O E-color] [× D-color]
+- AND indicators are spaced `INDICATOR_SP` (14px) apart, center-to-center
 - AND each indicator uses its shape's `SHAPE_COLORS` fill
 
-### Scenario: Open indicators — partial shape visibility
+### Scenario: Barre shape shows indicators left of barre line
 
-- GIVEN only C and G shapes visible with `baseFret === 0`
-- AND low E string is open (fret 0) in C and muted (fret null) in G
+- GIVEN the G shape visible with `baseFret === 3` and `barreFirst = 0, barreLast = 2`
+- AND string 5 (high E) is muted (`fret === null`)
 - WHEN FullFretboard renders
-- THEN low E string shows exactly two indicators: [O C-color] [× G-color]
+- THEN a × indicator appears at the left of the barre fret line (fret 3)
+- AND the × is positioned at X = `indicatorX(3, minFret)` which equals `fretLineX(3) - FRET_SP/2 - 8`
+- AND the × uses G shape color
 
-### Scenario: Open indicators — all-fretted string
+### Scenario: Mixed open and barre positions
 
-- GIVEN all visible shapes have a fretted note (fret > 0) on string 3
+- GIVEN C shape at `baseFret=0` and A shape at `baseFret=5` both visible
+- AND string 0 (low E) is open in C shape and muted in A shape
 - WHEN FullFretboard renders
-- THEN string 3 shows no indicator row
+- THEN string 0 shows an O indicator near the nut for C shape
+- AND string 0 shows a × indicator left of fret 5 barre line for A shape
+- AND both indicators are in separate groups due to different `baseFret`
 
-### Scenario: Open indicators — non-open position
+### Scenario: Multiple shapes at same barre baseFret
 
-- GIVEN all visible shapes have `baseFret > 0`
+- GIVEN C shape at `baseFret=3` and A shape at `baseFret=3` both visible
+- AND string 1 is muted in both shapes
 - WHEN FullFretboard renders
-- THEN no O/× indicators are rendered anywhere
+- THEN a single group at `baseFret=3, stringIndex=1` contains two × indicators stacked horizontally
+- AND the first × is C-color, second × is A-color
+- AND the group is positioned left of the barre line at fret 3
 
-### Scenario: Open indicators do not animate
+### Scenario: No visible shapes — no indicators
 
-- GIVEN a root change occurs in open position
-- WHEN the fretboard re-renders
-- THEN O/× indicators remain static (no CSS transition), consistent with Static Elements requirement
+- GIVEN `visibleShapes` is empty
+- WHEN FullFretboard renders
+- THEN no O/× indicators are rendered
+
+### Scenario: All-fretted string across all shapes
+
+- GIVEN all visible shapes have `fret > 0` on string 2
+- WHEN FullFretboard renders
+- THEN string 2 shows no indicator group
+
+### Scenario: Indicator group animates on root change
+
+- GIVEN a C shape at `baseFret=3` with a muted string 5 indicator group
+- WHEN root changes from C to A, moving the shape to `baseFret=5`
+- THEN the indicator group translates to the new barre position (left of fret 5)
+- AND the transition completes smoothly over `ANIM_DURATION` (0.3s) with `ANIM_EASING`
+
+### Scenario: prefers-reduced-motion disables indicator animation
+
+- GIVEN the user has `prefers-reduced-motion: reduce` enabled
+- WHEN a root change occurs
+- THEN indicator groups snap instantly to new positions (no CSS transition)
 
 ## Notes
 
