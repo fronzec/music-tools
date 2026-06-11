@@ -70,47 +70,23 @@
     <!-- Chord selector card -->
     <div class="rounded-xl border border-gray-200 bg-white p-4">
       <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Chord</div>
-      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <!-- Chromatic note buttons -->
-        <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select chord root">
-          {#each CHROMATIC as note (note)}
-            <button
-              aria-label="Select {note} chord"
-              aria-pressed={selectedRoot === note}
-              class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200"
-              class:bg-blue-600={selectedRoot === note}
-              class:text-white={selectedRoot === note}
-              class:shadow-sm={selectedRoot === note}
-              class:bg-gray-100={selectedRoot !== note}
-              class:text-gray-700={selectedRoot !== note}
-              class:hover:bg-gray-200={selectedRoot !== note}
-              onclick={() => (selectedRoot = note)}
-            >
-              {note}
-            </button>
-          {/each}
-        </div>
-
-        <!-- CAGED shape toggles (Full Neck mode only) -->
-        {#if viewMode === 'full'}
-          <div class="flex items-center gap-1.5" role="group" aria-label="Toggle shapes">
-            <span class="text-xs font-medium text-gray-400 mr-1">Shapes</span>
-            {#each CAGED_ORDER as shapeName (shapeName)}
-              {@const color = SHAPE_COLORS[shapeName]}
-              {@const isActive = visibleShapes.has(shapeName)}
-              <button
-                class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all duration-200 border"
-                style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
-                aria-label="Toggle {shapeName} shape"
-                aria-pressed={isActive}
-                onclick={() => toggleShape(shapeName)}
-              >
-                <span class="inline-block h-2.5 w-2.5 rounded-full" style="background-color: {color}" class:ring-1={!isActive} class:ring-white={!isActive}></span>
-                {shapeName}
-              </button>
-            {/each}
-          </div>
-        {/if}
+      <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select chord root">
+        {#each CHROMATIC as note (note)}
+          <button
+            aria-label="Select {note} chord"
+            aria-pressed={selectedRoot === note}
+            class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200"
+            class:bg-blue-600={selectedRoot === note}
+            class:text-white={selectedRoot === note}
+            class:shadow-sm={selectedRoot === note}
+            class:bg-gray-100={selectedRoot !== note}
+            class:text-gray-700={selectedRoot !== note}
+            class:hover:bg-gray-200={selectedRoot !== note}
+            onclick={() => (selectedRoot = note)}
+          >
+            {note}
+          </button>
+        {/each}
       </div>
     </div>
 
@@ -231,6 +207,34 @@
     <!-- Legend panel -->
     <LegendPanel open={legendOpen} viewMode={viewMode} />
 
+    <!-- Shape toggle bar (only in Full Neck mode) -->
+    {#if viewMode === 'full'}
+      <div class="rounded-xl border border-gray-200 bg-white p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Shapes</div>
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Toggle shapes">
+          {#each CAGED_ORDER as shapeName (shapeName)}
+            {@const color = SHAPE_COLORS[shapeName]}
+            {@const isActive = visibleShapes.has(shapeName)}
+            <button
+              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
+              class:border={true}
+              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
+              aria-label="Toggle {shapeName} shape"
+              aria-pressed={isActive}
+              onclick={() => toggleShape(shapeName)}
+            >
+              <span
+                class="inline-block h-3 w-3 rounded-full"
+                style="background-color: {color}"
+                class:ring-1={!isActive}
+                class:ring-white={!isActive}
+              ></span>
+              {shapeName}
+            </button>
+          {/each}
+        </div>
+      </div>
+    {/if}
   </div>
 
   <!-- Content area -->
