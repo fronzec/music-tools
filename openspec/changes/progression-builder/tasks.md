@@ -34,8 +34,8 @@ Chain strategy: pending
 
 ## Phase 2: Core Components
 
-- [ ] 2.1 Create `src/lib/components/ProgressionBar.svelte` — horizontal scrollable chord pills, add/remove controls, active highlighting, chord picker popover (CHROMATIC grid), MAX_CHORDS guard
-- [ ] 2.2 Create `src/lib/components/ProgressionTimeline.svelte` — step dots (one per chord), prev/next buttons, play/pause toggle, speed selector (slow/medium/fast), clickable dots for direct navigation
+- [x] 2.1 Create `src/lib/components/ProgressionBar.svelte` — horizontal scrollable chord pills, add/remove controls, active highlighting, chord picker popover (CHROMATIC grid), MAX_CHORDS guard
+- [x] 2.2 Create `src/lib/components/ProgressionTimeline.svelte` — step dots (one per chord), prev/next buttons, play/pause toggle, speed selector (slow/medium/fast), clickable dots for direct navigation
 
 ## Phase 3: Orchestrator
 
