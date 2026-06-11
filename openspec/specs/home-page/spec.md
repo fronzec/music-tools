@@ -24,7 +24,9 @@ The system MUST render a grid of tool cards on the home page.
 
 ### Requirement: Tool Card Content
 
-Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards.
+Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card and before the placeholder cards.
+
+(Previously: Did not include Note Trainer card.)
 
 #### Scenario: Card content is complete
 
@@ -45,13 +47,28 @@ Each card MUST display an icon/emoji, a title, a short description, and be click
 - THEN a Progression Builder card is present
 - AND it uses the same active-card styling as the CAGED Visualizer card
 - AND it is positioned after the CAGED Visualizer card
-- AND it is before the placeholder cards
+- AND it is before the Note Trainer card
 
 #### Scenario: Progression Builder card navigates
 
 - GIVEN the user is on the home page
 - WHEN the user clicks the Progression Builder card
 - THEN `navigate('progression')` is called
+
+#### Scenario: Note Trainer card exists
+
+- GIVEN the home page renders
+- WHEN the card grid is inspected
+- THEN a Note Trainer card is present
+- AND it uses the same active-card styling as the CAGED Visualizer card
+- AND it is positioned after the Progression Builder card
+- AND it is before the placeholder cards
+
+#### Scenario: Note Trainer card navigates
+
+- GIVEN the user is on the home page
+- WHEN the user clicks the Note Trainer card
+- THEN `navigate('note-trainer')` is called
 
 #### Scenario: Placeholder cards remain inactive
 
@@ -81,6 +98,17 @@ The system MUST render placeholder cards for future tools, styled as inactive/gr
 - WHEN a placeholder card is inspected
 - THEN it is visually distinct from active cards (e.g., muted opacity, no hover effects)
 - AND it is not clickable
+
+### Requirement: Note Trainer Card Content
+
+The Note Trainer card MUST display the 📝 emoji, the title "Note Trainer", and the description "Learn every note on the fretboard with visual patterns and quizzes".
+
+#### Scenario: Note Trainer card content
+
+- GIVEN the home page renders
+- WHEN the Note Trainer card is inspected
+- THEN it shows the 📝 emoji, "Note Trainer" title, and the correct description
+- AND it includes an "Open" button styled like other active cards
 
 ### Requirement: muted.io Aesthetic
 
