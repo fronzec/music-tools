@@ -24,9 +24,9 @@ The system MUST render a grid of tool cards on the home page.
 
 ### Requirement: Tool Card Content
 
-Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card and before the placeholder cards.
+Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active CAGED Visualizer card as the first card. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card and before the Tone Generator card. The system MUST include an active Tone Generator card between the Note Trainer card and the placeholder cards.
 
-(Previously: Did not include Note Trainer card.)
+(Previously: Did not include Tone Generator card, Note Trainer card.)
 
 #### Scenario: Card content is complete
 
@@ -70,6 +70,21 @@ Each card MUST display an icon/emoji, a title, a short description, and be click
 - WHEN the user clicks the Note Trainer card
 - THEN `navigate('note-trainer')` is called
 
+#### Scenario: Tone Generator card exists
+
+- GIVEN the home page renders
+- WHEN the card grid is inspected
+- THEN a Tone Generator card is present
+- AND it uses the same active-card styling as other active cards
+- AND it is positioned after the Note Trainer card
+- AND it is before the placeholder cards
+
+#### Scenario: Tone Generator card navigates
+
+- GIVEN the user is on the home page
+- WHEN the user clicks the Tone Generator card
+- THEN `navigate('tone-generator')` is called
+
 #### Scenario: Placeholder cards remain inactive
 
 - GIVEN the home page renders
@@ -103,11 +118,22 @@ The system MUST render placeholder cards for future tools, styled as inactive/gr
 
 The Note Trainer card MUST display the 📝 emoji, the title "Note Trainer", and the description "Learn every note on the fretboard with visual patterns and quizzes".
 
+### Requirement: Tone Generator Card Content
+
+The Tone Generator card MUST display the 🎵 emoji, the title "Tone Generator", and the description "Reference tones for tuning by ear".
+
 #### Scenario: Note Trainer card content
 
 - GIVEN the home page renders
 - WHEN the Note Trainer card is inspected
 - THEN it shows the 📝 emoji, "Note Trainer" title, and the correct description
+- AND it includes an "Open" button styled like other active cards
+
+#### Scenario: Tone Generator card content
+
+- GIVEN the home page renders
+- WHEN the Tone Generator card is inspected
+- THEN it shows the 🎵 emoji, "Tone Generator" title, and "Reference tones for tuning by ear" description
 - AND it includes an "Open" button styled like other active cards
 
 ### Requirement: muted.io Aesthetic
