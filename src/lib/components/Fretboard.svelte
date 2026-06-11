@@ -143,6 +143,13 @@
     />
   {/if}
 
+  <!-- Marker fret backgrounds (before strings so lines show through) -->
+  {#each FRET_MARKERS as mf (mf)}
+    {#if mf >= rangeStart && mf < rangeStart + displaySpan}
+      <rect x={fretLineX(mf - rangeStart - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg" />
+    {/if}
+  {/each}
+
   <!-- String lines -->
   {#each [0, 1, 2, 3, 4, 5] as i (i)}
     <line
@@ -172,7 +179,6 @@
     {#if mf >= rangeStart && mf < rangeStart + displaySpan}
       {@const mx = noteX(mf, rangeStart)}
       {@const my = stringY(2.5)}  <!-- centered vertically -->
-      <rect x={fretLineX(mf - rangeStart)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg" />
       <circle cx={mx} cy={my} r={L.MARKER_R} fill="#9CA3AF" />
       {#if mf === 12}
         <!-- Double dot at fret 12 -->

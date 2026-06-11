@@ -283,15 +283,19 @@
       <!-- Nut (thick) -->
       <line x1={L.LEFT_PAD} y1={stringY(0)} x2={L.LEFT_PAD} y2={stringY(5)} stroke="#1F2937" stroke-width="4" />
 
+      <!-- Marker fret backgrounds (before strings) -->
+      {#each FRET_MARKERS.filter((m) => m <= 12) as mf (mf)}
+        <rect x={fretLineX(mf - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg" />
+      {/each}
+
       <!-- String lines -->
       {#each strings as i (i)}
         <line x1={L.LEFT_PAD} y1={stringY(i)} x2={fretLineX(12)} y2={stringY(i)} stroke="#D1D5DB" stroke-width="1" />
       {/each}
 
-      <!-- Fret markers -->
+      <!-- Fret markers (dots) -->
       {#each FRET_MARKERS.filter((m) => m <= 12) as mf (mf)}
         {@const mx = noteX(mf, 0)}
-        <rect x={fretLineX(mf)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg" />
         <circle cx={mx} cy={stringY(2.5)} r={L.MARKER_R} fill="#9CA3AF" />
         {#if mf === 12}
           <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" />
