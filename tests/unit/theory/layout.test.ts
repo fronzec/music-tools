@@ -144,8 +144,8 @@ describe('FL (full layout constants)', () => {
     expect(FL.FRET_PAD).toBe(1);
   });
 
-  it('has FRET_NUM_Y_OFFSET of 14', () => {
-    expect(FL.FRET_NUM_Y_OFFSET).toBe(14);
+  it('has FRET_NUM_Y_OFFSET of 22', () => {
+    expect(FL.FRET_NUM_Y_OFFSET).toBe(22);
   });
 
   it('has FRET_NUM_FS of 9', () => {

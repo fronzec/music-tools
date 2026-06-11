@@ -26,7 +26,7 @@ export const FL = {
   /** Extra fret column for right padding. */
   FRET_PAD: 1,
   /** Vertical offset for fret numbers below the bottom string. */
-  FRET_NUM_Y_OFFSET: 14,
+  FRET_NUM_Y_OFFSET: 22,
   /** Font size for fret numbers. */
   FRET_NUM_FS: 9,
   /** Radius for root note diamond (same visual weight as ROOT_R). */
