@@ -307,6 +307,8 @@
     {#if mf >= minFret && mf < minFret + displaySpan}
       {@const mx = noteX(mf, minFret)}
       {@const my = stringY(2.5)}
+      <!-- Subtle dark background for the marker fret -->
+      <rect x={fretLineX(mf - minFret)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg" />
       <circle cx={mx} cy={my} r={L.MARKER_R} fill="#9CA3AF" />
       {#if mf === 12}
         <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" />

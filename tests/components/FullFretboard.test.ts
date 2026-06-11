@@ -373,7 +373,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['E']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = container.querySelectorAll('rect');
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg'));
       expect(rects.length).toBe(1);
     });
 
@@ -384,7 +384,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['C']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge'));
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge') && !r.classList.contains('fret-marker-bg'));
       expect(rects.length).toBe(0);
     });
 
@@ -397,7 +397,8 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['E']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rect = container.querySelector('rect')!;
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg'));
+      const rect = rects[0]!;
       expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.E);
       expect(rect.getAttribute('opacity')).toBe(String(FL.BARRE_OPACITY));
     });

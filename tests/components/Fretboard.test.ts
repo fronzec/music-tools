@@ -509,7 +509,7 @@ describe('Fretboard', () => {
     it('does not render a rect element for open positions', () => {
       const shape = makeCShape();
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
-      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge'));
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge') && !r.classList.contains('fret-marker-bg'));
       expect(rects.length).toBe(0);
     });
 

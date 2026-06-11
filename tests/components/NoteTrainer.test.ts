@@ -79,7 +79,7 @@ describe('NoteTrainer', () => {
       await clickNoteFilter('A');
 
       const svg = container.querySelector('svg')!;
-      const rects = svg.querySelectorAll('rect');
+      const rects = [...svg.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg'));
       expect(rects.length).toBe(0);
     });
 

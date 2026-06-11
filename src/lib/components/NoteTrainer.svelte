@@ -291,6 +291,7 @@
       <!-- Fret markers -->
       {#each FRET_MARKERS.filter((m) => m <= 12) as mf (mf)}
         {@const mx = noteX(mf, 0)}
+        <rect x={fretLineX(mf)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg" />
         <circle cx={mx} cy={stringY(2.5)} r={L.MARKER_R} fill="#9CA3AF" />
         {#if mf === 12}
           <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" />
