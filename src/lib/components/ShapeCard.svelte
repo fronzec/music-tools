@@ -32,13 +32,13 @@
 </script>
 
 <div
-  class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
+  class="rounded-lg border border-gray-200 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-900"
   aria-label="{shape.shape} shape, {fretRange}"
 >
-  <div class="mb-1 text-sm font-semibold text-gray-800">
+  <div class="mb-1 text-sm font-semibold text-gray-800 dark:text-gray-200">
     {shape.shape} shape
   </div>
-  <div class="mb-2 text-xs text-gray-500">
+  <div class="mb-2 text-xs text-gray-500 dark:text-gray-400">
     {fretRange}
   </div>
   <div class="max-w-[180px] sm:max-w-[200px]">

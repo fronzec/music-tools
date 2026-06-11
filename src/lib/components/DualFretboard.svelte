@@ -77,11 +77,11 @@
 <div class="flex flex-col gap-3 w-full overflow-auto">
   <!-- Top fretboard -->
   <section aria-label={`${root1} ${quality} — top fretboard`} class="flex flex-col gap-2">
-    <div class="text-sm font-medium text-gray-600">{root1} {quality}</div>
+    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">{root1} {quality}</div>
 
     <!-- Root selector row 1 -->
     <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Top root selector">
-      <span class="text-xs font-medium text-gray-500">From:</span>
+      <span class="text-xs font-medium text-gray-500 dark:text-gray-400">From:</span>
       {#each CHROMATIC as note (note)}
         <button
           aria-label="Select {note} as top root"
@@ -93,6 +93,9 @@
           class:bg-gray-100={root1 !== note}
           class:text-gray-700={root1 !== note}
           class:hover:bg-gray-200={root1 !== note}
+          class:dark:bg-gray-800={root1 !== note}
+          class:dark:text-gray-300={root1 !== note}
+          class:dark:hover:bg-gray-700={root1 !== note}
           onclick={() => onRoot1Change?.(note)}
         >
           {note}
@@ -128,11 +131,11 @@
 
   <!-- Bottom fretboard -->
   <section aria-label={`${root2} ${quality} — bottom fretboard`} class="flex flex-col gap-2">
-    <div class="text-sm font-medium text-gray-600">{root2} {quality}</div>
+    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">{root2} {quality}</div>
 
     <!-- Root selector row 2 -->
     <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Bottom root selector">
-      <span class="text-xs font-medium text-gray-500">To:</span>
+      <span class="text-xs font-medium text-gray-500 dark:text-gray-400">To:</span>
       {#each CHROMATIC as note (note)}
         <button
           aria-label="Select {note} as bottom root"
@@ -144,6 +147,9 @@
           class:bg-gray-100={root2 !== note}
           class:text-gray-700={root2 !== note}
           class:hover:bg-gray-200={root2 !== note}
+          class:dark:bg-gray-800={root2 !== note}
+          class:dark:text-gray-300={root2 !== note}
+          class:dark:hover:bg-gray-700={root2 !== note}
           onclick={() => onRoot2Change?.(note)}
         >
           {note}

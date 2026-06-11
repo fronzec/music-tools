@@ -132,24 +132,28 @@
 
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
   <button
-    class="mb-6 text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-800 hover:underline"
+    class="mb-6 text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
     aria-label="Back to Home"
     onclick={() => navigate('home')}
   >
     ← Back to Home
   </button>
 
-  <h1 class="mb-6 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Note Trainer</h1>
+  <h1 class="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">Note Trainer</h1>
 
   <!-- Mode tabs -->
-  <div class="mb-6 inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5" role="tablist">
+  <div class="mb-6 inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800" role="tablist">
     <button
       class="rounded-md px-4 py-1.5 text-sm font-medium transition-all duration-200"
       class:bg-white={mode === 'explore'}
+      class:dark:bg-gray-900={mode === 'explore'}
       class:text-gray-900={mode === 'explore'}
+      class:dark:text-gray-100={mode === 'explore'}
       class:shadow-sm={mode === 'explore'}
       class:text-gray-500={mode !== 'explore'}
+      class:dark:text-gray-400={mode !== 'explore'}
       class:hover:text-gray-700={mode !== 'explore'}
+      class:dark:hover:text-gray-300={mode !== 'explore'}
       role="tab"
       aria-selected={mode === 'explore'}
       onclick={() => (mode = 'explore')}
@@ -157,10 +161,14 @@
     <button
       class="rounded-md px-4 py-1.5 text-sm font-medium transition-all duration-200"
       class:bg-white={mode === 'quiz'}
+      class:dark:bg-gray-900={mode === 'quiz'}
       class:text-gray-900={mode === 'quiz'}
+      class:dark:text-gray-100={mode === 'quiz'}
       class:shadow-sm={mode === 'quiz'}
       class:text-gray-500={mode !== 'quiz'}
+      class:dark:text-gray-400={mode !== 'quiz'}
       class:hover:text-gray-700={mode !== 'quiz'}
+      class:dark:hover:text-gray-300={mode !== 'quiz'}
       role="tab"
       aria-selected={mode === 'quiz'}
       onclick={() => (mode = 'quiz')}
@@ -168,8 +176,8 @@
   </div>
 
   <!-- Note filter bar -->
-  <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4">
-    <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Notes</div>
+  <div class="mb-6 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+    <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Notes</div>
     <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select note to highlight">
       {#each CHROMATIC as note (note)}
         {#if mode === 'explore' || (currentQuestion && currentQuestion.options.includes(note))}
@@ -183,6 +191,9 @@
             class:bg-gray-100={selectedNote !== note}
             class:text-gray-700={selectedNote !== note}
             class:hover:bg-gray-200={selectedNote !== note}
+            class:dark:bg-gray-800={selectedNote !== note}
+            class:dark:text-gray-300={selectedNote !== note}
+            class:dark:hover:bg-gray-700={selectedNote !== note}
             class:bg-green-500={lastAnswer === 'correct' && currentQuestion?.correct === note}
             class:bg-red-500={lastAnswer === 'incorrect' && currentQuestion?.correct === note && note === currentQuestion?.correct}
             onclick={() => (mode === 'explore' ? toggleNote(note) : answer(note))}
@@ -197,11 +208,11 @@
   <!-- Explore mode toggles -->
   {#if mode === 'explore'}
     <div class="mb-6 flex flex-wrap gap-3">
-      <label class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50">
+      <label class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
         <input type="checkbox" bind:checked={showOctaves} class="rounded" />
         Octaves
       </label>
-      <label class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50">
+      <label class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800">
         <input type="checkbox" bind:checked={showUnisons} class="rounded" />
         Unisons
       </label>
@@ -211,45 +222,57 @@
   <!-- Quiz mode controls -->
   {#if mode === 'quiz'}
     <div class="mb-6 space-y-4">
-      <div class="rounded-xl border border-gray-200 bg-white p-4">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Difficulty</div>
-        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5" role="radiogroup" aria-label="Difficulty">
+      <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Difficulty</div>
+        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800" role="radiogroup" aria-label="Difficulty">
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
             class:bg-white={difficulty === 'easy'}
+            class:dark:bg-gray-900={difficulty === 'easy'}
             class:text-gray-900={difficulty === 'easy'}
+            class:dark:text-gray-100={difficulty === 'easy'}
             class:shadow-sm={difficulty === 'easy'}
             class:text-gray-500={difficulty !== 'easy'}
+            class:dark:text-gray-400={difficulty !== 'easy'}
             class:hover:text-gray-700={difficulty !== 'easy'}
+            class:dark:hover:text-gray-300={difficulty !== 'easy'}
             role="radio" aria-checked={difficulty === 'easy'}
             onclick={() => { difficulty = 'easy'; generateQuestion(); }}
           >Easy</button>
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
             class:bg-white={difficulty === 'medium'}
+            class:dark:bg-gray-900={difficulty === 'medium'}
             class:text-gray-900={difficulty === 'medium'}
+            class:dark:text-gray-100={difficulty === 'medium'}
             class:shadow-sm={difficulty === 'medium'}
             class:text-gray-500={difficulty !== 'medium'}
+            class:dark:text-gray-400={difficulty !== 'medium'}
             class:hover:text-gray-700={difficulty !== 'medium'}
+            class:dark:hover:text-gray-300={difficulty !== 'medium'}
             role="radio" aria-checked={difficulty === 'medium'}
             onclick={() => { difficulty = 'medium'; generateQuestion(); }}
           >Medium</button>
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
             class:bg-white={difficulty === 'hard'}
+            class:dark:bg-gray-900={difficulty === 'hard'}
             class:text-gray-900={difficulty === 'hard'}
+            class:dark:text-gray-100={difficulty === 'hard'}
             class:shadow-sm={difficulty === 'hard'}
             class:text-gray-500={difficulty !== 'hard'}
+            class:dark:text-gray-400={difficulty !== 'hard'}
             class:hover:text-gray-700={difficulty !== 'hard'}
+            class:dark:hover:text-gray-300={difficulty !== 'hard'}
             role="radio" aria-checked={difficulty === 'hard'}
             onclick={() => { difficulty = 'hard'; generateQuestion(); }}
           >Hard</button>
         </div>
       </div>
 
-      <div class="rounded-xl border border-gray-200 bg-white p-4">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Score</div>
-        <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-700">
+      <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Score</div>
+        <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-700 dark:text-gray-300">
           <span>{correct}/{total} correct</span>
           <span>Streak: {streak}</span>
           <span>Best: {bestStreak}</span>
@@ -257,8 +280,8 @@
       </div>
 
       {#if lastAnswer === 'incorrect' && currentQuestion}
-        <div class="rounded-xl border border-red-200 bg-red-50 p-4">
-          <p class="text-sm text-red-700">
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/30">
+          <p class="text-sm text-red-700 dark:text-red-300">
             The correct answer was <strong>{currentQuestion.correct}</strong> — <button
               class="ml-2 text-blue-600 underline hover:text-blue-800 text-sm font-medium"
               onclick={generateQuestion}
@@ -270,36 +293,36 @@
   {/if}
 
   <!-- SVG Fretboard -->
-  <div class="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+  <div class="rounded-xl border border-gray-200 bg-white overflow-x-auto dark:border-gray-700 dark:bg-gray-900">
     <svg viewBox="0 0 {vbW} {vbH}" xmlns="http://www.w3.org/2000/svg" class="w-full min-w-[600px] h-auto" role="img" aria-label="Fretboard">
       <title>Note Trainer Fretboard</title>
 
       <!-- Fret lines -->
       {#each frets as f (f)}
         {@const fx = fretLineX(f)}
-        <line x1={fx} y1={stringY(0)} x2={fx} y2={stringY(5)} stroke="#9CA3AF" stroke-width="1" />
+        <line x1={fx} y1={stringY(0)} x2={fx} y2={stringY(5)} stroke="#9CA3AF" class="stroke-gray-400 dark:stroke-gray-600" stroke-width="1" />
       {/each}
 
       <!-- Nut (thick) -->
-      <line x1={L.LEFT_PAD} y1={stringY(0)} x2={L.LEFT_PAD} y2={stringY(5)} stroke="#1F2937" stroke-width="4" />
+      <line x1={L.LEFT_PAD} y1={stringY(0)} x2={L.LEFT_PAD} y2={stringY(5)} stroke="#1F2937" class="stroke-gray-800 dark:stroke-gray-400" stroke-width="4" />
 
       <!-- Marker fret backgrounds (before strings) -->
       {#each FRET_MARKERS.filter((m) => m <= 12) as mf (mf)}
-        <rect x={fretLineX(mf - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg" />
+        <rect x={fretLineX(mf - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg fill-gray-100 dark:fill-gray-800" />
       {/each}
 
       <!-- String lines -->
       {#each strings as i (i)}
-        <line x1={L.LEFT_PAD} y1={stringY(i)} x2={fretLineX(12)} y2={stringY(i)} stroke="#D1D5DB" stroke-width="1" />
+        <line x1={L.LEFT_PAD} y1={stringY(i)} x2={fretLineX(12)} y2={stringY(i)} stroke="#D1D5DB" class="stroke-gray-300 dark:stroke-gray-700" stroke-width="1" />
       {/each}
 
       <!-- Fret markers (dots) -->
       {#each FRET_MARKERS.filter((m) => m <= 12) as mf (mf)}
         {@const mx = noteX(mf, 0)}
-        <circle cx={mx} cy={stringY(2.5)} r={L.MARKER_R} fill="#9CA3AF" />
+        <circle cx={mx} cy={stringY(2.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
         {#if mf === 12}
-          <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" />
-          <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} fill="#9CA3AF" />
+          <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
+          <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
         {/if}
       {/each}
 
@@ -309,7 +332,7 @@
           {#if isMatch(s, f)}
             {@const cx = labelX(f)}
             {@const cy = stringY(s)}
-            <rect x={cx - 13} y={cy - 9} width="26" height="18" rx="3" fill="#DBEAFE" />
+            <rect x={cx - 13} y={cy - 9} width="26" height="18" rx="3" fill="#DBEAFE" class="fill-blue-100 dark:fill-blue-900/40" />
           {/if}
         {/each}
       {/each}
@@ -359,6 +382,10 @@
             fill={matched ? '#1E40AF' : '#374151'}
             font-weight={matched ? 'bold' : 'normal'}
             class="select-none pointer-events-none"
+            class:fill-blue-800={matched}
+            class:dark:fill-blue-300={matched}
+            class:fill-gray-700={!matched}
+            class:dark:fill-gray-300={!matched}
           >{note}</text>
         {/each}
       {/each}

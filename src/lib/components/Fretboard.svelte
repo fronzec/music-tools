@@ -120,6 +120,7 @@
       text-anchor="middle"
       font-size={L.LABEL_FS + 1}
       fill="#6B7280"
+      class="fill-gray-500 dark:fill-gray-400"
       font-weight="bold"
     >{shape.baseFret}fr</text>
     <!-- Thick line at left edge -->
@@ -129,6 +130,7 @@
       x2={L.LEFT_PAD}
       y2={stringY(5)}
       stroke="#374151"
+      class="stroke-gray-700 dark:stroke-gray-300"
       stroke-width="4"
     />
   {:else}
@@ -139,6 +141,7 @@
       x2={L.LEFT_PAD}
       y2={stringY(5)}
       stroke="#1F2937"
+      class="stroke-gray-800 dark:stroke-gray-400"
       stroke-width="4"
     />
   {/if}
@@ -146,7 +149,7 @@
   <!-- Marker fret backgrounds (before strings so lines show through) -->
   {#each FRET_MARKERS as mf (mf)}
     {#if mf >= rangeStart && mf < rangeStart + displaySpan}
-      <rect x={fretLineX(mf - rangeStart - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg" />
+      <rect x={fretLineX(mf - rangeStart - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6"       class="fret-marker-bg fill-gray-100 dark:fill-gray-800" />
     {/if}
   {/each}
 
@@ -158,6 +161,7 @@
       x2={fretLineX(displaySpan)}
       y2={stringY(i)}
       stroke="#D1D5DB"
+      class="stroke-gray-300 dark:stroke-gray-700"
       stroke-width="1"
     />
   {/each}
@@ -170,6 +174,7 @@
       x2={fretLineX(f)}
       y2={stringY(5)}
       stroke="#9CA3AF"
+      class="stroke-gray-400 dark:stroke-gray-600"
       stroke-width={f === 0 && !isBarre ? 4 : 1}
     />
   {/each}
@@ -179,11 +184,11 @@
     {#if mf >= rangeStart && mf < rangeStart + displaySpan}
       {@const mx = noteX(mf, rangeStart)}
       {@const my = stringY(2.5)}  <!-- centered vertically -->
-      <circle cx={mx} cy={my} r={L.MARKER_R} fill="#9CA3AF" />
+      <circle cx={mx} cy={my} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
       {#if mf === 12}
         <!-- Double dot at fret 12 -->
-        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" />
-        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} fill="#9CA3AF" />
+        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
+        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
       {/if}
     {/if}
   {/each}
@@ -253,7 +258,7 @@
           <circle cx={cx} cy={cy} r={L.TONE_R} fill="#22C55E" stroke="#16A34A" stroke-width="1"
             style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {:else}
-          <circle cx={cx} cy={cy} r={L.OTHER_R} fill="none" stroke="#9CA3AF" stroke-width="1.5"
+          <circle cx={cx} cy={cy} r={L.OTHER_R} fill="none" stroke="#9CA3AF" class="stroke-gray-400 dark:stroke-gray-600" stroke-width="1.5"
             style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {/if}
 
@@ -268,6 +273,7 @@
               text-anchor="middle"
               font-size={L.LABEL_FS}
               fill="#374151"
+              class="fill-gray-700 dark:fill-gray-300"
               font-weight="bold"
             >{label}</text>
           </g>

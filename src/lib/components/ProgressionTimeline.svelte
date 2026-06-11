@@ -32,8 +32,8 @@
   }
 </script>
 
-<div class="rounded-xl border border-gray-200 bg-white p-4">
-  <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Playback</div>
+<div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+  <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Playback</div>
 
   <!-- Step dots -->
   <div class="mb-3 flex items-center justify-center gap-2" role="group" aria-label="Chord steps">
@@ -43,6 +43,7 @@
         class:bg-blue-600={i === activeIndex}
         class:scale-110={i === activeIndex}
         class:bg-gray-300={i !== activeIndex}
+        class:dark:bg-gray-600={i !== activeIndex}
         aria-label="Go to step {i + 1}"
         onclick={() => onSelectDot?.(i)}
       ></button>
@@ -52,12 +53,15 @@
   <!-- Controls -->
   <div class="mb-3 flex items-center justify-center gap-3">
     <button
-      class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+      class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 dark:bg-gray-800"
       class:bg-gray-100={activeIndex > 0}
       class:text-gray-700={activeIndex > 0}
       class:hover:bg-gray-200={activeIndex > 0}
+      class:dark:text-gray-300={activeIndex > 0}
+      class:dark:hover:bg-gray-700={activeIndex > 0}
       class:bg-gray-50={activeIndex === 0}
       class:text-gray-300={activeIndex === 0}
+      class:dark:text-gray-600={activeIndex === 0}
       class:cursor-not-allowed={activeIndex === 0}
       disabled={activeIndex === 0}
       aria-label="Previous chord"
@@ -67,7 +71,7 @@
     </button>
 
     <button
-      class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
+      class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
       aria-label={isPlaying ? 'Pause playback' : 'Start playback'}
       onclick={onTogglePlay}
     >
@@ -75,12 +79,15 @@
     </button>
 
     <button
-      class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+      class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 dark:bg-gray-800"
       class:bg-gray-100={activeIndex < length - 1}
       class:text-gray-700={activeIndex < length - 1}
       class:hover:bg-gray-200={activeIndex < length - 1}
+      class:dark:text-gray-300={activeIndex < length - 1}
+      class:dark:hover:bg-gray-700={activeIndex < length - 1}
       class:bg-gray-50={activeIndex >= length - 1}
       class:text-gray-300={activeIndex >= length - 1}
+      class:dark:text-gray-600={activeIndex >= length - 1}
       class:cursor-not-allowed={activeIndex >= length - 1}
       disabled={activeIndex >= length - 1}
       aria-label="Next chord"
@@ -100,6 +107,9 @@
         class:bg-gray-100={speed !== s}
         class:text-gray-700={speed !== s}
         class:hover:bg-gray-200={speed !== s}
+        class:dark:bg-gray-800={speed !== s}
+        class:dark:text-gray-300={speed !== s}
+        class:dark:hover:bg-gray-700={speed !== s}
         role="radio"
         aria-checked={speed === s}
         aria-label="{speedLabel(s)} speed"

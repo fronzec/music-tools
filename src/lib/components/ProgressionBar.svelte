@@ -29,8 +29,8 @@
   }
 </script>
 
-<div class="rounded-xl border border-gray-200 bg-white p-4">
-  <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Progression</div>
+<div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+  <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Progression</div>
   <div class="flex gap-2 overflow-x-auto pb-1">
     {#each progression as chord, index (chord.id)}
       <div class="group relative shrink-0">
@@ -42,6 +42,9 @@
           class:bg-gray-100={index !== activeIndex}
           class:text-gray-700={index !== activeIndex}
           class:hover:bg-gray-200={index !== activeIndex}
+          class:dark:bg-gray-800={index !== activeIndex}
+          class:dark:text-gray-300={index !== activeIndex}
+          class:dark:hover:bg-gray-700={index !== activeIndex}
           aria-label="Select chord {chord.root} {chord.quality} at position {index + 1}"
           aria-pressed={index === activeIndex}
           onclick={() => onSelect(index)}
@@ -61,7 +64,7 @@
     {#if progression.length < MAX_CHORDS}
       <div class="relative shrink-0">
         <button
-          class="rounded-lg px-3 py-1.5 text-sm bg-gray-100 text-gray-500 hover:bg-gray-200 transition-all duration-200"
+          class="rounded-lg px-3 py-1.5 text-sm bg-gray-100 text-gray-500 hover:bg-gray-200 transition-all duration-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
           aria-label="Add chord"
           aria-expanded={showPicker}
           onclick={togglePicker}
@@ -79,14 +82,14 @@
             role="presentation"
           ></div>
           <div
-            class="absolute left-0 top-full z-20 mt-1 rounded-xl border border-gray-200 bg-white p-3 shadow-lg"
+            class="absolute left-0 top-full z-20 mt-1 rounded-xl border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900"
             role="group"
             aria-label="Select chord root"
           >
             <div class="grid grid-cols-4 gap-1">
               {#each CHROMATIC as note (note)}
                 <button
-                  class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                   aria-label="Add {note} {quality} chord"
                   onclick={() => handleAdd(note)}
                 >
