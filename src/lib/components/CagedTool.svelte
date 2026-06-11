@@ -112,24 +112,6 @@
             </button>
           {/each}
         </div>
-        <!-- Shape toggles inline in dual mode -->
-        <div class="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label="Toggle shapes">
-          <span class="text-xs font-medium text-gray-400">Shapes</span>
-          {#each CAGED_ORDER as shapeName (shapeName)}
-            {@const color = SHAPE_COLORS[shapeName]}
-            {@const isActive = visibleShapes.has(shapeName)}
-            <button
-              class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium transition-all duration-200 border"
-              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
-              aria-label="Toggle {shapeName} shape"
-              aria-pressed={isActive}
-              onclick={() => toggleShape(shapeName)}
-            >
-              <span class="inline-block h-2.5 w-2.5 rounded-full" style="background-color: {color}" class:ring-1={!isActive} class:ring-white={!isActive}></span>
-              {shapeName}
-            </button>
-          {/each}
-        </div>
       </div>
     {/if}
 
