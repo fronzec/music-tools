@@ -248,6 +248,9 @@
 
     <!-- Fretboard 1 with inline controls -->
     <div class="rounded-xl border border-gray-200 bg-white p-4 mb-4">
+      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+        From: {selectedRoot} {selectedQuality}
+      </div>
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
         <div class="flex flex-wrap gap-1.5">
           {#each CHROMATIC as note (note)}
@@ -285,6 +288,9 @@
 
     <!-- Fretboard 2 with inline controls -->
     <div class="rounded-xl border border-gray-200 bg-white p-4 mt-6 mb-4">
+      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+        To: {secondRoot} {selectedQuality}
+      </div>
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
         <div class="flex flex-wrap gap-1.5">
           {#each CHROMATIC as note (note)}
