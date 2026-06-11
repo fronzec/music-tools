@@ -32,7 +32,7 @@ export interface FretboardProps {
   width?: number;
 }
 
-export type ViewName = 'home' | 'caged' | 'progression';
+export type ViewName = 'home' | 'caged' | 'progression' | 'note-trainer';
 
 export const CAGED_ORDER: CagedShape[] = ['C', 'A', 'G', 'E', 'D'];
 

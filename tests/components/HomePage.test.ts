@@ -69,7 +69,7 @@ describe('HomePage', () => {
     it('renders the Progression Builder card as an active tool', () => {
       renderPage();
       expect(screen.getByText('Progression Builder')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(2);
+      expect(screen.getAllByText('Open').length).toBe(3); // CAGED, Progression, Note Trainer
     });
 
     it('calls navigate with "progression" when the Progression Builder card is clicked', async () => {
@@ -95,6 +95,40 @@ describe('HomePage', () => {
       renderPage();
       const progressionBtn = screen.getByRole('button', { name: /Progression/i });
       expect(progressionBtn.getAttribute('aria-label')).toContain('Progression');
+    });
+  });
+
+  describe('Note Trainer card', () => {
+    it('renders the Note Trainer card as an active tool', () => {
+      renderPage();
+      expect(screen.getByText('Note Trainer')).toBeTruthy();
+      expect(screen.getByText('Learn every note on the fretboard with visual patterns and quizzes')).toBeTruthy();
+      expect(screen.getAllByText('Open').length).toBe(3);
+    });
+
+    it('calls navigate with "note-trainer" when the Note Trainer card is clicked', async () => {
+      const { navigate } = renderPage();
+      const noteCard = screen.getByText('Note Trainer');
+      await noteCard.click();
+
+      expect(navigate).toHaveBeenCalledWith('note-trainer');
+      expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls navigate with "note-trainer" when its Open button is clicked', async () => {
+      const { navigate } = renderPage();
+      const openBtns = screen.getAllByText('Open');
+      const noteTrainerBtn = openBtns[2]; // third "Open" button is Note Trainer's
+      await noteTrainerBtn!.click();
+
+      expect(navigate).toHaveBeenCalledWith('note-trainer');
+      expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('has an aria-label for accessibility', () => {
+      renderPage();
+      const noteBtn = screen.getByRole('button', { name: /Note Trainer/i });
+      expect(noteBtn.getAttribute('aria-label')).toContain('Note Trainer');
     });
   });
 
