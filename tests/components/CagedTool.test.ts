@@ -406,7 +406,7 @@ describe('CagedTool', () => {
     }
 
     describe('dual mode render', () => {
-      it('renders DualFretboard with 2 SVGs when in dual mode', async () => {
+      it('renders 2 FullFretboards when in dual mode', async () => {
         const { container } = await enterDualMode();
         const svgs = container.querySelectorAll('svg');
         expect(svgs.length).toBe(2);
@@ -417,10 +417,10 @@ describe('CagedTool', () => {
         expect(() => screen.getByText('Shapes', { exact: true })).toThrow();
       });
 
-      it('shows From/To labels from DualFretboard', async () => {
+      it('renders inline chord controls for top and bottom fretboards', async () => {
         await enterDualMode();
-        expect(screen.getByText('From:')).toBeTruthy();
-        expect(screen.getByText('To:')).toBeTruthy();
+        expect(screen.getByLabelText('Select C for top')).toBeTruthy();
+        expect(screen.getByLabelText('Select G for bottom')).toBeTruthy();
       });
 
       it('shows second root selector in CagedTool controls', async () => {
@@ -445,7 +445,7 @@ describe('CagedTool', () => {
         const shapes = ['C', 'A', 'G', 'E', 'D'];
         for (const shape of shapes) {
           const btn = screen.getByRole('button', {
-            name: `Toggle ${shape} shape on bottom fretboard`,
+            name: `Toggle ${shape} on bottom`,
           });
           expect(btn.getAttribute('aria-pressed')).toBe('true');
         }
@@ -455,7 +455,7 @@ describe('CagedTool', () => {
         await enterDualMode();
         // Toggle off A on bottom
         const aBtn = screen.getByRole('button', {
-          name: 'Toggle A shape on bottom fretboard',
+          name: 'Toggle A on bottom',
         });
         await aBtn.click();
         expect(aBtn.getAttribute('aria-pressed')).toBe('false');
@@ -470,7 +470,7 @@ describe('CagedTool', () => {
 
         // A should be reset to active
         const aAfter = screen.getByRole('button', {
-          name: 'Toggle A shape on bottom fretboard',
+          name: 'Toggle A on bottom',
         });
         expect(aAfter.getAttribute('aria-pressed')).toBe('true');
       });
@@ -492,10 +492,10 @@ describe('CagedTool', () => {
         await gridBtn.click();
 
         expect(() => screen.getByText('Shapes', { exact: true })).toThrow();
-        expect(() => screen.getByText('From:')).toThrow();
+        expect(() => screen.getByText('To', { exact: true })).toThrow();
       });
 
-      it('switching from grid to dual re-renders DualFretboard', async () => {
+      it('switching from grid to dual re-renders 2 FullFretboards', async () => {
         const { container } = renderTool();
         // Go to grid first
         const gridBtn = screen.getByText('Shape Grid', { exact: true });
@@ -507,7 +507,6 @@ describe('CagedTool', () => {
 
         const svgs = container.querySelectorAll('svg');
         expect(svgs.length).toBe(2);
-        expect(screen.getByText('From:')).toBeTruthy();
       });
     });
 
@@ -518,10 +517,8 @@ describe('CagedTool', () => {
         await minorBtn.click();
 
         // Both fretboard sections should reflect minor
-        const topSection = screen.getByLabelText('C minor — top fretboard');
-        expect(topSection).toBeTruthy();
-        const bottomSection = screen.getByLabelText('G minor — bottom fretboard');
-        expect(bottomSection).toBeTruthy();
+        expect(screen.getByLabelText('C minor chord — C, A, G, E, D shapes')).toBeTruthy();
+        expect(screen.getByLabelText('G minor chord — C, A, G, E, D shapes')).toBeTruthy();
       });
 
       it('changing quality back to major updates both labels', async () => {
@@ -533,22 +530,22 @@ describe('CagedTool', () => {
         const majorBtn = screen.getByText('Major', { exact: true });
         await majorBtn.click();
 
-        expect(screen.getByLabelText('C major — top fretboard')).toBeTruthy();
-        expect(screen.getByLabelText('G major — bottom fretboard')).toBeTruthy();
+        expect(screen.getByLabelText('C major chord — C, A, G, E, D shapes')).toBeTruthy();
+        expect(screen.getByLabelText('G major chord — C, A, G, E, D shapes')).toBeTruthy();
       });
     });
 
     describe('independent root selection', () => {
       it('changing top root updates selectedRoot but not secondRoot', async () => {
         await enterDualMode();
-        // Change top root to D via DualFretboard From: selector
-        const dFromBtn = screen.getByRole('button', { name: 'Select D as top root' });
-        await dFromBtn.click();
+        // Change top root to D via inline chord buttons
+        const dTopBtn = screen.getByRole('button', { name: 'Select D for top' });
+        await dTopBtn.click();
 
         // Top fretboard should now show D
-        expect(screen.getByLabelText('D major — top fretboard')).toBeTruthy();
+        expect(screen.getByLabelText('D major chord — C, A, G, E, D shapes')).toBeTruthy();
         // Bottom fretboard should still show G
-        expect(screen.getByLabelText('G major — bottom fretboard')).toBeTruthy();
+        expect(screen.getByLabelText('G major chord — C, A, G, E, D shapes')).toBeTruthy();
       });
 
       it('changing second root via CagedTool To selector', async () => {
@@ -558,29 +555,29 @@ describe('CagedTool', () => {
         await aBtn.click();
 
         // Bottom fretboard should now show A
-        expect(screen.getByLabelText('A major — bottom fretboard')).toBeTruthy();
+        expect(screen.getByLabelText('A major chord — C, A, G, E, D shapes')).toBeTruthy();
         // Top fretboard should still show C
-        expect(screen.getByLabelText('C major — top fretboard')).toBeTruthy();
+        expect(screen.getByLabelText('C major chord — C, A, G, E, D shapes')).toBeTruthy();
       });
 
-      it('changing second root via DualFretboard To selector', async () => {
+      it('changing second root via inline bottom selector', async () => {
         await enterDualMode();
-        const eBtn = screen.getByRole('button', { name: 'Select E as bottom root' });
+        const eBtn = screen.getByRole('button', { name: 'Select E for bottom' });
         await eBtn.click();
 
-        expect(screen.getByLabelText('E major — bottom fretboard')).toBeTruthy();
-        expect(screen.getByLabelText('C major — top fretboard')).toBeTruthy();
+        expect(screen.getByLabelText('E major chord — C, A, G, E, D shapes')).toBeTruthy();
+        expect(screen.getByLabelText('C major chord — C, A, G, E, D shapes')).toBeTruthy();
       });
 
       it('roots can be the same', async () => {
         await enterDualMode();
         // Set both to C — change second root to C
-        const cBottomBtn = screen.getByRole('button', { name: 'Select C as bottom root' });
+        const cBottomBtn = screen.getByRole('button', { name: 'Select C for bottom' });
         await cBottomBtn.click();
 
         // Both should be C
-        expect(screen.getByLabelText('C major — top fretboard')).toBeTruthy();
-        expect(screen.getByLabelText('C major — bottom fretboard')).toBeTruthy();
+        const labels = screen.getAllByLabelText('C major chord — C, A, G, E, D shapes');
+        expect(labels).toHaveLength(2);
       });
     });
   });

@@ -67,7 +67,8 @@
 
   <!-- Controls bar: card-based layout -->
   <div class="mb-8 space-y-4">
-    <!-- Chord selector card -->
+    <!-- Chord selector card (hidden in dual mode) -->
+    {#if viewMode !== 'dual'}
     <div class="rounded-xl border border-gray-200 bg-white p-4">
       <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Chord</div>
       <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select chord root">
@@ -89,6 +90,7 @@
         {/each}
       </div>
     </div>
+    {/if}
 
     <!-- Second root selector (dual mode only) -->
     {#if viewMode === 'dual'}
@@ -241,16 +243,85 @@
   {#if viewMode === 'full'}
     <FullFretboard shapes={shapes} {visibleShapes} labelMode="intervals" />
   {:else if viewMode === 'dual'}
-    <DualFretboard
-      root1={selectedRoot}
-      root2={secondRoot}
-      quality={selectedQuality}
-      labelMode="intervals"
-      visibleShapes1={visibleShapes}
-      visibleShapes2={secondVisibleShapes}
-      onRoot1Change={(r) => (selectedRoot = r)}
-      onRoot2Change={(r) => (secondRoot = r)}
-    />
+    {@const shapes1 = getShapes(selectedRoot, selectedQuality)}
+    {@const shapes2 = getShapes(secondRoot, selectedQuality)}
+
+    <!-- Fretboard 1 with inline controls -->
+    <div class="rounded-xl border border-gray-200 bg-white p-4 mb-4">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div class="flex flex-wrap gap-1.5">
+          {#each CHROMATIC as note (note)}
+            <button
+              aria-label="Select {note} for top"
+              aria-pressed={selectedRoot === note}
+              class="rounded-md px-2.5 py-1 text-xs font-medium transition-all duration-200"
+              class:bg-blue-600={selectedRoot === note}
+              class:text-white={selectedRoot === note}
+              class:shadow-sm={selectedRoot === note}
+              class:bg-gray-100={selectedRoot !== note}
+              class:text-gray-700={selectedRoot !== note}
+              class:hover:bg-gray-200={selectedRoot !== note}
+              onclick={() => (selectedRoot = note)}
+            >{note}</button>
+          {/each}
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="text-xs font-medium text-gray-400 mr-1">Shapes</span>
+          {#each CAGED_ORDER as shapeName (shapeName)}
+            {@const color = SHAPE_COLORS[shapeName]}
+            {@const isActive = visibleShapes.has(shapeName)}
+            <button
+              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border"
+              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
+              aria-label="Toggle {shapeName} on top"
+              aria-pressed={isActive}
+              onclick={() => toggleShape(shapeName)}
+            >{shapeName}</button>
+          {/each}
+        </div>
+      </div>
+    </div>
+    <FullFretboard shapes={shapes1} {visibleShapes} labelMode="intervals" />
+
+    <!-- Fretboard 2 with inline controls -->
+    <div class="rounded-xl border border-gray-200 bg-white p-4 mt-6 mb-4">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div class="flex flex-wrap gap-1.5">
+          {#each CHROMATIC as note (note)}
+            <button
+              aria-label="Select {note} for bottom"
+              aria-pressed={secondRoot === note}
+              class="rounded-md px-2.5 py-1 text-xs font-medium transition-all duration-200"
+              class:bg-blue-600={secondRoot === note}
+              class:text-white={secondRoot === note}
+              class:shadow-sm={secondRoot === note}
+              class:bg-gray-100={secondRoot !== note}
+              class:text-gray-700={secondRoot !== note}
+              class:hover:bg-gray-200={secondRoot !== note}
+              onclick={() => (secondRoot = note)}
+            >{note}</button>
+          {/each}
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="text-xs font-medium text-gray-400 mr-1">Shapes</span>
+          {#each CAGED_ORDER as shapeName (shapeName)}
+            {@const color = SHAPE_COLORS[shapeName]}
+            {@const isActive = secondVisibleShapes.has(shapeName)}
+            <button
+              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border"
+              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
+              aria-label="Toggle {shapeName} on bottom"
+              aria-pressed={isActive}
+              onclick={() => {
+                if (secondVisibleShapes.has(shapeName)) secondVisibleShapes.delete(shapeName);
+                else secondVisibleShapes.add(shapeName);
+              }}
+            >{shapeName}</button>
+          {/each}
+        </div>
+      </div>
+    </div>
+    <FullFretboard shapes={shapes2} visibleShapes={secondVisibleShapes} labelMode="intervals" />
   {:else}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {#each shapes as shape (shape.shape)}
