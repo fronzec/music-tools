@@ -2,6 +2,7 @@
   import type { ViewName } from '$lib/types/chord';
   import HomePage from '$lib/components/HomePage.svelte';
   import CagedTool from '$lib/components/CagedTool.svelte';
+  import ProgressionBuilder from '$lib/components/ProgressionBuilder.svelte';
 
   let currentView: ViewName = $state('home');
 
@@ -31,6 +32,10 @@
   {:else if currentView === 'caged'}
     <svelte:boundary failed={errorFallback}>
       <CagedTool {navigate} />
+    </svelte:boundary>
+  {:else if currentView === 'progression'}
+    <svelte:boundary failed={errorFallback}>
+      <ProgressionBuilder {navigate} />
     </svelte:boundary>
   {/if}
 </main>
