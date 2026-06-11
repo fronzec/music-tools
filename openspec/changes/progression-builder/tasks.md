@@ -39,16 +39,16 @@ Chain strategy: pending
 
 ## Phase 3: Orchestrator
 
-- [ ] 3.1 Create `src/lib/components/ProgressionBuilder.svelte` — owner view with progression state, shared quality toggle (major/minor), default C–F–G–C progression, `$effect` playback with `setInterval` + cleanup on unmount, chord add/remove handlers with `activeIndex` adjustment, FullFretboard wiring via `getShapes()`, empty-state message, back button
+- [x] 3.1 Create `src/lib/components/ProgressionBuilder.svelte` — owner view with progression state, shared quality toggle (major/minor), default C–F–G–C progression, `$effect` playback with `setInterval` + cleanup on unmount, chord add/remove handlers with `activeIndex` adjustment, FullFretboard wiring via `getShapes()`, empty-state message, back button
 
 ## Phase 4: Testing
 
-- [ ] 4.1 Create `tests/components/ProgressionBar.test.ts` — pills render roots, active pill highlighted, add dropdown opens, remove triggers callback, MAX_CHORDS disables add
-- [ ] 4.2 Create `tests/components/ProgressionTimeline.test.ts` — correct dot count, active dot highlighted, prev at start disabled, next at end disabled, play/pause toggles, speed change triggers callback
-- [ ] 4.3 Create `tests/components/ProgressionBuilder.test.ts` — default C–F–G–C renders, add chord appends with quality inheritance, remove chord adjusts `activeIndex`, quality toggle updates all chords, playback auto-advances and stops at end, empty progression shows message, back button navigates home
+- [x] 4.1 Create `tests/components/ProgressionBar.test.ts` — pills render roots, active pill highlighted, add dropdown opens, remove triggers callback, MAX_CHORDS disables add
+- [x] 4.2 Create `tests/components/ProgressionTimeline.test.ts` — correct dot count, active dot highlighted, prev at start disabled, next at end disabled, play/pause toggles, speed change triggers callback
+- [x] 4.3 Create `tests/components/ProgressionBuilder.test.ts` — default C–F–G–C renders, add chord appends with quality inheritance, remove chord adjusts `activeIndex`, quality toggle updates all chords, playback auto-advances and stops at end, empty progression shows message, back button navigates home
 
 ## Phase 5: Integration & Verification
 
-- [ ] 5.1 Run `pnpm tsc --noEmit` — confirm zero type errors with new `ViewName`
-- [ ] 5.2 Run `pnpm vitest run` — all tests pass (7 total: 4 modified/new + 3 new)
-- [ ] 5.3 Run `pnpm build` — production build succeeds
+- [x] 5.1 Run `pnpm tsc --noEmit` — confirm zero type errors with new `ViewName`
+- [x] 5.2 Run `pnpm vitest run` — all tests pass (376 total, 13 files)
+- [x] 5.3 Run `pnpm build` — production build succeeds
