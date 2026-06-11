@@ -4,6 +4,7 @@
   import CagedTool from '$lib/components/CagedTool.svelte';
   import ProgressionBuilder from '$lib/components/ProgressionBuilder.svelte';
   import NoteTrainer from '$lib/components/NoteTrainer.svelte';
+  import ToneGenerator from '$lib/components/ToneGenerator.svelte';
 
   let currentView: ViewName = $state('home');
 
@@ -41,6 +42,10 @@
   {:else if currentView === 'note-trainer'}
     <svelte:boundary failed={errorFallback}>
       <NoteTrainer {navigate} />
+    </svelte:boundary>
+  {:else if currentView === 'tone-generator'}
+    <svelte:boundary failed={errorFallback}>
+      <ToneGenerator {navigate} />
     </svelte:boundary>
   {/if}
 </main>

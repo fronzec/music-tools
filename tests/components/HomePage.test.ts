@@ -69,7 +69,7 @@ describe('HomePage', () => {
     it('renders the Progression Builder card as an active tool', () => {
       renderPage();
       expect(screen.getByText('Progression Builder')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(3); // CAGED, Progression, Note Trainer
+      expect(screen.getAllByText('Open').length).toBe(4); // CAGED, Progression, Note Trainer, Tone Generator
     });
 
     it('calls navigate with "progression" when the Progression Builder card is clicked', async () => {
@@ -103,7 +103,7 @@ describe('HomePage', () => {
       renderPage();
       expect(screen.getByText('Note Trainer')).toBeTruthy();
       expect(screen.getByText('Learn every note on the fretboard with visual patterns and quizzes')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(3);
+      expect(screen.getAllByText('Open').length).toBe(4);
     });
 
     it('calls navigate with "note-trainer" when the Note Trainer card is clicked', async () => {
@@ -129,6 +129,40 @@ describe('HomePage', () => {
       renderPage();
       const noteBtn = screen.getByRole('button', { name: /Note Trainer/i });
       expect(noteBtn.getAttribute('aria-label')).toContain('Note Trainer');
+    });
+  });
+
+  describe('Tone Generator card', () => {
+    it('renders the Tone Generator card as an active tool', () => {
+      renderPage();
+      expect(screen.getByText('Tone Generator')).toBeTruthy();
+      expect(screen.getByText('Reference tones for tuning by ear')).toBeTruthy();
+      expect(screen.getAllByText('Open').length).toBe(4);
+    });
+
+    it('calls navigate with "tone-generator" when the Tone Generator card is clicked', async () => {
+      const { navigate } = renderPage();
+      const toneCard = screen.getByText('Tone Generator');
+      await toneCard.click();
+
+      expect(navigate).toHaveBeenCalledWith('tone-generator');
+      expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls navigate with "tone-generator" when its Open button is clicked', async () => {
+      const { navigate } = renderPage();
+      const openBtns = screen.getAllByText('Open');
+      const toneBtn = openBtns[3]; // fourth "Open" button is Tone Generator's
+      await toneBtn!.click();
+
+      expect(navigate).toHaveBeenCalledWith('tone-generator');
+      expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('has an aria-label for accessibility', () => {
+      renderPage();
+      const toneBtn = screen.getByRole('button', { name: /Tone Generator/i });
+      expect(toneBtn.getAttribute('aria-label')).toContain('Tone Generator');
     });
   });
 
