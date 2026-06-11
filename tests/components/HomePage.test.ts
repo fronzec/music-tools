@@ -24,7 +24,8 @@ describe('HomePage', () => {
     it('renders the CAGED Visualizer card as an active tool', () => {
       renderPage();
       expect(screen.getByText('CAGED Visualizer')).toBeTruthy();
-      expect(screen.getByText('Open')).toBeTruthy();
+      const openButtons = screen.getAllByText('Open');
+      expect(openButtons.length).toBeGreaterThanOrEqual(1);
     });
 
     it('renders at least 2 placeholder cards', () => {
@@ -56,11 +57,44 @@ describe('HomePage', () => {
 
     it('calls navigate with "caged" when the Open button is clicked', async () => {
       const { navigate } = renderPage();
-      const openBtn = screen.getByText('Open');
-      await openBtn.click();
+      const openBtns = screen.getAllByText('Open');
+      await openBtns[0]!.click();
 
       expect(navigate).toHaveBeenCalledWith('caged');
       expect(navigate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Progression Builder card', () => {
+    it('renders the Progression Builder card as an active tool', () => {
+      renderPage();
+      expect(screen.getByText('Progression Builder')).toBeTruthy();
+      expect(screen.getAllByText('Open').length).toBe(2);
+    });
+
+    it('calls navigate with "progression" when the Progression Builder card is clicked', async () => {
+      const { navigate } = renderPage();
+      const progressionCard = screen.getByText('Progression Builder');
+      await progressionCard.click();
+
+      expect(navigate).toHaveBeenCalledWith('progression');
+      expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls navigate with "progression" when its Open button is clicked', async () => {
+      const { navigate } = renderPage();
+      const openBtns = screen.getAllByText('Open');
+      const progressionBtn = openBtns[1]; // second "Open" button is Progression Builder's
+      await progressionBtn!.click();
+
+      expect(navigate).toHaveBeenCalledWith('progression');
+      expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('has an aria-label for accessibility', () => {
+      renderPage();
+      const progressionBtn = screen.getByRole('button', { name: /Progression/i });
+      expect(progressionBtn.getAttribute('aria-label')).toContain('Progression');
     });
   });
 
