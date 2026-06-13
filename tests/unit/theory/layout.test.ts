@@ -111,14 +111,12 @@ describe('indicatorX', () => {
     expect(indicatorX(0, 0)).toBe(fretLineX(0) + 8);
   });
 
-  it('returns fretLineX(baseFret) + 14 for FullFretboard absolute coords (minFret !== baseFret)', () => {
-    // FullFretboard: minFret=0, baseFret=3 → fretLineX(3)+14 = 168+14 = 182
-    expect(indicatorX(3, 0)).toBe(fretLineX(3) + 14);
+  it('returns fretLineX(baseFret) + 17 for FullFretboard absolute coords', () => {
+    expect(indicatorX(3, 0)).toBe(fretLineX(3) + 17);
   });
 
-  it('returns fretLineX(1) - 36 for Fretboard shifted coords (minFret === baseFret)', () => {
-    // Fretboard barre: baseFret=5, minFret=5 → fretLineX(1)-36 = 68-36 = 32
-    expect(indicatorX(5, 5)).toBe(fretLineX(1) - 36);
+  it('returns fretLineX(1) - 33 for Fretboard shifted coords', () => {
+    expect(indicatorX(5, 5)).toBe(fretLineX(1) - 33);
   });
 });
 

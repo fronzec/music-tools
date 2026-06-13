@@ -493,8 +493,8 @@ describe('Fretboard', () => {
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const texts = [...container.querySelectorAll('text')];
       const xMarker = texts.find((t) => t.textContent === '×')!;
-      // indicatorX(3,3) = fretLineX(1)-36 = 32; minus 8 = 24
-      expect(xMarker.getAttribute('x')).toBe('24');
+      // indicatorX(3,3) = fretLineX(1)-33 = 35; minus 8 = 27
+      expect(xMarker.getAttribute('x')).toBe('27');
     });
   });
 

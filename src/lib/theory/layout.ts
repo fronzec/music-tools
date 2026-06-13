@@ -109,9 +109,9 @@ export function indicatorX(baseFret: number, minFret: number): number {
   // Open position: center badge on the nut line
   if (baseFret === 0) return fretLineX(0) + 8;
   // Fretboard.svelte shifted coords: barre line always at x=12
-  if (minFret === baseFret) return fretLineX(1) - 36;
-  // FullFretboard.svelte absolute coords: barre at fretLineX(baseFret)
-  return fretLineX(baseFret) + 14;
+  if (minFret === baseFret) return fretLineX(1) - 33;
+  // FullFretboard.svelte absolute coords: badge left edge at barre line
+  return fretLineX(baseFret) + 17;
 }
 
 /**
