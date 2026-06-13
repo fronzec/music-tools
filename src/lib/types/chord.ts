@@ -6,6 +6,8 @@ export type CagedShape = 'C' | 'A' | 'G' | 'E' | 'D';
 
 export type LabelMode = 'intervals' | 'notes' | 'both';
 
+export type OverlapStyle = 'split' | 'dots' | 'gradient';
+
 export type FretPosition = number | null;
 
 export interface ChordShape {
