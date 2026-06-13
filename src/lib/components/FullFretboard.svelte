@@ -438,8 +438,6 @@
           <polygon
             points={diamondPoints(0, 0, baseR)}
             fill={note.color}
-            stroke="white"
-            stroke-width="2"
           />
           <text
             x="0" y="4"
@@ -455,8 +453,6 @@
             r={L.TONE_R}
             fill={note.color}
             opacity={FL.NOTE_OPACITY}
-            stroke="white"
-            stroke-width="1.5"
           />
           <text
             x="0" y="3"
@@ -473,8 +469,6 @@
           <polygon
             points={diamondPoints(0, 0, baseR - 3)}
             fill={note.color}
-            stroke="white"
-            stroke-width="1"
           />
         {:else}
           <circle
