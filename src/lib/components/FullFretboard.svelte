@@ -340,7 +340,7 @@
   {:else}
     <!-- Base fret label (e.g. "5fr") above top -->
     <text
-              x={L.LEFT_PAD + L.NUT_W + 4}
+              x={fretLineX(1) - 12}
       y={L.TOP_PAD - 6}
       text-anchor="middle"
       font-size={L.LABEL_FS + 1}

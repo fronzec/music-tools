@@ -196,9 +196,7 @@
   <!-- Open (O) / muted (×) indicators -->
   {#each [0, 1, 2, 3, 4, 5] as i (i)}
     {@const fret = shape.frets[i]!}
-    {@const indicatorXPos = isBarre
-      ? fretLineX(0) + 12
-      : L.LEFT_PAD + L.NUT_W + 4}
+    {@const indicatorXPos = fretLineX(1) - 12}
 
     {#if fret === 0 && !isBarre}
       <rect x={indicatorXPos - 9} y={stringY(i) - 8} width="18" height="16" rx="5" class="indicator-badge"
