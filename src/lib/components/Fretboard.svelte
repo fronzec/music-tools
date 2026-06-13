@@ -8,6 +8,7 @@
     SHAPE_COLORS,
     stringY,
     fretLineX,
+    indicatorX,
     noteX,
     viewBoxW,
     viewBoxH,
@@ -196,25 +197,23 @@
   <!-- Open (O) / muted (×) indicators -->
   {#each [0, 1, 2, 3, 4, 5] as i (i)}
     {@const fret = shape.frets[i]!}
-    {@const indicatorXPos = (isBarre
-      ? fretLineX(0) - L.FRET_SP / 2 - 8
-      : L.LEFT_PAD + L.NUT_W / 2) - 8}
+    {@const indicatorXPos = indicatorX(shape.baseFret, isBarre ? shape.baseFret : 0) - 8}
 
     {#if fret === 0 && !isBarre}
-      <rect x={indicatorXPos - 9} y={stringY(i) - 8} width="18" height="16" rx="5" class="indicator-badge"
-            fill={SHAPE_COLORS[shape.shape]} opacity="0.85"
+      <rect x={indicatorXPos - 8} y={stringY(i) - 7} width="16" height="14" rx="5" class="indicator-badge"
+            fill={SHAPE_COLORS[shape.shape]} opacity={FL.INDICATOR_OPACITY}
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
-      <text x={indicatorXPos} y={stringY(i) + 3}
-            text-anchor="middle" font-size="11"
+      <text x={indicatorXPos} y={stringY(i)}
+            text-anchor="middle" alignment-baseline="central" font-size="10"
             fill="white"
             font-weight="bold"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>O</text>
     {:else if fret === null}
-      <rect x={indicatorXPos - 9} y={stringY(i) - 8} width="18" height="16" rx="5" class="indicator-badge"
-            fill={SHAPE_COLORS[shape.shape]} opacity="0.4"
+      <rect x={indicatorXPos - 8} y={stringY(i) - 7} width="16" height="14" rx="5" class="indicator-badge"
+            fill={SHAPE_COLORS[shape.shape]} opacity={FL.INDICATOR_OPACITY}
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
-      <text x={indicatorXPos} y={stringY(i) + 3}
-            text-anchor="middle" font-size="11"
+      <text x={indicatorXPos} y={stringY(i)}
+            text-anchor="middle" alignment-baseline="central" font-size="10"
             fill="white"
             font-weight="bold"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>×</text>

@@ -405,11 +405,11 @@
       style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
       transform="translate({indicator.cx}, {indicator.cy})"
     >
-      <rect x="-9" y="-8" width="18" height="16" rx="5" class="indicator-badge"
+      <rect x="-8" y="-8" width="16" height="14" rx="5" class="indicator-badge"
             fill={indicator.color}
-            opacity={indicator.type === 'muted' ? 0.4 : 0.85} />
-      <text x="0" y="3" text-anchor="middle"
-            font-size="11" fill="white"
+            opacity={FL.INDICATOR_OPACITY} />
+      <text x="0" y="0" text-anchor="middle" alignment-baseline="central"
+            font-size="10" fill="white"
             font-weight="bold">
         {indicator.type === 'open' ? 'O' : '×'}
       </text>

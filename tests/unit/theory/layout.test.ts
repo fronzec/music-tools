@@ -106,18 +106,17 @@ describe('viewBoxH', () => {
 });
 
 describe('indicatorX', () => {
-  it('returns LEFT_PAD + NUT_W + 6 for baseFret === 0 (nut area)', () => {
-    expect(indicatorX(0, 0)).toBe(L.LEFT_PAD + L.NUT_W + 6);
+  it('returns fretLineX(0) + 8 for baseFret=0 (centered on nut line)', () => {
+    // fretLineX(0) = 18; 18+8 = 26 → after -8 offset → badge center at 18 (nut line)
+    expect(indicatorX(0, 0)).toBe(fretLineX(0) + 8);
   });
 
-  it('returns fretLineX(3) - FRET_SP/2 - 8 for baseFret=3 minFret=0', () => {
-    // fretLineX(3) = 12+6+150 = 168; FRET_SP/2 = 25; 168-25-8 = 135
-    expect(indicatorX(3, 0)).toBe(fretLineX(3) - L.FRET_SP / 2 - 8);
+  it('returns fretLineX(baseFret) - 5 for FullFretboard (same space as barre note)', () => {
+    expect(indicatorX(3, 0)).toBe(fretLineX(3) - 5);
   });
 
-  it('handles non-zero minFret (barre offset)', () => {
-    // minFret=2: fretLineX(5-2) = fretLineX(3) = 168; 168-25-8=135
-    expect(indicatorX(5, 2)).toBe(fretLineX(3) - L.FRET_SP / 2 - 8);
+  it('returns fretLineX(0) + 10 for Fretboard shifted coords', () => {
+    expect(indicatorX(5, 5)).toBe(fretLineX(0) + 10);
   });
 });
 

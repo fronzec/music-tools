@@ -35,6 +35,8 @@ export const FL = {
   NOTE_OPACITY: 0.75,
   /** Opacity for barre indicator rectangles. */
   BARRE_OPACITY: 0.35,
+  /** Unified opacity for O (open) and × (muted) indicator badges. */
+  INDICATOR_OPACITY: 0.45,
   /** CSS transition duration for animated shape changes. */
   ANIM_DURATION: '0.3s',
   /** CSS transition timing function for animated shape changes. */
@@ -42,7 +44,7 @@ export const FL = {
   /** Center-to-center horizontal spacing between per-shape O/× indicators. */
   INDICATOR_SP: 14,
   /** Font size for O/× indicator text. */
-  INDICATOR_FS: 9,
+  INDICATOR_FS: 8,
 } as const;
 
 /** Per-shape colors for the CAGED full-neck overlay. */
@@ -94,12 +96,22 @@ export function viewBoxH(): number {
 }
 
 /**
- * Returns the X coordinate for an indicator group at a given baseFret.
- * baseFret=0 → near nut; baseFret>0 → left of barre fret line.
+ * Returns the X coordinate for an O/× indicator badge center.
+ *
+ * Three calling conventions (detected heuristically):
+ * 1. baseFret=0 → open position — badge centered on the nut line
+ * 2. minFret === baseFret → Fretboard.svelte shifted coords, barre line at x=12
+ * 3. minFret !== baseFret → FullFretboard.svelte absolute coords, minFret always 0
+ *
+ * Callers subtract 8 for badge centering offset.
  */
 export function indicatorX(baseFret: number, minFret: number): number {
-  if (baseFret === 0) return L.LEFT_PAD + L.NUT_W + 6;
-  return fretLineX(baseFret - minFret) - L.FRET_SP / 2 - 8;
+  // Open position: center badge on the nut line
+  if (baseFret === 0) return fretLineX(0) + 8;
+  // Fretboard.svelte shifted coords: badge right of barre line
+  if (minFret === baseFret) return fretLineX(0) + 10;
+  // FullFretboard.svelte absolute coords: badge in same fret space as barre note
+  return fretLineX(baseFret) - 5;
 }
 
 /**
