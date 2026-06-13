@@ -206,6 +206,22 @@
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key)!.push(note);
     }
+    // Sort each group in circular CAGED order (C→A→G→E→D→C)
+    for (const notes of groups.values()) {
+      if (notes.length < 2) continue;
+      notes.sort((a, b) => CAGED_ORDER.indexOf(a.shape) - CAGED_ORDER.indexOf(b.shape));
+      // If the gap between first and last > 2 (half the circle), rotate so first is the wrap start
+      const firstIdx = CAGED_ORDER.indexOf(notes[0]!.shape);
+      const lastIdx = CAGED_ORDER.indexOf(notes[notes.length - 1]!.shape);
+      if (lastIdx - firstIdx > 2) {
+        // The circular wrap should be between these — shift the array
+        const split = notes.findIndex((n) => CAGED_ORDER.indexOf(n.shape) - firstIdx > 2);
+        if (split > 0) {
+          const rotated = notes.splice(0, split);
+          notes.push(...rotated);
+        }
+      }
+    }
     return groups;
   });
 
