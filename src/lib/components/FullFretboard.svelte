@@ -479,7 +479,7 @@
           <text
             x="0" y="4"
             text-anchor="middle"
-            font-size="8"
+            font-size="9"
             fill="white"
             font-weight="bold"
             style="pointer-events:none"
@@ -494,7 +494,7 @@
           <text
             x="0" y="3"
             text-anchor="middle"
-            font-size="7"
+            font-size="8"
             fill="white"
             font-weight="bold"
             style="pointer-events:none"
@@ -531,7 +531,7 @@
           {/if}
         {/if}
         <!-- Note name label on top of overlap -->
-        <text x="0" y="4" text-anchor="middle" font-size="8" fill="white" font-weight="bold" style="pointer-events:none">
+        <text x="0" y="4" text-anchor="middle" font-size="9" fill="white" font-weight="bold" style="pointer-events:none">
           {getNoteName(note.stringIndex, note.absFret)}
         </text>
       {/if}
