@@ -92,8 +92,8 @@ const MINOR_TEMPLATES: ShapeTemplate[] = [
   },
   {
     name: 'G',
-    intervals: [-12, -9, -5, 0, 3, 12],
-    rootString: 3,
+    intervals: [0, 3, 7, 12, 19, 24],
+    rootString: 0,
   },
   {
     name: 'D',
@@ -102,7 +102,7 @@ const MINOR_TEMPLATES: ShapeTemplate[] = [
   },
   {
     name: 'C',
-    intervals: [null, 0, 3, 7, 12, 15],
+    intervals: [null, 0, 3, 7, 12, 19],
     rootString: 1,
   },
 ];
