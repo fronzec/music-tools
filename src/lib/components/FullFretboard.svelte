@@ -502,9 +502,15 @@
         {@const note1 = overlaps[0]}
         {@const note2 = overlaps[1]}
         {#if overlapStyle === 'split'}
-          <!-- Split circle -->
-          <path d="M0,-{baseR} A{baseR},{baseR} 0 0,0 0,{baseR} Z" fill={note1.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
-          <path d="M0,-{baseR} A{baseR},{baseR} 0 0,1 0,{baseR} Z" fill={note2.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+          {#if isRootPos}
+            <!-- Split diamond: left half + right half -->
+            <polygon points="0,-{baseR} 0,{baseR} -{baseR},0" fill={note1.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+            <polygon points="0,-{baseR} 0,{baseR} {baseR},0" fill={note2.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+          {:else}
+            <!-- Split circle -->
+            <path d="M0,-{baseR} A{baseR},{baseR} 0 0,0 0,{baseR} Z" fill={note1.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+            <path d="M0,-{baseR} A{baseR},{baseR} 0 0,1 0,{baseR} Z" fill={note2.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+          {/if}
         {:else if overlapStyle === 'dots'}
           <!-- Merged dots — handle N shapes by chaining horizontally -->
           {#each overlaps as n, j}
@@ -516,8 +522,11 @@
             {/if}
           {/each}
         {:else if overlapStyle === 'gradient'}
-          <!-- Gradient circle -->
-          <circle cx="0" cy="0" r={baseR} fill="url(#grad-{posKey})" opacity={FL.OVERLAP_GRADIENT_OPACITY} />
+          {#if isRootPos}
+            <polygon points={diamondPoints(0, 0, baseR)} fill="url(#grad-{posKey})" opacity={FL.OVERLAP_GRADIENT_OPACITY} />
+          {:else}
+            <circle cx="0" cy="0" r={baseR} fill="url(#grad-{posKey})" opacity={FL.OVERLAP_GRADIENT_OPACITY} />
+          {/if}
         {/if}
         <!-- Note name label on top of overlap -->
         <text x="0" y="4" text-anchor="middle" font-size="8" fill="white" font-weight="bold" style="pointer-events:none">
