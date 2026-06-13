@@ -408,7 +408,7 @@
       <rect x="-8" y="-8" width="16" height="14" rx="5" class="indicator-badge"
             fill={indicator.color}
             opacity={FL.INDICATOR_OPACITY} />
-      <text x="0" y="0" text-anchor="middle" dominant-baseline="central"
+      <text x="0" y={indicator.type === 'open' ? '0' : '1'} text-anchor="middle" dominant-baseline="central"
             font-size="10" fill="white"
             font-weight="bold">
         {indicator.type === 'open' ? 'O' : '×'}
