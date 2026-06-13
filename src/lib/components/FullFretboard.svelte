@@ -293,8 +293,8 @@
       {#each gradientDefs as def (def.posKey)}
         <linearGradient id="grad-{def.posKey}" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
           <stop offset="0%" stop-color={def.color1} />
-          <stop offset="48%" stop-color={def.color1} />
-          <stop offset="52%" stop-color={def.color2} />
+          <stop offset="30%" stop-color={def.color1} />
+          <stop offset="70%" stop-color={def.color2} />
           <stop offset="100%" stop-color={def.color2} />
         </linearGradient>
       {/each}
