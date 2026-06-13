@@ -203,8 +203,8 @@
       <rect x={indicatorXPos - 8} y={stringY(i) - 8} width="16" height="14" rx="5" class="indicator-badge"
             fill={SHAPE_COLORS[shape.shape]} opacity={FL.INDICATOR_OPACITY}
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
-      <text x={indicatorXPos} y={stringY(i) + 3}
-            text-anchor="middle" font-size="10"
+      <text x={indicatorXPos} y={stringY(i) - 1}
+            text-anchor="middle" dominant-baseline="central" font-size="10"
             fill="white"
             font-weight="bold"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>O</text>
@@ -212,8 +212,8 @@
       <rect x={indicatorXPos - 8} y={stringY(i) - 8} width="16" height="14" rx="5" class="indicator-badge"
             fill={SHAPE_COLORS[shape.shape]} opacity={FL.INDICATOR_OPACITY}
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
-      <text x={indicatorXPos} y={stringY(i) + 3}
-            text-anchor="middle" font-size="10"
+      <text x={indicatorXPos} y={stringY(i) - 1}
+            text-anchor="middle" dominant-baseline="central" font-size="10"
             fill="white"
             font-weight="bold"
             style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>×</text>
