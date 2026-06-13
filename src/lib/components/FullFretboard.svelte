@@ -518,9 +518,9 @@
           {#each overlaps as n, j}
             {@const off = (j - (overlaps.length - 1) / 2) * (n.isRoot ? FL.OVERLAP_ROOT_DOT_OFFSET : FL.OVERLAP_DOT_OFFSET)}
             {#if n.isRoot}
-              <polygon points={diamondPoints(off, 0, baseR - 3)} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
+              <polygon points={diamondPoints(off, 0, baseR)} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
             {:else}
-              <circle cx={off} cy="0" r={baseR - 2} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
+              <circle cx={off} cy="0" r={baseR} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
             {/if}
           {/each}
         {:else if overlapStyle === 'gradient'}
