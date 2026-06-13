@@ -6,6 +6,7 @@
   import { SHAPE_COLORS } from '$lib/theory/layout';
   import ShapeCard from './ShapeCard.svelte';
   import FullFretboard from './FullFretboard.svelte';
+  import OverlapDemo from './OverlapDemo.svelte';
   import DualFretboard from './DualFretboard.svelte';
   import LegendPanel from './LegendPanel.svelte';
 
@@ -370,4 +371,5 @@
       {/each}
     </div>
   {/if}
+  <OverlapDemo />
 </div>
