@@ -19,7 +19,6 @@
   let selectedRoot = $state<NoteName>('C');
   let selectedQuality = $state<ChordQuality>('major');
   let viewMode = $state<'full' | 'grid' | 'dual'>('full');
-  let legendOpen = $state(false);
   let visibleShapes = new SvelteSet(CAGED_ORDER);
   let secondRoot = $state<NoteName>('G');
   let secondVisibleShapes = new SvelteSet(CAGED_ORDER);
@@ -226,26 +225,6 @@
         </div>
       </div>
 
-      <!-- Legend card -->
-      <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Help</div>
-        <button
-          class="rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200"
-          class:bg-blue-600={legendOpen}
-          class:text-white={legendOpen}
-          class:bg-gray-100={!legendOpen}
-          class:text-gray-700={!legendOpen}
-          class:hover:bg-gray-200={!legendOpen}
-          class:dark:bg-gray-800={!legendOpen}
-          class:dark:text-gray-300={!legendOpen}
-          class:dark:hover:bg-gray-700={!legendOpen}
-          aria-expanded={legendOpen}
-          aria-controls="legend-panel"
-          aria-label="Toggle legend"
-          onclick={() => (legendOpen = !legendOpen)}
-        >Legend</button>
-      </div>
-
       <!-- Overlap Style card (hidden in grid mode — no overlaps to render) -->
       {#if viewMode !== 'grid'}
         <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
@@ -300,9 +279,6 @@
         </div>
       {/if}
     </div>
-
-    <!-- Legend panel -->
-    <LegendPanel open={legendOpen} viewMode={viewMode} />
 
     <!-- Shape toggle bar (only in Full Neck mode) -->
     {#if viewMode === 'full'}
@@ -436,4 +412,7 @@
       {/each}
     </div>
   {/if}
+
+  <!-- Legend — always visible below fretboard -->
+  <LegendPanel open={true} viewMode={viewMode} />
 </div>
