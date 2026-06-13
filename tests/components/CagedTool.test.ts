@@ -315,7 +315,7 @@ describe('CagedTool', () => {
     it('view toggle has radiogroup role', () => {
       const { container } = renderTool();
       const radiogroups = container.querySelectorAll('[role="radiogroup"]');
-      expect(radiogroups.length).toBe(2);
+      expect(radiogroups.length).toBe(3);
     });
 
     it('Full Neck button has aria-checked="true" by default', () => {
@@ -579,6 +579,95 @@ describe('CagedTool', () => {
         const labels = screen.getAllByLabelText('C major chord — C, A, G, E, D shapes');
         expect(labels).toHaveLength(2);
       });
+    });
+  });
+
+  describe('overlap style toggle', () => {
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('renders Overlap style card in full mode', () => {
+      renderTool();
+      expect(screen.getByText('Overlap')).toBeTruthy();
+      expect(screen.getByText('Split')).toBeTruthy();
+      expect(screen.getByText('Dots')).toBeTruthy();
+      expect(screen.getByText('Gradient')).toBeTruthy();
+    });
+
+    it('Overlap style card is visible in dual mode', async () => {
+      renderTool();
+      const dualBtn = screen.getByText('Dual Compare', { exact: true });
+      await dualBtn.click();
+      expect(screen.getByText('Overlap')).toBeTruthy();
+    });
+
+    it('Overlap style card is hidden in grid mode', async () => {
+      renderTool();
+      const gridBtn = screen.getByText('Shape Grid', { exact: true });
+      await gridBtn.click();
+      expect(() => screen.getByText('Overlap')).toThrow();
+    });
+
+    it('split is selected by default', () => {
+      renderTool();
+      const splitBtn = screen.getByRole('radio', { name: 'Split' });
+      expect(splitBtn.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('clicking Dots selects it and updates aria-checked', async () => {
+      renderTool();
+      const dotsBtn = screen.getByRole('radio', { name: 'Dots' });
+      await dotsBtn.click();
+      expect(dotsBtn.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('clicking Gradient selects it and deselects Split', async () => {
+      renderTool();
+      const gradBtn = screen.getByRole('radio', { name: 'Gradient' });
+      await gradBtn.click();
+      expect(gradBtn.getAttribute('aria-checked')).toBe('true');
+      const splitBtn = screen.getByRole('radio', { name: 'Split' });
+      expect(splitBtn.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('persists selected style to localStorage', async () => {
+      renderTool();
+      expect(localStorage.getItem('caged-overlap-style')).toBe('split');
+
+      const dotsBtn = screen.getByRole('radio', { name: 'Dots' });
+      await dotsBtn.click();
+      expect(localStorage.getItem('caged-overlap-style')).toBe('dots');
+
+      const gradBtn = screen.getByRole('radio', { name: 'Gradient' });
+      await gradBtn.click();
+      expect(localStorage.getItem('caged-overlap-style')).toBe('gradient');
+    });
+
+    it('reads initial style from localStorage', () => {
+      localStorage.setItem('caged-overlap-style', 'dots');
+      renderTool();
+      const dotsBtn = screen.getByRole('radio', { name: 'Dots' });
+      expect(dotsBtn.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('falls back to split when localStorage has invalid value', () => {
+      localStorage.setItem('caged-overlap-style', 'invalid');
+      renderTool();
+      const splitBtn = screen.getByRole('radio', { name: 'Split' });
+      expect(splitBtn.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('has radiogroup role and proper aria-label on the style toggle', () => {
+      renderTool();
+      const group = screen.getByRole('radiogroup', { name: 'Overlap style' });
+      expect(group).toBeTruthy();
+    });
+
+    it('style toggle buttons have role="radio"', () => {
+      renderTool();
+      const splitBtn = screen.getByRole('radio', { name: 'Split' });
+      expect(splitBtn).toBeTruthy();
     });
   });
 });

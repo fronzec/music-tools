@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ChordShape, LabelMode, CagedShape } from '$lib/types/chord';
+  import type { ChordShape, LabelMode, CagedShape, OverlapStyle } from '$lib/types/chord';
   import { STANDARD_TUNING, CAGED_ORDER } from '$lib/types/chord';
   import { buildPositionMap, type NoteEntry, type DiffEntry } from '$lib/theory/fretboard';
   import { semitoneToNoteName } from '$lib/theory/notes';
@@ -22,9 +22,10 @@
     labelMode: LabelMode;
     width?: number;
     highlightPositions?: Map<string, DiffEntry>;
+    overlapStyle?: OverlapStyle;
   }
 
-  let { shapes, visibleShapes, labelMode, width, highlightPositions }: Props = $props();
+  let { shapes, visibleShapes, labelMode, width, highlightPositions, overlapStyle = 'split' }: Props = $props();
 
   // ── Fret range calculation ──────────────────────────────────────
 
@@ -208,6 +209,28 @@
     return groups;
   });
 
+  /**
+   * Unique color pairs for gradient-style overlap rendering.
+   * Each entry maps a position key to the colors of shapes that overlap there.
+   */
+  let gradientDefs = $derived.by(() => {
+    if (overlapStyle !== 'gradient') return [];
+    const defs: Array<{ posKey: string; color1: string; color2: string }> = [];
+    for (const [posKey, notes] of overlapGroups) {
+      if (notes.length < 2) continue;
+      // Deduplicate colors while preserving order (first two distinct colors)
+      const colors: string[] = [];
+      for (const n of notes) {
+        if (!colors.includes(n.color)) colors.push(n.color);
+        if (colors.length >= 2) break;
+      }
+      if (colors.length >= 2) {
+        defs.push({ posKey, color1: colors[0], color2: colors[1] });
+      }
+    }
+    return defs;
+  });
+
   // ── Reduced motion ───────────────────────────────────────────────
   let reducedMotion = $state(typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
@@ -263,6 +286,18 @@
       ({visibleShapeData.map(s => s.shape).join(', ')}) of the {visibleShapeData[0].root} {visibleShapeData[0].quality} chord.
     {/if}
   </desc>
+
+  <!-- Gradient definitions for overlap styles -->
+  {#if gradientDefs.length > 0}
+    <defs>
+      {#each gradientDefs as def (def.posKey)}
+        <linearGradient id="grad-{def.posKey}" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color={def.color1} />
+          <stop offset="100%" stop-color={def.color2} />
+        </linearGradient>
+      {/each}
+    </defs>
+  {/if}
 
   <!-- Empty state message -->
   {#if isEmpty}
@@ -463,61 +498,31 @@
             style="pointer-events:none"
           >{getNoteName(note.stringIndex, note.absFret)}</text>
         {/if}
-      {:else if overlapIndex === 0}
-        <!-- Innermost of overlapping notes -->
-        {#if note.isRoot}
-          <polygon
-            points={diamondPoints(0, 0, baseR - 3)}
-            fill={note.color}
-          />
-        {:else}
-          <circle
-            cx="0" cy="0"
-            r={baseR - 3}
-            fill={note.color}
-            opacity={FL.NOTE_OPACITY}
-          />
-          <text
-            x="0" y="3"
-            text-anchor="middle"
-            font-size="7"
-            fill="white"
-            font-weight="bold"
-            style="pointer-events:none"
-          >{getNoteName(note.stringIndex, note.absFret)}</text>
+      {:else if overlapIndex === 0 && overlaps.length > 1}
+        {@const note1 = overlaps[0]}
+        {@const note2 = overlaps[1]}
+        {#if overlapStyle === 'split'}
+          <!-- Split circle -->
+          <path d="M0,-{baseR} A{baseR},{baseR} 0 0,0 0,{baseR} Z" fill={note1.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+          <path d="M0,-{baseR} A{baseR},{baseR} 0 0,1 0,{baseR} Z" fill={note2.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+        {:else if overlapStyle === 'dots'}
+          <!-- Merged dots — handle N shapes by chaining horizontally -->
+          {#each overlaps as n, j}
+            {@const off = (j - (overlaps.length - 1) / 2) * (n.isRoot ? FL.OVERLAP_ROOT_DOT_OFFSET : FL.OVERLAP_DOT_OFFSET)}
+            {#if n.isRoot}
+              <polygon points={diamondPoints(off, 0, baseR - 3)} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
+            {:else}
+              <circle cx={off} cy="0" r={baseR - 2} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
+            {/if}
+          {/each}
+        {:else if overlapStyle === 'gradient'}
+          <!-- Gradient circle -->
+          <circle cx="0" cy="0" r={baseR} fill="url(#grad-{posKey})" opacity={FL.OVERLAP_GRADIENT_OPACITY} />
         {/if}
-        <!-- Note name if any note in overlaps is root -->
-        {#if overlaps.some((n) => n.isRoot)}
-          <text
-            x="0" y="4"
-            text-anchor="middle"
-            font-size="8"
-            fill="white"
-            font-weight="bold"
-            style="pointer-events:none"
-          >{getNoteName(note.stringIndex, note.absFret)}</text>
-        {/if}
-      {:else}
-        <!-- Concentric ring for overlapping shapes -->
-        {@const ringR = baseR - 1 + (overlapIndex - 1) * 2}
-        {#if note.isRoot}
-          <polygon
-            points={diamondPoints(0, 0, ringR)}
-            fill="none"
-            stroke={note.color}
-            stroke-width="3"
-            opacity={0.9}
-          />
-        {:else}
-          <circle
-            cx="0" cy="0"
-            r={ringR}
-            fill="none"
-            stroke={note.color}
-            stroke-width="3"
-            opacity={FL.NOTE_OPACITY}
-          />
-        {/if}
+        <!-- Note name label on top of overlap -->
+        <text x="0" y="4" text-anchor="middle" font-size="8" fill="white" font-weight="bold" style="pointer-events:none">
+          {getNoteName(note.stringIndex, note.absFret)}
+        </text>
       {/if}
 
       <!-- Highlight diff ring (only on first note of a position to avoid duplicates) -->

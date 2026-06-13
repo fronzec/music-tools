@@ -45,6 +45,18 @@ export const FL = {
   INDICATOR_SP: 14,
   /** Font size for O/× indicator text. */
   INDICATOR_FS: 8,
+  /** Default overlap visualization style. */
+  DEFAULT_OVERLAP_STYLE: 'split' as const,
+  /** Horizontal offset between non-root overlapping dots. */
+  OVERLAP_DOT_OFFSET: 4,
+  /** Horizontal offset between root overlapping dots. */
+  OVERLAP_ROOT_DOT_OFFSET: 5.5,
+  /** Opacity for split-style overlap semicircles. */
+  OVERLAP_SPLIT_OPACITY: 0.8,
+  /** Opacity for dots-style overlap circles. */
+  OVERLAP_DOTS_OPACITY: 0.75,
+  /** Opacity for gradient-style overlap circles. */
+  OVERLAP_GRADIENT_OPACITY: 0.85,
 } as const;
 
 /** Per-shape colors for the CAGED full-neck overlay. */

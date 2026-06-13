@@ -225,7 +225,7 @@ describe('FullFretboard', () => {
       expect(polygons.length).toBeGreaterThanOrEqual(5);
     });
 
-    it('diamonds have white stroke', () => {
+    it('diamonds have fill but no stroke (no ring for single shape)', () => {
       const shapes = allShapes();
       const { container } = render(FullFretboard, {
         shapes,
@@ -234,8 +234,9 @@ describe('FullFretboard', () => {
       });
       const polygons = container.querySelectorAll('polygon');
       const firstDiamond = polygons[0];
-      expect(firstDiamond.getAttribute('stroke')).toBe('white');
-      expect(firstDiamond.getAttribute('stroke-width')).toBe('2');
+      // Single-shape diamonds have fill but no stroke or stroke-width
+      expect(firstDiamond.getAttribute('fill')).toBeTruthy();
+      expect(firstDiamond.getAttribute('stroke')).toBeNull();
     });
 
     it('non-root circles have lower opacity', () => {
@@ -945,6 +946,175 @@ describe('FullFretboard', () => {
       const svg = screen.getByRole('img');
       expect(svg).toBeTruthy();
       expect(svg.tagName).toBe('svg');
+    });
+  });
+
+  describe('overlap style rendering', () => {
+    it('split style renders <path> semicircles for overlapping positions', () => {
+      const shapes = [makeCShape(), makeAShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'split',
+      });
+      const paths = container.querySelectorAll('path');
+      // Overlap at positions (2,2) and (0,5) — 2 split semicircles each = 4 paths
+      expect(paths.length).toBeGreaterThanOrEqual(2);
+      // Each path should be an arc from top to bottom of the circle
+      const firstPath = paths[0];
+      expect(firstPath.getAttribute('d')).toContain('A');
+    });
+
+    it('split style uses OVERLAP_SPLIT_OPACITY', () => {
+      const shapes = [makeCShape(), makeAShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'split',
+      });
+      const paths = container.querySelectorAll('path');
+      if (paths.length > 0) {
+        expect(paths[0].getAttribute('opacity')).toBe(String(FL.OVERLAP_SPLIT_OPACITY));
+      }
+    });
+
+    it('dots style renders offset circles for overlapping positions', () => {
+      const shapes = [makeCShape(), makeAShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'dots',
+      });
+      // Dots style renders circles for non-root overlaps
+      const circles = [...container.querySelectorAll('circle')];
+      // Find circles with non-zero cx (offset circles)
+      const offsetCircles = circles.filter(
+        (c) => parseFloat(c.getAttribute('cx') ?? '0') !== 0,
+      );
+      // Overlap at (2,2) is non-root × 2 → 2 offset circles
+      expect(offsetCircles.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it('dots style uses OVERLAP_DOTS_OPACITY', () => {
+      const shapes = [makeCShape(), makeAShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'dots',
+      });
+      const circles = [...container.querySelectorAll('circle')];
+      // Filter to dots-style overlap circles: non-zero cx, larger radius than fret markers (r=3)
+      const dotsCircles = circles.filter((c) => {
+        const cx = parseFloat(c.getAttribute('cx') ?? '0');
+        const r = parseFloat(c.getAttribute('r') ?? '0');
+        return cx !== 0 && r > 4;
+      });
+      expect(dotsCircles.length).toBeGreaterThan(0);
+      // All dots-style circles should have the correct opacity
+      dotsCircles.forEach((c) => {
+        expect(c.getAttribute('opacity')).toBe(String(FL.OVERLAP_DOTS_OPACITY));
+      });
+    });
+
+    it('gradient style renders <defs> with <linearGradient> elements', () => {
+      const shapes = [makeCShape(), makeAShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'gradient',
+      });
+      const defs = container.querySelector('defs');
+      expect(defs).toBeTruthy();
+      const gradients = defs!.querySelectorAll('linearGradient');
+      expect(gradients.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('gradient style circles have fill="url(#grad-...)" for overlaps', () => {
+      const shapes = [makeCShape(), makeAShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'gradient',
+      });
+      const circles = [...container.querySelectorAll('circle')];
+      const gradientCircles = circles.filter(
+        (c) => c.getAttribute('fill')?.startsWith('url(#grad-'),
+      );
+      expect(gradientCircles.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('gradient style uses OVERLAP_GRADIENT_OPACITY', () => {
+      const shapes = [makeCShape(), makeAShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'gradient',
+      });
+      const circles = [...container.querySelectorAll('circle')];
+      const gradientCircle = circles.find(
+        (c) => c.getAttribute('fill')?.startsWith('url(#grad-'),
+      );
+      if (gradientCircle) {
+        expect(gradientCircle.getAttribute('opacity')).toBe(String(FL.OVERLAP_GRADIENT_OPACITY));
+      }
+    });
+
+    it('single shape renders same regardless of overlapStyle', () => {
+      const shapes = [makeCShape()];
+      const splitResult = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'split',
+      });
+      const dotsResult = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'dots',
+      });
+      const gradResult = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C']),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'gradient',
+      });
+      // All three should render the same number of note polygons (diamonds)
+      const splitPolygons = splitResult.container.querySelectorAll('polygon').length;
+      const dotsPolygons = dotsResult.container.querySelectorAll('polygon').length;
+      const gradPolygons = gradResult.container.querySelectorAll('polygon').length;
+      expect(splitPolygons).toBe(dotsPolygons);
+      expect(dotsPolygons).toBe(gradPolygons);
+    });
+
+    it('empty state unchanged with any overlapStyle', () => {
+      const shapes = [makeCShape()];
+      render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(),
+        labelMode: 'intervals' as LabelMode,
+        overlapStyle: 'gradient',
+      });
+      expect(screen.getByText('No shapes selected')).toBeTruthy();
+    });
+
+    it('default overlapStyle is split (no prop passed — backward compat)', () => {
+      const shapes = [makeCShape(), makeAShape()];
+      const { container } = render(FullFretboard, {
+        shapes,
+        visibleShapes: new Set<CagedShape>(['C', 'A']),
+        labelMode: 'intervals' as LabelMode,
+      });
+      // Should render paths (split style) by default
+      const paths = container.querySelectorAll('path');
+      expect(paths.length).toBeGreaterThanOrEqual(2);
     });
   });
 });

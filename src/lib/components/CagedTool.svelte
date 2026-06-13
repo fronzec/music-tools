@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NoteName, ChordQuality, ViewName, CagedShape } from '$lib/types/chord';
+  import type { NoteName, ChordQuality, ViewName, CagedShape, OverlapStyle } from '$lib/types/chord';
   import { CHROMATIC, CAGED_ORDER } from '$lib/types/chord';
   import { SvelteSet } from 'svelte/reactivity';
   import { getShapes } from '$lib/data/chords';
@@ -24,6 +24,13 @@
   let secondRoot = $state<NoteName>('G');
   let secondVisibleShapes = new SvelteSet(CAGED_ORDER);
 
+  let overlapStyle = $state<OverlapStyle>(
+    (() => {
+      const saved = localStorage.getItem('caged-overlap-style');
+      return saved === 'split' || saved === 'dots' || saved === 'gradient' ? saved : 'split';
+    })(),
+  );
+
   let shapes = $derived(getShapes(selectedRoot, selectedQuality));
 
   function toggleShape(shape: CagedShape) {
@@ -47,6 +54,11 @@
       secondVisibleShapes.clear();
       for (const s of CAGED_ORDER) secondVisibleShapes.add(s);
     }
+  });
+
+  // Persist overlap style to localStorage
+  $effect(() => {
+    localStorage.setItem('caged-overlap-style', overlapStyle);
   });
 </script>
 
@@ -233,6 +245,60 @@
           onclick={() => (legendOpen = !legendOpen)}
         >Legend</button>
       </div>
+
+      <!-- Overlap Style card (hidden in grid mode — no overlaps to render) -->
+      {#if viewMode !== 'grid'}
+        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+          <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Overlap</div>
+          <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800" role="radiogroup" aria-label="Overlap style">
+            <button
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+              class:bg-white={overlapStyle === 'split'}
+              class:dark:bg-gray-900={overlapStyle === 'split'}
+              class:text-gray-900={overlapStyle === 'split'}
+              class:dark:text-gray-100={overlapStyle === 'split'}
+              class:shadow-sm={overlapStyle === 'split'}
+              class:text-gray-500={overlapStyle !== 'split'}
+              class:dark:text-gray-400={overlapStyle !== 'split'}
+              class:hover:text-gray-700={overlapStyle !== 'split'}
+              class:dark:hover:text-gray-300={overlapStyle !== 'split'}
+              role="radio"
+              aria-checked={overlapStyle === 'split'}
+              onclick={() => (overlapStyle = 'split')}
+            >Split</button>
+            <button
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+              class:bg-white={overlapStyle === 'dots'}
+              class:dark:bg-gray-900={overlapStyle === 'dots'}
+              class:text-gray-900={overlapStyle === 'dots'}
+              class:dark:text-gray-100={overlapStyle === 'dots'}
+              class:shadow-sm={overlapStyle === 'dots'}
+              class:text-gray-500={overlapStyle !== 'dots'}
+              class:dark:text-gray-400={overlapStyle !== 'dots'}
+              class:hover:text-gray-700={overlapStyle !== 'dots'}
+              class:dark:hover:text-gray-300={overlapStyle !== 'dots'}
+              role="radio"
+              aria-checked={overlapStyle === 'dots'}
+              onclick={() => (overlapStyle = 'dots')}
+            >Dots</button>
+            <button
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+              class:bg-white={overlapStyle === 'gradient'}
+              class:dark:bg-gray-900={overlapStyle === 'gradient'}
+              class:text-gray-900={overlapStyle === 'gradient'}
+              class:dark:text-gray-100={overlapStyle === 'gradient'}
+              class:shadow-sm={overlapStyle === 'gradient'}
+              class:text-gray-500={overlapStyle !== 'gradient'}
+              class:dark:text-gray-400={overlapStyle !== 'gradient'}
+              class:hover:text-gray-700={overlapStyle !== 'gradient'}
+              class:dark:hover:text-gray-300={overlapStyle !== 'gradient'}
+              role="radio"
+              aria-checked={overlapStyle === 'gradient'}
+              onclick={() => (overlapStyle = 'gradient')}
+            >Gradient</button>
+          </div>
+        </div>
+      {/if}
     </div>
 
     <!-- Legend panel -->
@@ -270,7 +336,7 @@
 
   <!-- Content area -->
   {#if viewMode === 'full'}
-    <FullFretboard shapes={shapes} {visibleShapes} labelMode="intervals" />
+    <FullFretboard shapes={shapes} {visibleShapes} labelMode="intervals" {overlapStyle} />
   {:else if viewMode === 'dual'}
     {@const shapes1 = getShapes(selectedRoot, selectedQuality)}
     {@const shapes2 = getShapes(secondRoot, selectedQuality)}
@@ -316,7 +382,7 @@
         </div>
       </div>
     </div>
-    <FullFretboard shapes={shapes1} {visibleShapes} labelMode="intervals" />
+    <FullFretboard shapes={shapes1} {visibleShapes} labelMode="intervals" {overlapStyle} />
 
     <!-- Fretboard 2 with inline controls -->
     <div class="rounded-xl border border-gray-200 bg-white p-4 mt-6 mb-4 dark:border-gray-700 dark:bg-gray-900">
@@ -362,7 +428,7 @@
         </div>
       </div>
     </div>
-    <FullFretboard shapes={shapes2} visibleShapes={secondVisibleShapes} labelMode="intervals" />
+    <FullFretboard shapes={shapes2} visibleShapes={secondVisibleShapes} labelMode="intervals" {overlapStyle} />
   {:else}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {#each shapes as shape (shape.shape)}
