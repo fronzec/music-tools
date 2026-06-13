@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import FullFretboard from '$lib/components/FullFretboard.svelte';
 import type { ChordShape, LabelMode, CagedShape } from '$lib/types/chord';
-import { FL, SHAPE_COLORS, L } from '$lib/theory/layout';
+import { FL, SHAPE_COLORS, L, fretLineX } from '$lib/theory/layout';
 import type { DiffEntry } from '$lib/theory/fretboard';
 
 // ── Test helpers ──────────────────────────────────────────────────
@@ -605,13 +605,14 @@ describe('FullFretboard', () => {
       // The × for string 3 should be at a barre-position X (not at the nut)
       const xMarkers = [...container.querySelectorAll('text')].filter((t) => t.textContent === '×');
       expect(xMarkers.length).toBe(1);
-      // Verify it's inside a <g> with a transform (not at the old nut position)
+      // Verify it's inside a <g> with a transform positioned at right edge of fret space
       const gParent = xMarkers[0]!.closest('g')!;
       const transform = gParent.getAttribute('transform');
       expect(transform).toBeTruthy();
-      // Barre X should be different from nut X (12+6+6=24)
+      // translateX = indicatorX(3, 0) - 8 = fretLineX(4) - 12 - 8 = 198
       const translateX = transform!.match(/translate\(([^,]+)/)?.[1];
-      expect(translateX).not.toBe(String(L.LEFT_PAD + L.NUT_W + 6));
+      const expectedX = fretLineX(4) - 12 - 8;
+      expect(translateX).toBe(String(expectedX));
     });
   });
 

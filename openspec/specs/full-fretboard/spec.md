@@ -14,7 +14,7 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 | **Root Note Diamonds** | MUST render roots as diamonds; others as circles | Distinct shape per root | Overlapping roots show both colors |
 | **Fret Numbers** | MUST render numbers below 6th string | Sequential from min fret | Barre offset: first visible = base fret label |
 | **Barre Indicators** | MUST render per-shape colored barre rects and animate them when root changes via CSS transition on `<g>` wrapper | Barre at baseFret > 1, animates via CSS transition | Multiple barres visible simultaneously |
-| **Open/Muted Strings** | MUST compute and render per-(baseFret, stringIndex) groups of O/× indicators across all visible shapes; MUST remove the `isOpenPosition` guard so ALL visible shapes display indicators regardless of `baseFret`; each group MUST be positioned at its shape's base position: `baseFret=0` → near nut area (`indicatorX(0, minFret)`), `baseFret>0` → left of the barre fret line (`indicatorX(baseFret, minFret)`); multiple shapes sharing the same `baseFret` and `stringIndex` MUST stack horizontally with `INDICATOR_SP` (14px) spacing; indicator groups MUST animate alongside their shape's notes on root change via CSS `transition: transform` matching `ANIM_DURATION` and `ANIM_EASING`; MUST honor `prefers-reduced-motion: reduce` by disabling indicator transitions; indicator visual properties (O/× glyphs, `SHAPE_COLORS`, `INDICATOR_FS`, opacity) MUST remain unchanged | All five shapes at open position → indicators at nut area per shape; barre shapes → indicators left of barre line; mixed positions → separate groups per baseFret; root change → indicators slide smoothly with shapes | No visible shapes → no indicators; all-fretted string on all shapes → no indicator group; `prefers-reduced-motion` → instant snap (no transition)
+| **Open/Muted Strings** | MUST compute and render per-(baseFret, stringIndex) groups of O/× indicators across all visible shapes; MUST remove the `isOpenPosition` guard so ALL visible shapes display indicators regardless of `baseFret`; each group MUST be positioned at the right edge of the fret space via `indicatorX(baseFret, minFret) - 8`; multiple shapes sharing the same `baseFret` and `stringIndex` MUST stack horizontally with `INDICATOR_SP` (14px) spacing; indicator groups MUST animate alongside their shape's notes on root change via CSS `transition: transform` matching `ANIM_DURATION` and `ANIM_EASING`; MUST honor `prefers-reduced-motion: reduce` by disabling indicator transitions; indicator visual properties (O/× glyphs, `SHAPE_COLORS`, `INDICATOR_FS`, opacity) MUST remain unchanged | All five shapes at open position → indicators at right edge of fret space per shape; barre shapes → indicators at right edge of fret space; mixed positions → separate groups per baseFret; root change → indicators slide smoothly with shapes | No visible shapes → no indicators; all-fretted string on all shapes → no indicator group; `prefers-reduced-motion` → instant snap (no transition)
 | **Shape Visibility** | MUST accept `visibleShapes: Set<CagedShape>` | Toggle on/off adds/removes shape | — |
 | **Label Mode** | MUST support `labelMode: 'intervals' \| 'notes' \| 'both'`; labels animate alongside their parent notes via the same `<g>` transition | R, 3, 5; C, E, G; C (R) | — |
 | **Scale-to-Fit** | MUST scale via SVG viewBox to container width | Fills container | No horizontal scroll |
@@ -137,22 +137,22 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 - WHEN `FullFretboard` renders a note `<g>` element
 - THEN the inline style is `transition: transform {{ANIM_DURATION}}ms {{ANIM_EASING}}`
 
-### Scenario: All shapes at open position — per-string indicators at nut
+### Scenario: All shapes at open position — per-string indicators at right edge of fret space
 
 - GIVEN all five CAGED shapes visible with `baseFret === 0`
 - AND high E string is open (fret 0) in C, A, G, E and muted (fret null) in D
 - WHEN FullFretboard renders
-- THEN high E string shows a horizontal row at the nut: [O C-color] [O A-color] [O G-color] [O E-color] [× D-color]
+- THEN high E string shows a horizontal row at the right edge of the fret space: [O C-color] [O A-color] [O G-color] [O E-color] [× D-color]
 - AND indicators are spaced `INDICATOR_SP` (14px) apart, center-to-center
 - AND each indicator uses its shape's `SHAPE_COLORS` fill
 
-### Scenario: Barre shape shows indicators left of barre line
+### Scenario: Barre shape shows indicators at right edge of fret space
 
 - GIVEN the G shape visible with `baseFret === 3` and `barreFirst = 0, barreLast = 2`
 - AND string 5 (high E) is muted (`fret === null`)
 - WHEN FullFretboard renders
-- THEN a × indicator appears at the left of the barre fret line (fret 3)
-- AND the × is positioned at X = `indicatorX(3, minFret)` which equals `fretLineX(3) - FRET_SP/2 - 8`
+- THEN a × indicator appears at the right edge of the fret space
+- AND the × is positioned at translate X = `indicatorX(3, minFret) - 8` which equals `fretLineX(4) - 12 - 8`
 - AND the × uses G shape color
 
 ### Scenario: Mixed open and barre positions
@@ -160,8 +160,8 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 - GIVEN C shape at `baseFret=0` and A shape at `baseFret=5` both visible
 - AND string 0 (low E) is open in C shape and muted in A shape
 - WHEN FullFretboard renders
-- THEN string 0 shows an O indicator near the nut for C shape
-- AND string 0 shows a × indicator left of fret 5 barre line for A shape
+- THEN string 0 shows an O indicator at the right edge of the fret space for C shape
+- AND string 0 shows a × indicator at the right edge of the fret space (fret 5) for A shape
 - AND both indicators are in separate groups due to different `baseFret`
 
 ### Scenario: Multiple shapes at same barre baseFret
@@ -171,7 +171,7 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 - WHEN FullFretboard renders
 - THEN a single group at `baseFret=3, stringIndex=1` contains two × indicators stacked horizontally
 - AND the first × is C-color, second × is A-color
-- AND the group is positioned left of the barre line at fret 3
+- AND the group is positioned at the right edge of the fret space
 
 ### Scenario: No visible shapes — no indicators
 
@@ -189,7 +189,7 @@ Multi-shape SVG fretboard overlay rendering 2–5 CAGED shapes on a single neck 
 
 - GIVEN a C shape at `baseFret=3` with a muted string 5 indicator group
 - WHEN root changes from C to A, moving the shape to `baseFret=5`
-- THEN the indicator group translates to the new barre position (left of fret 5)
+- THEN the indicator group translates to the right edge of the fret space at the new base fret
 - AND the transition completes smoothly over `ANIM_DURATION` (0.3s) with `ANIM_EASING`
 
 ### Scenario: prefers-reduced-motion disables indicator animation

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import Fretboard from '$lib/components/Fretboard.svelte';
 import type { ChordShape, LabelMode } from '$lib/types/chord';
-import { L } from '$lib/theory/layout';
+import { L, fretLineX } from '$lib/theory/layout';
 
 // ── Test helpers ──────────────────────────────────────────────────
 
@@ -493,7 +493,7 @@ describe('Fretboard', () => {
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const texts = [...container.querySelectorAll('text')];
       const xMarker = texts.find((t) => t.textContent === '×')!;
-      const barreX = L.LEFT_PAD + L.NUT_W - L.FRET_SP / 2 - 8 - 8; // shifted 8px left
+      const barreX = fretLineX(1) - 12 - 8; // indicatorX(3,3) - 8 = 68-12-8 = 48
       expect(xMarker.getAttribute('x')).toBe(String(barreX));
     });
   });
