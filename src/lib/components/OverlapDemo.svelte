@@ -28,8 +28,8 @@
     <div class="text-center">
       <p class="mb-2 text-xs font-medium text-gray-500">2. Merged dots</p>
       <svg viewBox="0 0 48 48" class="mx-auto w-20 h-20">
-        <circle cx={cx + 2} cy={cy - 1} r="12" fill={color1} opacity="0.75" />
-        <circle cx={cx - 2} cy={cy + 1} r="12" fill={color2} opacity="0.75" />
+        <circle cx={cx - 4} cy={cy} r="12" fill={color1} opacity="0.75" />
+        <circle cx={cx + 4} cy={cy} r="12" fill={color2} opacity="0.75" />
         <text x={cx} y={cy + 4} text-anchor="middle" font-size="9" fill="white" font-weight="bold">{noteName}</text>
       </svg>
     </div>
