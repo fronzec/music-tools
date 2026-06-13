@@ -496,7 +496,7 @@ describe('FullFretboard', () => {
       xMarkers.forEach((x) => {
         const rect = x.previousElementSibling as Element;
         expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
-        expect(rect.getAttribute('opacity')).toBe('0.4');
+        expect(rect.getAttribute('opacity')).toBe('0.6');
       });
     });
 

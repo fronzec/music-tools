@@ -407,7 +407,7 @@
     >
       <rect x="-9" y="-8" width="18" height="16" rx="5" class="indicator-badge"
             fill={indicator.color}
-            opacity={indicator.type === 'muted' ? 0.4 : 0.85} />
+            opacity={FL.INDICATOR_OPACITY} />
       <text x="0" y="3" text-anchor="middle"
             font-size="11" fill="white"
             font-weight="bold">
