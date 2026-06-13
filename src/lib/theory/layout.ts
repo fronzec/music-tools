@@ -108,10 +108,10 @@ export function viewBoxH(): number {
 export function indicatorX(baseFret: number, minFret: number): number {
   // Open position: center badge on the nut line
   if (baseFret === 0) return fretLineX(0) + 8;
-  // Fretboard.svelte shifted coords: barre line always at x=12
-  if (minFret === baseFret) return fretLineX(1) - 33;
-  // FullFretboard.svelte absolute coords: badge left edge at barre line
-  return fretLineX(baseFret) + 17;
+  // Fretboard.svelte shifted coords: badge right of barre line
+  if (minFret === baseFret) return fretLineX(0) + 10;
+  // FullFretboard.svelte absolute coords: badge in same fret space as barre note
+  return fretLineX(baseFret) - 5;
 }
 
 /**
