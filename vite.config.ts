@@ -3,8 +3,7 @@ import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { resolve } from 'path';
 
-export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/music-tools/' : '/',
+export default defineConfig({
   plugins: [svelte()],
   resolve: {
     alias: {
@@ -17,4 +16,4 @@ export default defineConfig(({ mode }) => ({
     include: ['tests/**/*.{test,spec}.ts'],
     globals: true,
   },
-}));
+});
