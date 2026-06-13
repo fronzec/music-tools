@@ -482,7 +482,7 @@ describe('Fretboard', () => {
       expect(rect.getAttribute('fill')).toBe('#16A34A'); // G color
     });
 
-    it('barre-position indicator X uses barre-area offset', () => {
+    it('barre-position indicator X uses right-edge fret space offset', () => {
       const shape = makeCShape({
         shape: 'G',
         baseFret: 3,
@@ -493,8 +493,8 @@ describe('Fretboard', () => {
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const texts = [...container.querySelectorAll('text')];
       const xMarker = texts.find((t) => t.textContent === '×')!;
-      const barreX = L.LEFT_PAD + L.NUT_W - L.FRET_SP / 2 - 8 - 8; // shifted 8px left
-      expect(xMarker.getAttribute('x')).toBe(String(barreX));
+      // fretLineX(1) - 12 = 18 + 50 - 12 = 56 (right edge of first visible fret space)
+      expect(xMarker.getAttribute('x')).toBe('56');
     });
   });
 

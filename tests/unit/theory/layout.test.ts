@@ -106,18 +106,19 @@ describe('viewBoxH', () => {
 });
 
 describe('indicatorX', () => {
-  it('returns LEFT_PAD + NUT_W + 6 for baseFret === 0 (nut area)', () => {
-    expect(indicatorX(0, 0)).toBe(L.LEFT_PAD + L.NUT_W + 6);
+  it('returns fretLineX(1) - 12 for baseFret=0 (right edge of first fret space)', () => {
+    // fretLineX(1) = 18+50 = 68; 68-12 = 56
+    expect(indicatorX(0, 0)).toBe(fretLineX(1) - 12);
   });
 
-  it('returns fretLineX(3) - FRET_SP/2 - 8 for baseFret=3 minFret=0', () => {
-    // fretLineX(3) = 12+6+150 = 168; FRET_SP/2 = 25; 168-25-8 = 135
-    expect(indicatorX(3, 0)).toBe(fretLineX(3) - L.FRET_SP / 2 - 8);
+  it('returns fretLineX(4) - 12 for baseFret=3 minFret=0', () => {
+    // fretLineX(4) = 18+200 = 218; 218-12 = 206
+    expect(indicatorX(3, 0)).toBe(fretLineX(4) - 12);
   });
 
   it('handles non-zero minFret (barre offset)', () => {
-    // minFret=2: fretLineX(5-2) = fretLineX(3) = 168; 168-25-8=135
-    expect(indicatorX(5, 2)).toBe(fretLineX(3) - L.FRET_SP / 2 - 8);
+    // minFret=2, baseFret=5: fretLineX(5+1-2) = fretLineX(4) = 218; 218-12=206
+    expect(indicatorX(5, 2)).toBe(fretLineX(4) - 12);
   });
 });
 

@@ -94,12 +94,12 @@ export function viewBoxH(): number {
 }
 
 /**
- * Returns the X coordinate for an indicator group at a given baseFret.
- * baseFret=0 → near nut; baseFret>0 → left of barre fret line.
+ * Returns the X coordinate for an O/× indicator badge at a given baseFret.
+ * Always positions at the right edge of the fret space (just before the next fret line).
+ * Unified formula: works for both open (baseFret=0) and barre (baseFret>0) positions.
  */
 export function indicatorX(baseFret: number, minFret: number): number {
-  if (baseFret === 0) return L.LEFT_PAD + L.NUT_W + 6;
-  return fretLineX(baseFret - minFret) - L.FRET_SP / 2 - 8;
+  return fretLineX(baseFret + 1 - minFret) - 12;
 }
 
 /**
