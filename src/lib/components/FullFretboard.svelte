@@ -405,7 +405,7 @@
       style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
       transform="translate({indicator.cx}, {indicator.cy})"
     >
-      <rect x="-9" y="-8" width="18" height="16" rx="5" class="indicator-badge"
+      <rect x="-7" y="-8" width="14" height="12" rx="5" class="indicator-badge"
             fill={indicator.color}
             opacity={FL.INDICATOR_OPACITY} />
       <text x="0" y="3" text-anchor="middle"

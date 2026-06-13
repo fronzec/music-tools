@@ -36,7 +36,7 @@ export const FL = {
   /** Opacity for barre indicator rectangles. */
   BARRE_OPACITY: 0.35,
   /** Unified opacity for O (open) and × (muted) indicator badges. */
-  INDICATOR_OPACITY: 0.6,
+  INDICATOR_OPACITY: 0.45,
   /** CSS transition duration for animated shape changes. */
   ANIM_DURATION: '0.3s',
   /** CSS transition timing function for animated shape changes. */
@@ -44,7 +44,7 @@ export const FL = {
   /** Center-to-center horizontal spacing between per-shape O/× indicators. */
   INDICATOR_SP: 14,
   /** Font size for O/× indicator text. */
-  INDICATOR_FS: 9,
+  INDICATOR_FS: 8,
 } as const;
 
 /** Per-shape colors for the CAGED full-neck overlay. */

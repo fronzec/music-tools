@@ -460,7 +460,7 @@ describe('Fretboard', () => {
         expect(rect.classList.contains('indicator-badge')).toBe(true);
         expect(rect.getAttribute('fill')).toBe('#2563EB');
         // × badge has reduced opacity for visual distinction
-        expect(rect.getAttribute('opacity')).toBe('0.6');
+        expect(rect.getAttribute('opacity')).toBe('0.45');
       });
     });
 
