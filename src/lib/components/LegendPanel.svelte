@@ -40,12 +40,12 @@
           <span class="text-xs text-gray-700 dark:text-gray-300">Chord tone</span>
         </div>
         <div class="flex items-center gap-1.5 py-0.5">
-          <span class="inline-flex items-center justify-center w-4 h-4 rounded text-[9px] font-bold text-white bg-blue-600 shrink-0">O</span>
-          <span class="text-xs text-gray-700 dark:text-gray-300">Open</span>
+          <span class="inline-flex items-center justify-center w-4 h-4 rounded text-[9px] font-bold bg-blue-600/40 shrink-0" style="color: #22C55E">O</span>
+          <span class="text-xs text-gray-700 dark:text-gray-300">Open string</span>
         </div>
         <div class="flex items-center gap-1.5 py-0.5">
-          <span class="inline-flex items-center justify-center w-4 h-4 rounded text-[9px] font-bold text-white bg-blue-600/40 shrink-0">×</span>
-          <span class="text-xs text-gray-700 dark:text-gray-300">Muted</span>
+          <span class="inline-flex items-center justify-center w-4 h-4 rounded text-[9px] font-bold bg-blue-600/40 shrink-0" style="color: #DC2626">×</span>
+          <span class="text-xs text-gray-700 dark:text-gray-300">Muted string</span>
         </div>
       </div>
 

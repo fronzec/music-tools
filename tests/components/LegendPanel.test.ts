@@ -35,8 +35,8 @@ describe('LegendPanel', () => {
 
     it('shows open and muted string indicators', () => {
       renderPanel();
-      expect(screen.getByText('Open')).toBeTruthy();
-      expect(screen.getByText('Muted')).toBeTruthy();
+      expect(screen.getByText('Open string')).toBeTruthy();
+      expect(screen.getByText('Muted string')).toBeTruthy();
     });
   });
 
