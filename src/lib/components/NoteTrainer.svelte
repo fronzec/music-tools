@@ -67,17 +67,27 @@
     return lines;
   }
 
-  function getUnisonPositions(): Array<{ x: number; y: number }> {
+  function getUnisonLines(): Array<{ x1: number; y1: number; x2: number; y2: number }> {
     if (!selectedNote) return [];
-    const positions: Array<{ x: number; y: number }> = [];
-    for (let s = 0; s < 6; s++) {
+    const lines: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+    // Iterate from thinner string (s+1) at fret f; same note on thicker string (s) is at f+offset
+    // Standard tuning: adjacent strings differ by 5 semitones (G→B by 4)
+    for (let s = 0; s < 5; s++) {
+      const offset = s === 3 ? 4 : 5; // G→B interval is 4 semitones, all others 5
       for (let f = 0; f <= 12; f++) {
-        if (isMatch(s, f)) {
-          positions.push({ x: labelX(f), y: stringY(s) });
-        }
+        if (!isMatch(s + 1, f)) continue; // note on thinner string at fret f
+        const f2 = f + offset;            // same note on thicker string at fret f+offset
+        if (f2 > 12) continue;
+        if (!isMatch(s, f2)) continue;
+        lines.push({
+          x1: labelX(f),
+          y1: stringY(s + 1),
+          x2: labelX(f2),
+          y2: stringY(s),
+        });
       }
     }
-    return positions;
+    return lines;
   }
 
   function toggleNote(note: NoteName) {
@@ -110,7 +120,7 @@
       streak++;
       if (streak > bestStreak) bestStreak = streak;
       lastAnswer = 'correct';
-      setTimeout(() => generateQuestion(), 1000);
+      setTimeout(() => generateQuestion(), 1500);
     } else {
       streak = 0;
       lastAnswer = 'incorrect';
@@ -326,6 +336,33 @@
         {/if}
       {/each}
 
+      <!-- String name labels (hidden in quiz medium/hard — tuning is part of what you must know) -->
+      {#if mode !== 'quiz' || difficulty === 'easy'}
+      {#each strings as s (s)}
+        <text
+          x={L.LEFT_PAD - 8}
+          y={stringY(s)}
+          dy="3"
+          text-anchor="middle"
+          font-size="8"
+          fill="#9CA3AF"
+          class="fill-gray-400 select-none pointer-events-none"
+        >{(['E','A','D','G','B','e'])[s]}</text>
+      {/each}
+      {/if}
+
+      <!-- Fret number labels -->
+      {#each frets.slice(1) as f (f)}
+        <text
+          x={labelX(f)}
+          y={stringY(0) + 14}
+          text-anchor="middle"
+          font-size="7"
+          fill="#9CA3AF"
+          class="fill-gray-400 select-none pointer-events-none"
+        >{f}</text>
+      {/each}
+
       <!-- Highlight rectangles for matching notes -->
       {#each strings as s (s)}
         {#each frets as f (f)}
@@ -359,10 +396,13 @@
         {/each}
       {/if}
 
-      <!-- Unison markers -->
-      {#if mode === 'explore' && showUnisons}
-        {#each getUnisonPositions() as pos (`${pos.x}-${pos.y}`)}
-          <circle cx={pos.x} cy={pos.y} r="6" fill="none" stroke="#16A34A" stroke-width="1.5" opacity="0.7" />
+      <!-- Unison lines -->
+      {#if mode === 'explore' && showUnisons && selectedNote}
+        {#each getUnisonLines() as line (`${line.x1}-${line.y1}-${line.x2}-${line.y2}`)}
+          <line
+            x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
+            stroke="#16A34A" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.65"
+          />
         {/each}
       {/if}
 
@@ -372,21 +412,24 @@
           {@const cx = labelX(f)}
           {@const cy = stringY(s)}
           {@const note = noteAt(s, f)}
-          {@const matched = isMatch(s, f)}
-          <text
-            x={cx}
-            y={cy}
-            dy="3"
-            text-anchor="middle"
-            font-size={matched ? '8' : '7'}
-            fill={matched ? '#1E40AF' : '#374151'}
-            font-weight={matched ? 'bold' : 'normal'}
-            class="select-none pointer-events-none"
-            class:fill-blue-800={matched}
-            class:dark:fill-blue-300={matched}
-            class:fill-gray-700={!matched}
-            class:dark:fill-gray-300={!matched}
-          >{note}</text>
+          {@const isReveal = mode === 'quiz' && lastAnswer !== null && isQuizHighlight(s, f)}
+          {@const matched = isMatch(s, f) || isReveal}
+          {#if mode !== 'quiz' || isReveal}
+            <text
+              x={cx}
+              y={cy}
+              dy="3"
+              text-anchor="middle"
+              font-size={matched ? '8' : '7'}
+              fill={matched ? '#1E40AF' : '#374151'}
+              font-weight={matched ? 'bold' : 'normal'}
+              class="select-none pointer-events-none"
+              class:fill-blue-800={matched}
+              class:dark:fill-blue-300={matched}
+              class:fill-gray-700={!matched}
+              class:dark:fill-gray-300={!matched}
+            >{note}</text>
+          {/if}
         {/each}
       {/each}
     </svg>

@@ -374,7 +374,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['E']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg'));
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg') && !r.classList.contains('fretboard-bg'));
       expect(rects.length).toBe(1);
     });
 
@@ -385,7 +385,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['C']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge') && !r.classList.contains('fret-marker-bg'));
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge') && !r.classList.contains('fret-marker-bg') && !r.classList.contains('fretboard-bg'));
       expect(rects.length).toBe(0);
     });
 
@@ -398,7 +398,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['E']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg'));
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg') && !r.classList.contains('fretboard-bg'));
       const rect = rects[0]!;
       expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.E);
       expect(rect.getAttribute('opacity')).toBe(String(FL.BARRE_OPACITY));
@@ -477,7 +477,7 @@ describe('FullFretboard', () => {
       expect(mutedMarkers.length).toBe(1);
     });
 
-    it('uses shape color for O/× indicators (single shape)', () => {
+    it('uses shape color for badge rect, semantic color for O/× text', () => {
       const shapes = [makeCShape()];
       const { container } = render(FullFretboard, {
         shapes,
@@ -488,16 +488,18 @@ describe('FullFretboard', () => {
       const oMarkers = texts.filter((t) => t.textContent === 'O');
       const xMarkers = texts.filter((t) => t.textContent === '×');
 
-      // O uses C shape color (on the badge rect)
+      // Badge rect keeps shape color
       oMarkers.forEach((o) => {
         const rect = o.previousElementSibling as Element;
         expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
       });
-      // × uses C shape color (not old gray), reduced opacity on the badge
+      // O text is green, × text is red
+      oMarkers.forEach((o) => expect(o.getAttribute('fill')).toBe('#22C55E'));
       xMarkers.forEach((x) => {
         const rect = x.previousElementSibling as Element;
         expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
         expect(rect.getAttribute('opacity')).toBe('0.45');
+        expect(x.getAttribute('fill')).toBe('#DC2626');
       });
     });
 
@@ -517,16 +519,21 @@ describe('FullFretboard', () => {
       expect(total).toBeGreaterThan(3);
       expect(total).toBeLessThan(30);
 
-      // Every O/× badge uses a known shape color, never generic gray
+      // Badge rects use shape colors, text uses semantic colors
       const shapeColors = Object.values(SHAPE_COLORS);
-      [...oMarkers, ...xMarkers].forEach((ind) => {
+      oMarkers.forEach((ind) => {
         const rect = ind.previousElementSibling as Element;
-        const fill = rect.getAttribute('fill')!;
-        expect(shapeColors).toContain(fill);
+        expect(shapeColors).toContain(rect.getAttribute('fill'));
+        expect(ind.getAttribute('fill')).toBe('#22C55E');
+      });
+      xMarkers.forEach((ind) => {
+        const rect = ind.previousElementSibling as Element;
+        expect(shapeColors).toContain(rect.getAttribute('fill'));
+        expect(ind.getAttribute('fill')).toBe('#DC2626');
       });
     });
 
-    it('O/× indicators use shape colors (multi-shape)', () => {
+    it('O/× text uses semantic colors regardless of shape (multi-shape)', () => {
       const shapes = allShapes();
       const { container } = render(FullFretboard, {
         shapes,
@@ -537,13 +544,9 @@ describe('FullFretboard', () => {
       const oMarkers = texts.filter((t) => t.textContent === 'O');
       const xMarkers = texts.filter((t) => t.textContent === '×');
 
-      // Every O/× badge uses a known shape color, never generic gray
-      const shapeColors = Object.values(SHAPE_COLORS);
-      [...oMarkers, ...xMarkers].forEach((ind) => {
-        const rect = ind.previousElementSibling as Element;
-        const fill = rect.getAttribute('fill')!;
-        expect(shapeColors).toContain(fill);
-      });
+      // O text always green, × text always red
+      oMarkers.forEach((ind) => expect(ind.getAttribute('fill')).toBe('#22C55E'));
+      xMarkers.forEach((ind) => expect(ind.getAttribute('fill')).toBe('#DC2626'));
 
       // Open-position shapes (C, A, G) should have at least some O indicators
       expect(oMarkers.length).toBeGreaterThan(0);
@@ -579,6 +582,7 @@ describe('FullFretboard', () => {
       expect(xMarkers.length).toBe(1);
       const rect = xMarkers[0]!.previousElementSibling as Element;
       expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.G);
+      expect(xMarkers[0]!.getAttribute('fill')).toBe('#DC2626');
     });
 
     it('indicators are grouped by (baseFret, stringIndex)', () => {
@@ -672,7 +676,7 @@ describe('FullFretboard', () => {
       const viewBox = svg.getAttribute('viewBox');
       expect(viewBox).toBeTruthy();
       const parts = viewBox!.split(' ').map(Number);
-      expect(parts[0]).toBe(0);
+      expect(parts[0]).toBe(-24); // left extension covers open-string notes
       expect(parts[1]).toBe(0);
       expect(parts[2]).toBeGreaterThan(0);
       expect(parts[3]).toBeGreaterThan(0);
@@ -688,7 +692,7 @@ describe('FullFretboard', () => {
       });
       const svg = container.querySelector('svg')!;
       const vbW = Number(svg.getAttribute('viewBox')!.split(' ')[2]);
-      expect(vbW).toBe(400);
+      expect(vbW).toBe(424); // width prop 400 + 24px left extension
     });
   });
 
