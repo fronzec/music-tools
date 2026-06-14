@@ -105,8 +105,8 @@
       y1={stringY(0)}
       x2={L.LEFT_PAD}
       y2={stringY(5)}
-      stroke="#374151"
-      class="stroke-gray-700 dark:stroke-gray-300"
+      stroke="#1F2937"
+      class="stroke-gray-800 dark:stroke-gray-400"
       stroke-width="4"
     />
   {:else}
@@ -247,7 +247,7 @@
               text-anchor="middle"
               font-size={L.LABEL_FS}
               fill="#374151"
-              class="fill-gray-700 dark:fill-gray-300"
+              class="fill-gray-700 dark:fill-gray-200"
               font-weight="bold"
             >{label}</text>
           </g>
