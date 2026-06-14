@@ -40,9 +40,20 @@ describe('SignalLab', () => {
     connect: ReturnType<typeof vi.fn>;
     disconnect: ReturnType<typeof vi.fn>;
   };
+  type DelayMock = {
+    delayTime: { value: number; setTargetAtTime: ReturnType<typeof vi.fn> };
+    connect: ReturnType<typeof vi.fn>;
+    disconnect: ReturnType<typeof vi.fn>;
+  };
   let mockGain: GainMock;
   let mockTremoloGain: GainMock;
   let mockLfoDepth: GainMock;
+  // Delay sub-graph nodes (dry/wet split + feedback loop).
+  let mockFeedbackGain: GainMock;
+  let mockDelayInput: GainMock;
+  let mockDelayOutput: GainMock;
+  let mockWetGain: GainMock;
+  let mockDelay: DelayMock;
   let mockAnalyser: {
     fftSize: number;
     frequencyBinCount: number;
@@ -56,6 +67,7 @@ describe('SignalLab', () => {
     createAnalyser: ReturnType<typeof vi.fn>;
     createWaveShaper: ReturnType<typeof vi.fn>;
     createBiquadFilter: ReturnType<typeof vi.fn>;
+    createDelay: ReturnType<typeof vi.fn>;
     destination: object;
     currentTime: number;
     close: ReturnType<typeof vi.fn>;
@@ -87,16 +99,34 @@ describe('SignalLab', () => {
   }
 
   beforeEach(() => {
-    // Creation order in start(): tone osc, master gain, …, LFO, tremolo gain,
-    // depth gain. Hand each create() call the next distinct mock so the tests
-    // can assert on the tremolo nodes independently of the tone/master ones.
+    // Creation order in start() drives the index arrays below. Oscillators:
+    // tone osc, then tremolo LFO. Gains: master, tremolo gain, LFO depth, then
+    // the delay sub-graph (feedback, dry/wet input, output, wet). Handing each
+    // create() the next distinct mock lets tests assert on a specific node.
     mockOscillator = makeOscillator();
     mockLfo = makeOscillator();
     mockGain = makeGain();
     mockTremoloGain = makeGain();
     mockLfoDepth = makeGain();
+    mockFeedbackGain = makeGain();
+    mockDelayInput = makeGain();
+    mockDelayOutput = makeGain();
+    mockWetGain = makeGain();
+    mockDelay = {
+      delayTime: { value: 0, setTargetAtTime: vi.fn() },
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+    };
     const oscillators = [mockOscillator, mockLfo];
-    const gains = [mockGain, mockTremoloGain, mockLfoDepth];
+    const gains = [
+      mockGain,
+      mockTremoloGain,
+      mockLfoDepth,
+      mockFeedbackGain,
+      mockDelayInput,
+      mockDelayOutput,
+      mockWetGain,
+    ];
     let oscIdx = 0;
     let gainIdx = 0;
     mockWaveShaper = { oversample: '', curve: null, connect: vi.fn(), disconnect: vi.fn() };
@@ -120,6 +150,7 @@ describe('SignalLab', () => {
       createAnalyser: vi.fn().mockReturnValue(mockAnalyser),
       createWaveShaper: vi.fn().mockReturnValue(mockWaveShaper),
       createBiquadFilter: vi.fn().mockReturnValue(mockBiquad),
+      createDelay: vi.fn().mockReturnValue(mockDelay),
       destination: { _dest: true },
       currentTime: 0,
       close: vi.fn(),
@@ -383,6 +414,67 @@ describe('SignalLab', () => {
       );
       expect(mockLfoDepth.gain.setTargetAtTime).toHaveBeenCalledWith(
         0.8 / 2,
+        expect.any(Number),
+        expect.any(Number),
+      );
+    });
+  });
+
+  describe('delay effect', () => {
+    it('is off (bypassed) by default', () => {
+      renderTool();
+      expect(
+        effectGroup('Delay').getByRole('radio', { name: 'Off' }).getAttribute('aria-checked'),
+      ).toBe('true');
+    });
+
+    it('builds the delay sub-graph (dry/wet split + feedback loop) on play', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      expect(mockCtx.createDelay).toHaveBeenCalled();
+      // Dry path: input → output. Wet path: input → delay → wet → output.
+      expect(mockDelayInput.connect).toHaveBeenCalledWith(mockDelayOutput);
+      expect(mockDelayInput.connect).toHaveBeenCalledWith(mockDelay);
+      expect(mockDelay.connect).toHaveBeenCalledWith(mockWetGain);
+      expect(mockWetGain.connect).toHaveBeenCalledWith(mockDelayOutput);
+      // Feedback loop: delay → feedback → delay.
+      expect(mockDelay.connect).toHaveBeenCalledWith(mockFeedbackGain);
+      expect(mockFeedbackGain.connect).toHaveBeenCalledWith(mockDelay);
+    });
+
+    it('routes the chain through the delay input/output when turned on', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.click(effectGroup('Delay').getByRole('radio', { name: 'On' }));
+      // With other effects off and delay on: oscillator → delayInput, delayOutput → analyser.
+      expect(mockOscillator.connect).toHaveBeenCalledWith(mockDelayInput);
+      expect(mockDelayOutput.connect).toHaveBeenCalledWith(mockAnalyser);
+    });
+
+    it('updates time, feedback, and mix live', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.input(screen.getByRole('slider', { name: 'Delay time' }), {
+        target: { value: '0.4' },
+      });
+      await fireEvent.input(screen.getByRole('slider', { name: 'Delay feedback' }), {
+        target: { value: '0.6' },
+      });
+      await fireEvent.input(screen.getByRole('slider', { name: 'Delay mix' }), {
+        target: { value: '0.7' },
+      });
+      expect(mockDelay.delayTime.setTargetAtTime).toHaveBeenCalledWith(
+        0.4,
+        expect.any(Number),
+        expect.any(Number),
+      );
+      expect(mockFeedbackGain.gain.setTargetAtTime).toHaveBeenCalledWith(
+        0.6,
+        expect.any(Number),
+        expect.any(Number),
+      );
+      expect(mockWetGain.gain.setTargetAtTime).toHaveBeenCalledWith(
+        0.7,
         expect.any(Number),
         expect.any(Number),
       );
