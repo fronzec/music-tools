@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/svelte';
+import { render, screen, fireEvent, within } from '@testing-library/svelte';
 import SignalLab from '$lib/components/SignalLab.svelte';
 import type { ViewName } from '$lib/types/chord';
 
@@ -16,6 +16,14 @@ describe('SignalLab', () => {
     oversample: string;
     curve: Float32Array | null;
     connect: ReturnType<typeof vi.fn>;
+    disconnect: ReturnType<typeof vi.fn>;
+  };
+  let mockBiquad: {
+    type: string;
+    frequency: { value: number; setTargetAtTime: ReturnType<typeof vi.fn> };
+    Q: { value: number; setTargetAtTime: ReturnType<typeof vi.fn> };
+    connect: ReturnType<typeof vi.fn>;
+    disconnect: ReturnType<typeof vi.fn>;
   };
   let mockGain: {
     gain: {
@@ -39,6 +47,7 @@ describe('SignalLab', () => {
     createGain: ReturnType<typeof vi.fn>;
     createAnalyser: ReturnType<typeof vi.fn>;
     createWaveShaper: ReturnType<typeof vi.fn>;
+    createBiquadFilter: ReturnType<typeof vi.fn>;
     destination: object;
     currentTime: number;
     close: ReturnType<typeof vi.fn>;
@@ -53,7 +62,14 @@ describe('SignalLab', () => {
       start: vi.fn(),
       stop: vi.fn(),
     };
-    mockWaveShaper = { oversample: '', curve: null, connect: vi.fn() };
+    mockWaveShaper = { oversample: '', curve: null, connect: vi.fn(), disconnect: vi.fn() };
+    mockBiquad = {
+      type: '',
+      frequency: { value: 0, setTargetAtTime: vi.fn() },
+      Q: { value: 0, setTargetAtTime: vi.fn() },
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+    };
     mockGain = {
       gain: {
         value: 0,
@@ -76,6 +92,7 @@ describe('SignalLab', () => {
       createGain: vi.fn().mockReturnValue(mockGain),
       createAnalyser: vi.fn().mockReturnValue(mockAnalyser),
       createWaveShaper: vi.fn().mockReturnValue(mockWaveShaper),
+      createBiquadFilter: vi.fn().mockReturnValue(mockBiquad),
       destination: { _dest: true },
       currentTime: 0,
       close: vi.fn(),
@@ -194,10 +211,16 @@ describe('SignalLab', () => {
     });
   });
 
+  function effectGroup(name: string) {
+    return within(screen.getByRole('radiogroup', { name }));
+  }
+
   describe('distortion effect', () => {
     it('is off (bypassed) by default', () => {
       renderTool();
-      expect(screen.getByRole('radio', { name: 'Off' }).getAttribute('aria-checked')).toBe('true');
+      expect(
+        effectGroup('Distortion').getByRole('radio', { name: 'Off' }).getAttribute('aria-checked'),
+      ).toBe('true');
     });
 
     it('creates a waveshaper with a 4x-oversampled distortion curve on play', async () => {
@@ -211,7 +234,7 @@ describe('SignalLab', () => {
     it('routes the oscillator through the waveshaper when turned on', async () => {
       renderTool();
       await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
-      await fireEvent.click(screen.getByRole('radio', { name: 'On' }));
+      await fireEvent.click(effectGroup('Distortion').getByRole('radio', { name: 'On' }));
       expect(mockOscillator.disconnect).toHaveBeenCalled();
       expect(mockOscillator.connect).toHaveBeenCalledWith(mockWaveShaper);
     });
@@ -225,6 +248,54 @@ describe('SignalLab', () => {
       });
       expect(mockWaveShaper.curve).toBeInstanceOf(Float32Array);
       expect(mockWaveShaper.curve).not.toBe(before);
+    });
+  });
+
+  describe('low-pass filter effect', () => {
+    it('is off (bypassed) by default', () => {
+      renderTool();
+      expect(
+        effectGroup('Low-pass filter')
+          .getByRole('radio', { name: 'Off' })
+          .getAttribute('aria-checked'),
+      ).toBe('true');
+    });
+
+    it('creates a lowpass biquad on play', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      expect(mockCtx.createBiquadFilter).toHaveBeenCalled();
+      expect(mockBiquad.type).toBe('lowpass');
+    });
+
+    it('routes the oscillator through the filter when turned on', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.click(effectGroup('Low-pass filter').getByRole('radio', { name: 'On' }));
+      // With distortion off and filter on: oscillator → biquad → analyser.
+      expect(mockOscillator.connect).toHaveBeenCalledWith(mockBiquad);
+      expect(mockBiquad.connect).toHaveBeenCalledWith(mockAnalyser);
+    });
+
+    it('updates cutoff and resonance live', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.input(screen.getByRole('slider', { name: 'Filter cutoff' }), {
+        target: { value: '500' },
+      });
+      await fireEvent.input(screen.getByRole('slider', { name: 'Filter resonance' }), {
+        target: { value: '5' },
+      });
+      expect(mockBiquad.frequency.setTargetAtTime).toHaveBeenCalledWith(
+        500,
+        expect.any(Number),
+        expect.any(Number),
+      );
+      expect(mockBiquad.Q.setTargetAtTime).toHaveBeenCalledWith(
+        5,
+        expect.any(Number),
+        expect.any(Number),
+      );
     });
   });
 
