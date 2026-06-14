@@ -23,7 +23,17 @@
     { name: 'E4', note: 'E', freq: 329.63, num: 1, label: 'High E' },
   ];
 
-  const WAVE_TYPES: OscillatorType[] = ['sine', 'triangle', 'sawtooth', 'square'];
+  // Only the clean waveforms — sine (pure, best for tuning by ear) and triangle
+  // (soft). Sawtooth/square are harsh raw synth tones that don't help tuning.
+  const WAVE_TYPES: OscillatorType[] = ['sine', 'triangle'];
+
+  // Cap output gain well below 0 dBFS to protect hearing and avoid harsh
+  // clipping on square/sawtooth waves. The slider reads 0–100% of this ceiling.
+  const MAX_GAIN = 0.5;
+
+  // Short gain ramps avoid the audible click that an abrupt start/stop produces.
+  const ATTACK = 0.015; // seconds — fade in
+  const RELEASE = 0.03; // seconds — fade out
 
   function play(freq: number, stringIdx: number) {
     if (!audioCtx) audioCtx = new AudioContext();
@@ -34,7 +44,10 @@
 
     oscillator.type = waveType;
     oscillator.frequency.value = freq;
-    gainNode.gain.value = volume;
+
+    const now = audioCtx.currentTime;
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(volume, now + ATTACK);
 
     oscillator.connect(gainNode).connect(audioCtx.destination);
     oscillator.start();
@@ -42,12 +55,34 @@
   }
 
   function stop() {
-    if (oscillator) {
-      try { oscillator.stop(); } catch { /* already stopped */ }
+    if (oscillator && gainNode && audioCtx) {
+      const now = audioCtx.currentTime;
+      try {
+        gainNode.gain.cancelScheduledValues(now);
+        gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+        gainNode.gain.linearRampToValueAtTime(0, now + RELEASE);
+        oscillator.stop(now + RELEASE);
+      } catch {
+        /* already stopped */
+      }
     }
     oscillator = null;
+    gainNode = null;
     activeString = null;
   }
+
+  // Live updates: reflect control changes on the currently playing tone.
+  $effect(() => {
+    const v = volume;
+    if (gainNode && audioCtx) {
+      gainNode.gain.setTargetAtTime(v, audioCtx.currentTime, 0.02);
+    }
+  });
+
+  $effect(() => {
+    const t = waveType;
+    if (oscillator) oscillator.type = t;
+  });
 
   function toggle(freq: number, stringIdx: number) {
     if (activeString === stringIdx) {
@@ -131,13 +166,15 @@
           id="volume-slider"
           type="range"
           min="0"
-          max="1"
+          max={MAX_GAIN}
           step="0.01"
           bind:value={volume}
           class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 dark:bg-gray-700"
           aria-label="Volume"
         />
-        <div class="mt-1 text-xs text-gray-400 dark:text-gray-500">{Math.round(volume * 100)}%</div>
+        <div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+          {Math.round((volume / MAX_GAIN) * 100)}%
+        </div>
       </div>
 
       <!-- Wave Type -->

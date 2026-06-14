@@ -12,13 +12,20 @@ describe('ToneGenerator', () => {
     stop: ReturnType<typeof vi.fn>;
   };
   let mockGain: {
-    gain: { value: number };
+    gain: {
+      value: number;
+      setValueAtTime: ReturnType<typeof vi.fn>;
+      linearRampToValueAtTime: ReturnType<typeof vi.fn>;
+      setTargetAtTime: ReturnType<typeof vi.fn>;
+      cancelScheduledValues: ReturnType<typeof vi.fn>;
+    };
     connect: ReturnType<typeof vi.fn>;
   };
   let mockCtx: {
     createOscillator: ReturnType<typeof vi.fn>;
     createGain: ReturnType<typeof vi.fn>;
     destination: object;
+    currentTime: number;
     close: ReturnType<typeof vi.fn>;
   };
 
@@ -31,13 +38,20 @@ describe('ToneGenerator', () => {
       stop: vi.fn(),
     };
     mockGain = {
-      gain: { value: 0 },
+      gain: {
+        value: 0,
+        setValueAtTime: vi.fn(),
+        linearRampToValueAtTime: vi.fn(),
+        setTargetAtTime: vi.fn(),
+        cancelScheduledValues: vi.fn(),
+      },
       connect: vi.fn(),
     };
     mockCtx = {
       createOscillator: vi.fn().mockReturnValue(mockOscillator),
       createGain: vi.fn().mockReturnValue(mockGain),
       destination: { _dest: true },
+      currentTime: 0,
       close: vi.fn(),
     };
 
@@ -97,12 +111,13 @@ describe('ToneGenerator', () => {
       expect(screen.getByText('Waveform')).toBeTruthy();
     });
 
-    it('renders all wave type options', () => {
+    it('renders only the clean wave type options (sine + triangle)', () => {
       renderTool();
       expect(screen.getByText('sine')).toBeTruthy();
       expect(screen.getByText('triangle')).toBeTruthy();
-      expect(screen.getByText('sawtooth')).toBeTruthy();
-      expect(screen.getByText('square')).toBeTruthy();
+      // Harsh raw waveforms are intentionally excluded for a tuning reference.
+      expect(screen.queryByText('sawtooth')).toBeNull();
+      expect(screen.queryByText('square')).toBeNull();
     });
 
     it('has sine selected by default', () => {
@@ -173,24 +188,84 @@ describe('ToneGenerator', () => {
   });
 
   describe('volume slider', () => {
-    it('sets initial gain from volume state when playing', async () => {
+    it('fades in to the current volume on play (anti-click envelope)', async () => {
       renderTool();
       const lowEBtn = screen.getByRole('button', { name: /Play Low E/ });
       await fireEvent.click(lowEBtn);
 
-      // Default volume is 0.3
-      expect(mockGain.gain.value).toBe(0.3);
+      // Gain starts at 0 and ramps up to the default volume (0.3)
+      expect(mockGain.gain.setValueAtTime).toHaveBeenCalledWith(0, expect.any(Number));
+      expect(mockGain.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0.3, expect.any(Number));
     });
 
-    it('applies new volume on next play', async () => {
+    it('uses the updated volume on the next play', async () => {
       renderTool();
       const slider = screen.getByRole('slider', { name: 'Volume' });
-      await fireEvent.input(slider, { target: { value: '0.8' } });
+      await fireEvent.input(slider, { target: { value: '0.4' } });
 
       const lowEBtn = screen.getByRole('button', { name: /Play Low E/ });
       await fireEvent.click(lowEBtn);
 
-      expect(mockGain.gain.value).toBe(0.8);
+      expect(mockGain.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0.4, expect.any(Number));
+    });
+
+    it('caps the slider at a safe maximum gain for hearing protection', () => {
+      renderTool();
+      const slider = screen.getByRole('slider', { name: 'Volume' });
+      expect(slider.getAttribute('max')).toBe('0.5');
+    });
+  });
+
+  describe('live updates while playing', () => {
+    it('updates the gain live when volume changes during playback', async () => {
+      renderTool();
+      const lowEBtn = screen.getByRole('button', { name: /Play Low E/ });
+      await fireEvent.click(lowEBtn);
+
+      const slider = screen.getByRole('slider', { name: 'Volume' });
+      await fireEvent.input(slider, { target: { value: '0.4' } });
+
+      expect(mockGain.gain.setTargetAtTime).toHaveBeenCalledWith(
+        0.4,
+        expect.any(Number),
+        expect.any(Number),
+      );
+    });
+
+    it('updates the oscillator type live when waveform changes during playback', async () => {
+      renderTool();
+      const lowEBtn = screen.getByRole('button', { name: /Play Low E/ });
+      await fireEvent.click(lowEBtn);
+
+      const triangleBtn = screen.getByRole('radio', { name: 'triangle' });
+      await fireEvent.click(triangleBtn);
+
+      expect(mockOscillator.type).toBe('triangle');
+    });
+
+    it('does not touch audio nodes when volume changes while idle', async () => {
+      renderTool();
+      const slider = screen.getByRole('slider', { name: 'Volume' });
+      await fireEvent.input(slider, { target: { value: '0.5' } });
+
+      expect(mockGain.gain.setTargetAtTime).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('anti-click envelope on stop', () => {
+    it('ramps the gain to zero and defers the oscillator stop', async () => {
+      renderTool();
+      const lowEBtn = screen.getByRole('button', { name: /Play Low E/ });
+      await fireEvent.click(lowEBtn);
+
+      const stopBtn = screen.getByRole('button', { name: /Stop Low E/ });
+      await fireEvent.click(stopBtn);
+
+      expect(mockGain.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, expect.any(Number));
+      // The oscillator stop is scheduled for a future time, not fired instantly
+      const stopArg = mockOscillator.stop.mock.calls.at(-1)?.[0];
+      expect(typeof stopArg).toBe('number');
+      expect(stopArg).toBeGreaterThan(0);
     });
   });
 
@@ -207,13 +282,13 @@ describe('ToneGenerator', () => {
     it('applies new wave type on next play', async () => {
       renderTool();
       // Change wave type first, then play
-      const squareBtn = screen.getByRole('radio', { name: 'square' });
-      await fireEvent.click(squareBtn);
+      const triangleBtn = screen.getByRole('radio', { name: 'triangle' });
+      await fireEvent.click(triangleBtn);
 
       const lowEBtn = screen.getByRole('button', { name: /Play Low E/ });
       await fireEvent.click(lowEBtn);
 
-      expect(mockOscillator.type).toBe('square');
+      expect(mockOscillator.type).toBe('triangle');
     });
   });
 });
