@@ -466,6 +466,10 @@
           />
         </div>
       </div>
+      <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        The waveform sets a tone's harmonic content — a sine is a single spike, while sawtooth and
+        square are rich in harmonics. Switch waveforms and watch the spectrum change.
+      </p>
     </div>
 
     <!-- Additive synthesis: harmonic slider bank + presets (shown in Additive mode) -->
@@ -511,7 +515,8 @@
           {/each}
         </div>
         <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-          Each slider sets the amplitude of a harmonic. A tone IS a sum of sines — drag to hear it.
+          Each slider sets the amplitude of one harmonic — a tone IS a sum of sines. Drag them, or
+          try a preset, and watch the waveform and spectrum rebuild from pure sines.
         </p>
       </div>
     {/if}
