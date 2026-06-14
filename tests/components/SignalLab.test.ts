@@ -8,8 +8,14 @@ describe('SignalLab', () => {
     type: string;
     frequency: { value: number; setTargetAtTime: ReturnType<typeof vi.fn> };
     connect: ReturnType<typeof vi.fn>;
+    disconnect: ReturnType<typeof vi.fn>;
     start: ReturnType<typeof vi.fn>;
     stop: ReturnType<typeof vi.fn>;
+  };
+  let mockWaveShaper: {
+    oversample: string;
+    curve: Float32Array | null;
+    connect: ReturnType<typeof vi.fn>;
   };
   let mockGain: {
     gain: {
@@ -32,6 +38,7 @@ describe('SignalLab', () => {
     createOscillator: ReturnType<typeof vi.fn>;
     createGain: ReturnType<typeof vi.fn>;
     createAnalyser: ReturnType<typeof vi.fn>;
+    createWaveShaper: ReturnType<typeof vi.fn>;
     destination: object;
     currentTime: number;
     close: ReturnType<typeof vi.fn>;
@@ -42,9 +49,11 @@ describe('SignalLab', () => {
       type: 'sine',
       frequency: { value: 0, setTargetAtTime: vi.fn() },
       connect: vi.fn(),
+      disconnect: vi.fn(),
       start: vi.fn(),
       stop: vi.fn(),
     };
+    mockWaveShaper = { oversample: '', curve: null, connect: vi.fn() };
     mockGain = {
       gain: {
         value: 0,
@@ -66,6 +75,7 @@ describe('SignalLab', () => {
       createOscillator: vi.fn().mockReturnValue(mockOscillator),
       createGain: vi.fn().mockReturnValue(mockGain),
       createAnalyser: vi.fn().mockReturnValue(mockAnalyser),
+      createWaveShaper: vi.fn().mockReturnValue(mockWaveShaper),
       destination: { _dest: true },
       currentTime: 0,
       close: vi.fn(),
@@ -181,6 +191,40 @@ describe('SignalLab', () => {
       await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
       unmount();
       expect(mockCtx.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('distortion effect', () => {
+    it('is off (bypassed) by default', () => {
+      renderTool();
+      expect(screen.getByRole('radio', { name: 'Off' }).getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('creates a waveshaper with a 4x-oversampled distortion curve on play', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      expect(mockCtx.createWaveShaper).toHaveBeenCalled();
+      expect(mockWaveShaper.oversample).toBe('4x');
+      expect(mockWaveShaper.curve).toBeInstanceOf(Float32Array);
+    });
+
+    it('routes the oscillator through the waveshaper when turned on', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.click(screen.getByRole('radio', { name: 'On' }));
+      expect(mockOscillator.disconnect).toHaveBeenCalled();
+      expect(mockOscillator.connect).toHaveBeenCalledWith(mockWaveShaper);
+    });
+
+    it('regenerates the curve when drive changes while playing', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      const before = mockWaveShaper.curve;
+      await fireEvent.input(screen.getByRole('slider', { name: 'Distortion drive' }), {
+        target: { value: '80' },
+      });
+      expect(mockWaveShaper.curve).toBeInstanceOf(Float32Array);
+      expect(mockWaveShaper.curve).not.toBe(before);
     });
   });
 
