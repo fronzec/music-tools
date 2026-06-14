@@ -1,9 +1,12 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import type { ViewName } from '$lib/types/chord';
-  import { generateQuestion, midiToFreq } from '$lib/theory/intervals';
+  import { CHROMATIC } from '$lib/types/chord';
+  import { generateQuestion, midiToFreq, intervalBySemitones, INTERVALS } from '$lib/theory/intervals';
   import type { IntervalName, Question, Rng } from '$lib/theory/intervals';
+  import { semitoneToNoteName } from '$lib/theory/notes';
   import { createNotePlayer } from '$lib/audio/playNote';
+  import IntervalFretboard from '$lib/components/IntervalFretboard.svelte';
 
   interface Props {
     navigate: (view: ViewName) => void;
@@ -18,6 +21,28 @@
   // ---------------------------------------------------------------------------
 
   const player = createNotePlayer();
+
+  // ---------------------------------------------------------------------------
+  // Mode state — Practice (default) or Explore
+  // ---------------------------------------------------------------------------
+
+  let mode = $state<'practice' | 'explore'>('practice');
+
+  // Explore selections (independent of quiz state)
+  let exploreRootPc = $state(0);      // default C
+  let exploreSemitones = $state(7);   // default Perfect 5th
+
+  let exploreInterval = $derived(intervalBySemitones(exploreSemitones));
+  let exploreRootName = $derived(semitoneToNoteName(exploreRootPc));
+  let exploreTargetName = $derived(semitoneToNoteName((exploreRootPc + exploreSemitones) % 12));
+
+  // Fixed reference octave for Explore playback (C4)
+  const EXPLORE_ROOT_MIDI = 60;
+
+  function playExplore() {
+    const low = EXPLORE_ROOT_MIDI + exploreRootPc;
+    player.playSequence([midiToFreq(low), midiToFreq(low + exploreSemitones)]);
+  }
 
   // ---------------------------------------------------------------------------
   // Quiz state (flat $state runes, mirroring NoteTrainer)
@@ -43,6 +68,13 @@
       clearTimeout(pendingNext);
       pendingNext = null;
     }
+  }
+
+  // Switching modes must cancel any pending Practice auto-advance, or its timer
+  // fires later and plays audio / mutates the quiz while in Explore mode.
+  function setMode(m: 'practice' | 'explore') {
+    cancelPending();
+    mode = m;
   }
 
   function next() {
@@ -101,94 +133,179 @@
   <h1 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
     Interval Trainer
   </h1>
-  <p class="mb-8 text-sm text-gray-500 dark:text-gray-400">
+  <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
     Listen to two notes and identify the interval between them.
   </p>
 
-  <!-- Score + replay row -->
-  <div class="mb-6 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-    <div>
-      <div class="mb-0.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Score</div>
-      <div aria-live="polite" class="text-lg font-bold text-gray-900 dark:text-gray-100">
-        {correct} / {total}
-      </div>
-    </div>
+  <!-- Mode toggle -->
+  <div class="mb-6 flex gap-2">
     <button
-      class="rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-      aria-label="Replay interval"
-      onclick={replay}
+      class="rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
+      class:bg-blue-600={mode === 'practice'}
+      class:text-white={mode === 'practice'}
+      class:bg-gray-100={mode !== 'practice'}
+      class:text-gray-700={mode !== 'practice'}
+      class:dark:bg-gray-800={mode !== 'practice'}
+      class:dark:text-gray-300={mode !== 'practice'}
+      aria-pressed={mode === 'practice' ? 'true' : 'false'}
+      onclick={() => setMode('practice')}
     >
-      ↩ Replay
+      Practice
+    </button>
+    <button
+      class="rounded-lg px-4 py-2 text-sm font-semibold transition-colors"
+      class:bg-blue-600={mode === 'explore'}
+      class:text-white={mode === 'explore'}
+      class:bg-gray-100={mode !== 'explore'}
+      class:text-gray-700={mode !== 'explore'}
+      class:dark:bg-gray-800={mode !== 'explore'}
+      class:dark:text-gray-300={mode !== 'explore'}
+      aria-pressed={mode === 'explore' ? 'true' : 'false'}
+      onclick={() => setMode('explore')}
+    >
+      Explore
     </button>
   </div>
 
-  <!-- Answer choices -->
-  {#if question}
-    <div class="mb-6 grid grid-cols-2 gap-3" role="group" aria-label="Choose the interval">
-      {#each question.choices as name (name)}
-        {@const isSelected = selected === name}
-        {@const isCorrect = question.interval.name === name}
-        {@const revealed = lastAnswer !== null}
-        <button
-          class="rounded-xl border p-4 text-left text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed"
-          class:border-gray-200={!revealed}
-          class:bg-white={!revealed}
-          class:hover:border-blue-400={!revealed}
-          class:hover:bg-blue-50={!revealed}
-          class:dark:border-gray-700={!revealed}
-          class:dark:bg-gray-900={!revealed}
-          class:border-green-400={revealed && isCorrect}
-          class:bg-green-50={revealed && isCorrect}
-          class:text-green-800={revealed && isCorrect}
-          class:dark:bg-green-900={revealed && isCorrect}
-          class:dark:text-green-200={revealed && isCorrect}
-          class:border-red-400={revealed && isSelected && !isCorrect}
-          class:bg-red-50={revealed && isSelected && !isCorrect}
-          class:text-red-800={revealed && isSelected && !isCorrect}
-          class:dark:bg-red-900={revealed && isSelected && !isCorrect}
-          class:dark:text-red-200={revealed && isSelected && !isCorrect}
-          class:opacity-60={revealed && !isCorrect && !isSelected}
-          aria-label="Answer {name}"
-          disabled={selected !== null}
-          onclick={() => answer(name)}
-        >
-          {name}
-        </button>
-      {/each}
+  {#if mode === 'practice'}
+    <!-- Score + replay row -->
+    <div class="mb-6 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+      <div>
+        <div class="mb-0.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Score</div>
+        <div aria-live="polite" class="text-lg font-bold text-gray-900 dark:text-gray-100">
+          {correct} / {total}
+        </div>
+      </div>
+      <button
+        class="rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        aria-label="Replay interval"
+        onclick={replay}
+      >
+        ↩ Replay
+      </button>
     </div>
 
-    <!-- Feedback + Next -->
-    {#if lastAnswer !== null}
-      <div class="flex items-center justify-between rounded-xl border p-4"
-        class:border-green-200={lastAnswer === 'correct'}
-        class:bg-green-50={lastAnswer === 'correct'}
-        class:dark:border-green-800={lastAnswer === 'correct'}
-        class:dark:bg-green-900={lastAnswer === 'correct'}
-        class:border-red-200={lastAnswer === 'incorrect'}
-        class:bg-red-50={lastAnswer === 'incorrect'}
-        class:dark:border-red-800={lastAnswer === 'incorrect'}
-        class:dark:bg-red-900={lastAnswer === 'incorrect'}
-      >
-        <p class="text-sm font-medium"
-          class:text-green-800={lastAnswer === 'correct'}
-          class:dark:text-green-200={lastAnswer === 'correct'}
-          class:text-red-800={lastAnswer === 'incorrect'}
-          class:dark:text-red-200={lastAnswer === 'incorrect'}
+    <!-- Answer choices -->
+    {#if question}
+      <div class="mb-6 grid grid-cols-2 gap-3" role="group" aria-label="Choose the interval">
+        {#each question.choices as name (name)}
+          {@const isSelected = selected === name}
+          {@const isCorrect = question.interval.name === name}
+          {@const revealed = lastAnswer !== null}
+          <button
+            class="rounded-xl border p-4 text-left text-sm font-semibold transition-all duration-200 disabled:cursor-not-allowed"
+            class:border-gray-200={!revealed}
+            class:bg-white={!revealed}
+            class:hover:border-blue-400={!revealed}
+            class:hover:bg-blue-50={!revealed}
+            class:dark:border-gray-700={!revealed}
+            class:dark:bg-gray-900={!revealed}
+            class:border-green-400={revealed && isCorrect}
+            class:bg-green-50={revealed && isCorrect}
+            class:text-green-800={revealed && isCorrect}
+            class:dark:bg-green-900={revealed && isCorrect}
+            class:dark:text-green-200={revealed && isCorrect}
+            class:border-red-400={revealed && isSelected && !isCorrect}
+            class:bg-red-50={revealed && isSelected && !isCorrect}
+            class:text-red-800={revealed && isSelected && !isCorrect}
+            class:dark:bg-red-900={revealed && isSelected && !isCorrect}
+            class:dark:text-red-200={revealed && isSelected && !isCorrect}
+            class:opacity-60={revealed && !isCorrect && !isSelected}
+            aria-label="Answer {name}"
+            disabled={selected !== null}
+            onclick={() => answer(name)}
+          >
+            {name}
+          </button>
+        {/each}
+      </div>
+
+      <!-- Feedback + Next -->
+      {#if lastAnswer !== null}
+        <div class="flex items-center justify-between rounded-xl border p-4"
+          class:border-green-200={lastAnswer === 'correct'}
+          class:bg-green-50={lastAnswer === 'correct'}
+          class:dark:border-green-800={lastAnswer === 'correct'}
+          class:dark:bg-green-900={lastAnswer === 'correct'}
+          class:border-red-200={lastAnswer === 'incorrect'}
+          class:bg-red-50={lastAnswer === 'incorrect'}
+          class:dark:border-red-800={lastAnswer === 'incorrect'}
+          class:dark:bg-red-900={lastAnswer === 'incorrect'}
         >
-          {#if lastAnswer === 'correct'}
-            Correct! Moving to next…
-          {:else}
-            The correct answer was <strong>{question.interval.name}</strong>.
-          {/if}
-        </p>
+          <p class="text-sm font-medium"
+            class:text-green-800={lastAnswer === 'correct'}
+            class:dark:text-green-200={lastAnswer === 'correct'}
+            class:text-red-800={lastAnswer === 'incorrect'}
+            class:dark:text-red-200={lastAnswer === 'incorrect'}
+          >
+            {#if lastAnswer === 'correct'}
+              Correct! Moving to next…
+            {:else}
+              The correct answer was <strong>{question.interval.name}</strong>.
+            {/if}
+          </p>
+          <button
+            class="ml-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            aria-label="Next question"
+            onclick={next}
+          >
+            Next
+          </button>
+        </div>
+      {/if}
+    {/if}
+  {:else}
+    <!-- Explore mode -->
+    <div class="mb-4 flex flex-wrap gap-4">
+      <label class="flex flex-col gap-1">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Root note</span>
+        <select
+          class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          aria-label="Root note"
+          onchange={(e) => { exploreRootPc = parseInt((e.target as HTMLSelectElement).value, 10); }}
+        >
+          {#each CHROMATIC as note, i (note)}
+            <option value={i} selected={i === exploreRootPc}>{note}</option>
+          {/each}
+        </select>
+      </label>
+
+      <label class="flex flex-col gap-1">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Interval</span>
+        <select
+          class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+          aria-label="Interval"
+          onchange={(e) => { exploreSemitones = parseInt((e.target as HTMLSelectElement).value, 10); }}
+        >
+          {#each INTERVALS as interval (interval.semitones)}
+            <option value={interval.semitones} selected={interval.semitones === exploreSemitones}>
+              {interval.short} — {interval.name}
+            </option>
+          {/each}
+        </select>
+      </label>
+
+      <div class="flex items-end">
         <button
-          class="ml-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-          aria-label="Next question"
-          onclick={next}
+          class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+          aria-label="Play interval"
+          onclick={playExplore}
         >
-          Next
+          ▶ Play
         </button>
       </div>
-    {/if}
+    </div>
+
+    <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
+      {exploreRootName} → {exploreTargetName}: <strong>{exploreInterval.name} ({exploreInterval.short})</strong>.
+      Same shape everywhere it repeats across the neck.
+    </p>
+
+    <IntervalFretboard
+      rootPc={exploreRootPc}
+      intervalSemitones={exploreSemitones}
+      rootName={exploreRootName}
+      targetName={exploreTargetName}
+    />
   {/if}
 </div>
