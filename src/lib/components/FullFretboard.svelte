@@ -279,8 +279,8 @@
     {/if}
   </desc>
 
-  <!-- Dark neck background -->
-  <rect x="0" y="0" width={vbW} height={vbH} fill="#1F2937" rx="4" class="fretboard-bg" />
+  <!-- Dark neck background — extends left to cover open-string notes (x≈-7, r=11) and down for fret numbers (y≈vbH+6) -->
+  <rect x="-24" y="0" width={vbW + 24} height={vbH + 18} fill="#1F2937" rx="4" class="fretboard-bg" />
 
   <!-- Gradient definitions for overlap styles -->
   {#if gradientDefs.length > 0}
