@@ -34,7 +34,14 @@ export interface FretboardProps {
   width?: number;
 }
 
-export type ViewName = 'home' | 'caged' | 'progression' | 'note-trainer' | 'tone-generator' | 'pentatonic';
+export type ViewName =
+  | 'home'
+  | 'caged'
+  | 'progression'
+  | 'note-trainer'
+  | 'tone-generator'
+  | 'pentatonic'
+  | 'signal-lab';
 
 export const CAGED_ORDER: CagedShape[] = ['C', 'A', 'G', 'E', 'D'];
 

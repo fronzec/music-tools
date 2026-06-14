@@ -1,0 +1,196 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/svelte';
+import SignalLab from '$lib/components/SignalLab.svelte';
+import type { ViewName } from '$lib/types/chord';
+
+describe('SignalLab', () => {
+  let mockOscillator: {
+    type: string;
+    frequency: { value: number; setTargetAtTime: ReturnType<typeof vi.fn> };
+    connect: ReturnType<typeof vi.fn>;
+    start: ReturnType<typeof vi.fn>;
+    stop: ReturnType<typeof vi.fn>;
+  };
+  let mockGain: {
+    gain: {
+      value: number;
+      setValueAtTime: ReturnType<typeof vi.fn>;
+      linearRampToValueAtTime: ReturnType<typeof vi.fn>;
+      setTargetAtTime: ReturnType<typeof vi.fn>;
+      cancelScheduledValues: ReturnType<typeof vi.fn>;
+    };
+    connect: ReturnType<typeof vi.fn>;
+  };
+  let mockAnalyser: {
+    fftSize: number;
+    frequencyBinCount: number;
+    getByteTimeDomainData: ReturnType<typeof vi.fn>;
+    getByteFrequencyData: ReturnType<typeof vi.fn>;
+    connect: ReturnType<typeof vi.fn>;
+  };
+  let mockCtx: {
+    createOscillator: ReturnType<typeof vi.fn>;
+    createGain: ReturnType<typeof vi.fn>;
+    createAnalyser: ReturnType<typeof vi.fn>;
+    destination: object;
+    currentTime: number;
+    close: ReturnType<typeof vi.fn>;
+  };
+
+  beforeEach(() => {
+    mockOscillator = {
+      type: 'sine',
+      frequency: { value: 0, setTargetAtTime: vi.fn() },
+      connect: vi.fn(),
+      start: vi.fn(),
+      stop: vi.fn(),
+    };
+    mockGain = {
+      gain: {
+        value: 0,
+        setValueAtTime: vi.fn(),
+        linearRampToValueAtTime: vi.fn(),
+        setTargetAtTime: vi.fn(),
+        cancelScheduledValues: vi.fn(),
+      },
+      connect: vi.fn(),
+    };
+    mockAnalyser = {
+      fftSize: 0,
+      frequencyBinCount: 1024,
+      getByteTimeDomainData: vi.fn(),
+      getByteFrequencyData: vi.fn(),
+      connect: vi.fn(),
+    };
+    mockCtx = {
+      createOscillator: vi.fn().mockReturnValue(mockOscillator),
+      createGain: vi.fn().mockReturnValue(mockGain),
+      createAnalyser: vi.fn().mockReturnValue(mockAnalyser),
+      destination: { _dest: true },
+      currentTime: 0,
+      close: vi.fn(),
+    };
+    vi.stubGlobal(
+      'AudioContext',
+      vi.fn(function (this: unknown) {
+        return mockCtx;
+      }),
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function renderTool() {
+    const navigate = vi.fn() as (view: ViewName) => void;
+    return { navigate, ...render(SignalLab, { navigate }) };
+  }
+
+  describe('initial render', () => {
+    it('renders the title and back button', () => {
+      renderTool();
+      expect(screen.getByText('Signal Lab')).toBeTruthy();
+      expect(screen.getByText('← Back to Home')).toBeTruthy();
+    });
+
+    it('back button navigates home', async () => {
+      const { navigate } = renderTool();
+      await fireEvent.click(screen.getByText('← Back to Home'));
+      expect(navigate).toHaveBeenCalledWith('home');
+    });
+
+    it('renders all four waveform options', () => {
+      renderTool();
+      for (const wt of ['sine', 'triangle', 'sawtooth', 'square']) {
+        expect(screen.getByRole('radio', { name: wt })).toBeTruthy();
+      }
+    });
+
+    it('defaults to sawtooth (rich spectrum to visualize)', () => {
+      renderTool();
+      expect(screen.getByRole('radio', { name: 'sawtooth' }).getAttribute('aria-checked')).toBe(
+        'true',
+      );
+    });
+
+    it('renders frequency and volume sliders', () => {
+      renderTool();
+      expect(screen.getByRole('slider', { name: 'Frequency' })).toBeTruthy();
+      expect(screen.getByRole('slider', { name: 'Volume' })).toBeTruthy();
+    });
+
+    it('renders the oscilloscope and spectrum canvases', () => {
+      const { container } = renderTool();
+      expect(container.querySelectorAll('canvas')).toHaveLength(2);
+    });
+
+    it('does not create an AudioContext until played', () => {
+      renderTool();
+      expect((globalThis.AudioContext as unknown as ReturnType<typeof vi.fn>)).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('playback', () => {
+    it('Play creates the audio graph (oscillator + analyser) and starts', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      expect(mockCtx.createOscillator).toHaveBeenCalled();
+      expect(mockCtx.createAnalyser).toHaveBeenCalled();
+      expect(mockOscillator.start).toHaveBeenCalled();
+      expect(mockOscillator.frequency.value).toBe(220);
+    });
+
+    it('toggles to Stop and stops the oscillator', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.click(screen.getByRole('button', { name: 'Stop tone' }));
+      expect(mockOscillator.stop).toHaveBeenCalled();
+    });
+  });
+
+  describe('live updates while playing', () => {
+    it('moving the frequency slider updates the oscillator frequency live', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.input(screen.getByRole('slider', { name: 'Frequency' }), {
+        target: { value: '440' },
+      });
+      expect(mockOscillator.frequency.setTargetAtTime).toHaveBeenCalledWith(
+        440,
+        expect.any(Number),
+        expect.any(Number),
+      );
+    });
+
+    it('moving the volume slider updates the master gain live', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.input(screen.getByRole('slider', { name: 'Volume' }), {
+        target: { value: '0.2' },
+      });
+      expect(mockGain.gain.setTargetAtTime).toHaveBeenCalledWith(
+        0.2,
+        expect.any(Number),
+        expect.any(Number),
+      );
+    });
+
+    it('closes the AudioContext on unmount', async () => {
+      const { unmount } = renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      unmount();
+      expect(mockCtx.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('waveform selection', () => {
+    it('selecting square updates aria-checked and the live oscillator', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.click(screen.getByRole('radio', { name: 'square' }));
+      expect(screen.getByRole('radio', { name: 'square' }).getAttribute('aria-checked')).toBe('true');
+      expect(mockOscillator.type).toBe('square');
+    });
+  });
+});
