@@ -374,7 +374,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['E']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg'));
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg') && !r.classList.contains('fretboard-bg'));
       expect(rects.length).toBe(1);
     });
 
@@ -385,7 +385,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['C']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge') && !r.classList.contains('fret-marker-bg'));
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('indicator-badge') && !r.classList.contains('fret-marker-bg') && !r.classList.contains('fretboard-bg'));
       expect(rects.length).toBe(0);
     });
 
@@ -398,7 +398,7 @@ describe('FullFretboard', () => {
         visibleShapes: new Set<CagedShape>(['E']),
         labelMode: 'intervals' as LabelMode,
       });
-      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg'));
+      const rects = [...container.querySelectorAll('rect')].filter(r => !r.classList.contains('fret-marker-bg') && !r.classList.contains('fretboard-bg'));
       const rect = rects[0]!;
       expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.E);
       expect(rect.getAttribute('opacity')).toBe(String(FL.BARRE_OPACITY));
