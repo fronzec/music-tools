@@ -188,4 +188,92 @@ describe('NoteTrainer', () => {
       expect(screen.getByText('Octaves')).toBeTruthy();
     });
   });
+
+  describe('string name labels', () => {
+    it('renders string name labels in explore mode', () => {
+      const { container } = renderTool();
+      const svg = container.querySelector('svg')!;
+      const texts = [...svg.querySelectorAll('text')];
+      expect(texts.some(t => t.textContent === 'e')).toBe(true);
+      expect(texts.some(t => t.textContent === 'B')).toBe(true);
+    });
+
+    it('renders string name labels in quiz mode', async () => {
+      const { container } = renderTool();
+      await fireEvent.click(screen.getByRole('tab', { name: /Quiz/i }));
+      const svg = container.querySelector('svg')!;
+      const texts = [...svg.querySelectorAll('text')];
+      expect(texts.some(t => t.textContent === 'e')).toBe(true);
+    });
+  });
+
+  describe('fret number labels', () => {
+    it('renders fret numbers 1–12', () => {
+      const { container } = renderTool();
+      const svg = container.querySelector('svg')!;
+      const texts = [...svg.querySelectorAll('text')];
+      for (let i = 1; i <= 12; i++) {
+        expect(texts.some(t => t.textContent === String(i))).toBe(true);
+      }
+    });
+  });
+
+  describe('unison lines', () => {
+    it('renders <line> elements (not circles) when note selected and showUnisons checked', async () => {
+      const { container } = renderTool();
+      await clickNoteFilter('E');
+      const svg = container.querySelector('svg')!;
+      const lines = [...svg.querySelectorAll('line')].filter(
+        l => l.getAttribute('stroke') === '#16A34A'
+      );
+      expect(lines.length).toBeGreaterThan(0);
+      const greenCircles = [...svg.querySelectorAll('circle')].filter(
+        c => c.getAttribute('stroke') === '#16A34A'
+      );
+      expect(greenCircles.length).toBe(0);
+    });
+
+    it('renders no unison lines when no note selected', () => {
+      const { container } = renderTool();
+      const svg = container.querySelector('svg')!;
+      const lines = [...svg.querySelectorAll('line')].filter(
+        l => l.getAttribute('stroke') === '#16A34A'
+      );
+      expect(lines.length).toBe(0);
+    });
+
+    it('renders no unison lines in quiz mode', async () => {
+      const { container } = renderTool();
+      await fireEvent.click(screen.getByRole('tab', { name: /Quiz/i }));
+      const svg = container.querySelector('svg')!;
+      const lines = [...svg.querySelectorAll('line')].filter(
+        l => l.getAttribute('stroke') === '#16A34A'
+      );
+      expect(lines.length).toBe(0);
+    });
+  });
+
+  describe('quiz note suppression', () => {
+    it('hides note labels on fretboard in quiz mode before answering', async () => {
+      const { container } = renderTool();
+      await fireEvent.click(screen.getByRole('tab', { name: /Quiz/i }));
+      const svg = container.querySelector('svg')!;
+      // In quiz mode before answering: only 6 string name labels + 12 fret number labels = 18 texts
+      const allTexts = svg.querySelectorAll('text');
+      expect(allTexts.length).toBe(18);
+    });
+
+    it('reveals exactly one note label after answering in quiz mode', async () => {
+      const { container } = renderTool();
+      await fireEvent.click(screen.getByRole('tab', { name: /Quiz/i }));
+      const answerBtns = screen.getAllByRole('button').filter(b =>
+        /^Answer /.test(b.getAttribute('aria-label') ?? '')
+      );
+      await fireEvent.click(answerBtns[0]!);
+      const svg = container.querySelector('svg')!;
+      // After answering: 18 static labels + 1 revealed note label = 19
+      const allTexts = svg.querySelectorAll('text');
+      expect(allTexts.length).toBe(19);
+    });
+  });
 });
