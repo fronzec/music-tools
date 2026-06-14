@@ -20,7 +20,7 @@ function isScaleNote(
 ): boolean {
   const noteSemitone = noteNameToSemitone(getNoteName(stringIndex, fret) as NoteName);
   const rootSemitone = noteNameToSemitone(root);
-  const distance = ((noteSemitone - rootSemitone) % 12 + 12) % 12;
+  const distance = (((noteSemitone - rootSemitone) % 12) + 12) % 12;
   return PENTATONIC_INTERVALS[quality].includes(distance);
 }
 
@@ -142,6 +142,31 @@ describe('getPentatonicNotes', () => {
         expect(notes[0].interval).toBe('R');
       }
     }
+  });
+});
+
+describe('major box numbering — Box 1 is the major-root position', () => {
+  it('C major Box 1 starts on the root — root is the lower low-E note', () => {
+    const box1 = getPentatonicBoxes('C', 'major').find((b) => b.name === '1')!;
+    const lowE = box1.positions.filter((p) => p.stringIndex === 0).sort((a, b) => a.fret - b.fret);
+    // The lower of the two low-E notes is the root (C at fret 8), i.e. the box
+    // is the major-root position, not the relative-minor's box 1.
+    expect(lowE[0].isRoot).toBe(true);
+    expect(getNoteName(0, lowE[0].fret)).toBe('C');
+    expect(lowE[0].fret).toBe(8);
+  });
+
+  it('still returns five boxes named 1–5 for major', () => {
+    const names = getPentatonicBoxes('G', 'major')
+      .map((b) => b.name)
+      .sort();
+    expect(names).toEqual(['1', '2', '3', '4', '5']);
+  });
+
+  it('minor numbering is unchanged — Box 1 still has the root on low-E', () => {
+    const box1 = getPentatonicBoxes('A', 'minor').find((b) => b.name === '1')!;
+    const rootOnLowE = box1.positions.filter((p) => p.stringIndex === 0).find((p) => p.isRoot);
+    expect(getNoteName(0, rootOnLowE!.fret)).toBe('A');
   });
 });
 

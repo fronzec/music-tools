@@ -105,7 +105,7 @@ export function getPentatonicBoxes(root: NoteName, quality: ScaleQuality): Penta
   const base = rootFretOnLowE(anchorRoot);
   const rootSemitone = noteNameToSemitone(root);
 
-  return BOX_ORDER.map((name) => {
+  const boxes = BOX_ORDER.map((name) => {
     const frets = MINOR_BOX_OFFSETS[name].map(([lo, hi]) => [base + lo, base + hi]);
     // Keep the box on the neck: if any note falls below the nut, raise the
     // whole box an octave so it stays playable.
@@ -129,4 +129,21 @@ export function getPentatonicBoxes(root: NoteName, quality: ScaleQuality): Penta
       maxFret: Math.max(...allFrets),
     };
   });
+
+  if (quality === 'major') {
+    // Number major boxes from the major-root position. The major root is the
+    // relative minor's b3 (minor Box 2), so rotate the box names down by one.
+    const MAJOR_RENAME: Record<BoxName, BoxName> = {
+      '1': '5',
+      '2': '1',
+      '3': '2',
+      '4': '3',
+      '5': '4',
+    };
+    return boxes
+      .map((b) => ({ ...b, name: MAJOR_RENAME[b.name] }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  return boxes;
 }
