@@ -279,8 +279,8 @@
     {/if}
   </desc>
 
-  <!-- Dark neck background — extends left to cover open-string notes (x≈-7, r=11) and down for fret numbers (y≈vbH+6) -->
-  <rect x="-24" y="0" width={vbW + 24} height={vbH + 18} fill="#1F2937" rx="4" class="fretboard-bg" />
+  <!-- Neck background — extends left to cover open-string notes (x≈-7, r=11) and down for fret numbers (y≈vbH+6) -->
+  <rect x="-24" y="0" width={vbW + 24} height={vbH + 18} fill="#1F2937" rx="4" class="fretboard-bg fill-white dark:fill-gray-900" />
 
   <!-- Gradient definitions for overlap styles -->
   {#if gradientDefs.length > 0}
@@ -304,7 +304,7 @@
       text-anchor="middle"
       font-size="14"
       fill="#6B7280"
-      class="fill-gray-500"
+      class="fill-gray-500 dark:fill-gray-400"
       font-weight="500"
     >
       No shapes selected
@@ -318,8 +318,8 @@
       y1={stringY(0)}
       x2={fretLineX(f)}
       y2={stringY(5)}
-      stroke="#374151"
-      class="stroke-gray-700"
+      stroke="#9CA3AF"
+      class="stroke-gray-400 dark:stroke-gray-600"
       stroke-width="1"
     />
   {/each}
@@ -327,7 +327,7 @@
   <!-- Marker fret backgrounds (before strings so lines show through) -->
   {#each FRET_MARKERS as mf (mf)}
     {#if mf >= minFret && mf < minFret + displaySpan}
-      <rect x={fretLineX(mf - minFret - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#111827" class="fret-marker-bg fill-gray-900" />
+      <rect x={fretLineX(mf - minFret - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg fill-gray-100 dark:fill-gray-800" />
     {/if}
   {/each}
 
@@ -338,8 +338,8 @@
       y1={stringY(i)}
       x2={fretLineX(displaySpan)}
       y2={stringY(i)}
-      stroke="#9CA3AF"
-      class="stroke-gray-400"
+      stroke="#D1D5DB"
+      class="stroke-gray-300 dark:stroke-gray-700"
       stroke-width="1"
     />
   {/each}
@@ -349,24 +349,24 @@
     {#if mf >= minFret && mf < minFret + displaySpan}
       {@const mx = noteX(mf, minFret)}
       {@const my = stringY(2.5)}
-      <circle cx={mx} cy={my} r={L.MARKER_R} fill="#4B5563" class="fill-gray-600" />
+      <circle cx={mx} cy={my} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
       {#if mf === 12}
-        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#4B5563" class="fill-gray-600" />
-        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} fill="#4B5563" class="fill-gray-600" />
+        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
+        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
       {/if}
     {/if}
   {/each}
 
   <!-- Nut / base-fret indicator -->
   {#if isOpenPosition}
-    <!-- Nut: thick black line -->
+    <!-- Nut: thick line -->
     <line
       x1={fretLineX(0)}
       y1={stringY(0)}
       x2={fretLineX(0)}
       y2={stringY(5)}
-      stroke="#D1D5DB"
-      class="stroke-gray-300"
+      stroke="#1F2937"
+      class="stroke-gray-800 dark:stroke-gray-400"
       stroke-width="4"
     />
   {:else}
@@ -377,7 +377,7 @@
       text-anchor="middle"
       font-size={L.LABEL_FS + 1}
       fill="#9CA3AF"
-      class="fill-gray-400"
+      class="fill-gray-500 dark:fill-gray-400"
       font-weight="bold"
     >{minFret}fr</text>
     <!-- Thick line at left edge -->
@@ -386,8 +386,8 @@
       y1={stringY(0)}
       x2={fretLineX(0)}
       y2={stringY(5)}
-      stroke="#D1D5DB"
-      class="stroke-gray-300"
+      stroke="#1F2937"
+      class="stroke-gray-800 dark:stroke-gray-400"
       stroke-width="4"
     />
   {/if}
@@ -600,8 +600,8 @@
           y="-11"
           text-anchor="start"
           font-size={L.LABEL_FS}
-          fill="#E5E7EB"
-          class="fill-gray-200"
+          fill="#374151"
+          class="fill-gray-700 dark:fill-gray-200"
           font-weight="bold"
         >{label}</text>
       {/if}
@@ -617,8 +617,8 @@
       y={ny}
       text-anchor="middle"
       font-size={FL.FRET_NUM_FS}
-      fill="#6B7280"
-      class="fill-gray-500"
+      fill="#9CA3AF"
+      class="fill-gray-400 dark:fill-gray-500"
     >{n}</text>
   {/each}
 </svg>
