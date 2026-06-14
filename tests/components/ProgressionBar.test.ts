@@ -27,6 +27,7 @@ describe('ProgressionBar', () => {
     const onSelect = vi.fn();
     const onAdd = vi.fn();
     const onRemove = vi.fn();
+    const onQualityChange = vi.fn();
     const result = render(ProgressionBar, {
       progression,
       activeIndex,
@@ -34,8 +35,9 @@ describe('ProgressionBar', () => {
       onSelect,
       onAdd,
       onRemove,
+      onQualityChange,
     });
-    return { onSelect, onAdd, onRemove, ...result };
+    return { onSelect, onAdd, onRemove, onQualityChange, ...result };
   }
 
   describe('initial render', () => {
@@ -44,15 +46,16 @@ describe('ProgressionBar', () => {
       expect(screen.getByText('Progression')).toBeTruthy();
     });
 
-    it('renders chord pills with root and quality text', () => {
+    it('renders chord pills with the root and an accessible quality label', () => {
       renderBar({
         progression: [
           makeChord({ root: 'C', quality: 'major' }),
           makeChord({ root: 'F', quality: 'major' }),
         ],
       });
-      expect(screen.getByText('C major')).toBeTruthy();
-      expect(screen.getByText('F major')).toBeTruthy();
+      // The visible label is the root only; quality lives in the inline toggle.
+      expect(screen.getByRole('button', { name: 'Select chord C major at position 1' })).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Select chord F major at position 2' })).toBeTruthy();
     });
 
     it('renders the + Add button when under MAX_CHORDS', () => {
@@ -83,9 +86,10 @@ describe('ProgressionBar', () => {
       renderBar();
       const addBtn = screen.getByText('+ Add');
       await addBtn.click();
-      // After clicking + Add, the 12 note buttons should be visible
-      expect(screen.getByText('C')).toBeTruthy();
-      expect(screen.getByText('F#')).toBeTruthy();
+      // After clicking + Add, the 12 note buttons should be visible.
+      // Target by the picker aria-label since roots also appear on chips.
+      expect(screen.getByRole('button', { name: 'Add C major chord' })).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'Add F# major chord' })).toBeTruthy();
     });
 
     it('selecting a note from the picker calls onAdd with that note', async () => {
@@ -97,6 +101,45 @@ describe('ProgressionBar', () => {
       await noteBtn.click();
       expect(onAdd).toHaveBeenCalledWith('D#');
       expect(onAdd).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('per-chord quality toggle', () => {
+    it('renders a major/minor toggle for every chord', () => {
+      renderBar({
+        progression: [makeChord({ root: 'C' }), makeChord({ root: 'F' })],
+      });
+      expect(screen.getAllByRole('radio', { name: /to major$/ })).toHaveLength(2);
+      expect(screen.getAllByRole('radio', { name: /to minor$/ })).toHaveLength(2);
+    });
+
+    it('marks the active quality segment with aria-checked', () => {
+      renderBar({
+        progression: [makeChord({ root: 'A', quality: 'minor' })],
+      });
+      const major = screen.getByRole('radio', { name: 'Set chord 1 to major' });
+      const minor = screen.getByRole('radio', { name: 'Set chord 1 to minor' });
+      expect(major.getAttribute('aria-checked')).toBe('false');
+      expect(minor.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('clicking the minor segment calls onQualityChange with index and minor', async () => {
+      const { onQualityChange } = renderBar({
+        progression: [makeChord({ root: 'C' }), makeChord({ root: 'F' })],
+      });
+      const minorToggles = screen.getAllByRole('radio', { name: /to minor$/ });
+      await minorToggles[1]!.click();
+      expect(onQualityChange).toHaveBeenCalledWith(1, 'minor');
+      expect(onQualityChange).toHaveBeenCalledTimes(1);
+    });
+
+    it('clicking the major segment calls onQualityChange with index and major', async () => {
+      const { onQualityChange } = renderBar({
+        progression: [makeChord({ root: 'C', quality: 'minor' })],
+      });
+      const majorToggle = screen.getByRole('radio', { name: 'Set chord 1 to major' });
+      await majorToggle.click();
+      expect(onQualityChange).toHaveBeenCalledWith(0, 'major');
     });
   });
 

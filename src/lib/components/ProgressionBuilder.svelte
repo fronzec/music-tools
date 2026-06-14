@@ -63,11 +63,7 @@
   // ── Callbacks ────────────────────────────────────────────────────
   function addChord(root: NoteName) {
     if (progression.length >= MAX_CHORDS) return;
-    progression.push({
-      id: createChordId(),
-      root,
-      quality: progression[0]?.quality ?? 'major',
-    });
+    progression.push({ id: createChordId(), root, quality: 'major' });
   }
 
   function removeChord(index: number) {
@@ -76,11 +72,10 @@
     if (activeIndex >= progression.length) activeIndex = progression.length - 1;
   }
 
-  function changeQuality(quality: ChordQuality) {
-    for (const chord of progression) chord.quality = quality;
+  function setChordQuality(index: number, quality: ChordQuality) {
+    const chord = progression[index];
+    if (chord) chord.quality = quality;
   }
-
-  let currentQuality = $derived(progression[0]?.quality ?? 'major');
 </script>
 
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
@@ -100,60 +95,16 @@
 
   <!-- Controls bar: card-based layout -->
   <div class="mb-8 space-y-4">
-    <!-- Type card (shared quality) -->
-    <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Type</div>
-      <div
-        class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
-        role="radiogroup"
-        aria-label="Quality"
-      >
-        <button
-          class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-          class:bg-white={currentQuality === 'major'}
-          class:dark:bg-gray-900={currentQuality === 'major'}
-          class:text-gray-900={currentQuality === 'major'}
-          class:dark:text-gray-100={currentQuality === 'major'}
-          class:shadow-sm={currentQuality === 'major'}
-          class:text-gray-500={currentQuality !== 'major'}
-          class:dark:text-gray-400={currentQuality !== 'major'}
-          class:hover:text-gray-700={currentQuality !== 'major'}
-          class:dark:hover:text-gray-300={currentQuality !== 'major'}
-          role="radio"
-          aria-checked={currentQuality === 'major'}
-          onclick={() => changeQuality('major')}
-        >
-          Major
-        </button>
-        <button
-          class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-          class:bg-white={currentQuality === 'minor'}
-          class:dark:bg-gray-900={currentQuality === 'minor'}
-          class:text-gray-900={currentQuality === 'minor'}
-          class:dark:text-gray-100={currentQuality === 'minor'}
-          class:shadow-sm={currentQuality === 'minor'}
-          class:text-gray-500={currentQuality !== 'minor'}
-          class:dark:text-gray-400={currentQuality !== 'minor'}
-          class:hover:text-gray-700={currentQuality !== 'minor'}
-          class:dark:hover:text-gray-300={currentQuality !== 'minor'}
-          role="radio"
-          aria-checked={currentQuality === 'minor'}
-          onclick={() => changeQuality('minor')}
-        >
-          Minor
-        </button>
-      </div>
-    </div>
-
     <ProgressionBar
       {progression}
       {activeIndex}
-      quality={currentQuality}
+      quality="major"
       onSelect={(i: number) => {
         activeIndex = i;
       }}
       onAdd={addChord}
       onRemove={removeChord}
+      onQualityChange={setChordQuality}
     />
 
     <!-- Fretboard + Playback (side by side on desktop) -->

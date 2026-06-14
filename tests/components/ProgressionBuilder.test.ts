@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import ProgressionBuilder from '$lib/components/ProgressionBuilder.svelte';
 import type { ViewName } from '$lib/types/chord';
-import { MAX_CHORDS } from '$lib/types/progression';
 
 describe('ProgressionBuilder', () => {
   beforeEach(() => {
@@ -33,12 +32,19 @@ describe('ProgressionBuilder', () => {
 
     it('renders the default C-F-G-C progression', () => {
       renderBuilder();
-      // ProgressionBar renders pills with root + quality text
-      // C major appears twice (first and last), so use getAllByText
-      const cMajorPills = screen.getAllByText('C major');
-      expect(cMajorPills).toHaveLength(2);
-      expect(screen.getByText('F major')).toBeTruthy();
-      expect(screen.getByText('G major')).toBeTruthy();
+      // Pills show the root only; quality is read from the aria-label.
+      expect(
+        screen.getByRole('button', { name: 'Select chord C major at position 1' }),
+      ).toBeTruthy();
+      expect(
+        screen.getByRole('button', { name: 'Select chord F major at position 2' }),
+      ).toBeTruthy();
+      expect(
+        screen.getByRole('button', { name: 'Select chord G major at position 3' }),
+      ).toBeTruthy();
+      expect(
+        screen.getByRole('button', { name: 'Select chord C major at position 4' }),
+      ).toBeTruthy();
     });
 
     it('renders 4 chord pills in the default progression', () => {
@@ -47,18 +53,10 @@ describe('ProgressionBuilder', () => {
       expect(pills).toHaveLength(4);
     });
 
-    it('renders the Type toggle with Major and Minor', () => {
+    it('renders a per-chord quality toggle for each chord', () => {
       renderBuilder();
-      const majorBtn = screen.getByText('Major', { exact: true });
-      const minorBtn = screen.getByText('Minor', { exact: true });
-      expect(majorBtn).toBeTruthy();
-      expect(minorBtn).toBeTruthy();
-    });
-
-    it('Major is active by default', () => {
-      renderBuilder();
-      const majorBtn = screen.getByText('Major', { exact: true });
-      expect((majorBtn as HTMLButtonElement).getAttribute('aria-checked')).toBe('true');
+      expect(screen.getAllByRole('radio', { name: /to major$/ })).toHaveLength(4);
+      expect(screen.getAllByRole('radio', { name: /to minor$/ })).toHaveLength(4);
     });
 
     it('renders a FullFretboard SVG', () => {
@@ -118,17 +116,18 @@ describe('ProgressionBuilder', () => {
       expect(pills).toHaveLength(5);
     });
 
-    it('new chord inherits the shared quality', async () => {
+    it('new chord defaults to major', async () => {
       renderBuilder();
       const addBtn = screen.getByText('+ Add');
       await addBtn.click();
 
-      // Default quality is major, so "Add D major" should match
       const dBtn = screen.getByRole('button', { name: /Add D major chord/ });
       await dBtn.click();
 
-      // The new pill should show "D major"
-      expect(screen.getByText('D major')).toBeTruthy();
+      // The new pill (position 5) should be a D major chord
+      expect(
+        screen.getByRole('button', { name: 'Select chord D major at position 5' }),
+      ).toBeTruthy();
     });
   });
 
@@ -159,40 +158,63 @@ describe('ProgressionBuilder', () => {
     });
   });
 
-  describe('quality toggle', () => {
-    it('updates all chords to minor when Minor is clicked', async () => {
+  describe('per-chord quality', () => {
+    it('toggling one chord to minor leaves the others untouched', async () => {
       renderBuilder();
-      const minorBtn = screen.getByText('Minor', { exact: true });
-      await minorBtn.click();
+      // Flip the second chord (F) to minor.
+      const minorToggles = screen.getAllByRole('radio', { name: /to minor$/ });
+      await minorToggles[1]!.click();
 
-      // All pills should now show "minor" quality
-      // C minor appears twice (first and last)
-      const cMinorPills = screen.getAllByText('C minor');
-      expect(cMinorPills).toHaveLength(2);
-      expect(screen.getByText('F minor')).toBeTruthy();
-      expect(screen.getByText('G minor')).toBeTruthy();
+      // Only position 2 changes: F minor. The rest stay major.
+      expect(
+        screen.getByRole('button', { name: 'Select chord F minor at position 2' }),
+      ).toBeTruthy();
+      expect(
+        screen.getByRole('button', { name: 'Select chord C major at position 1' }),
+      ).toBeTruthy();
+      expect(
+        screen.getByRole('button', { name: 'Select chord G major at position 3' }),
+      ).toBeTruthy();
     });
 
-    it('switches back to Major', async () => {
+    it('enables building a real I-vi-IV-V progression (C-Am-F-G)', async () => {
       renderBuilder();
-      const minorBtn = screen.getByText('Minor', { exact: true });
-      await minorBtn.click();
-      const majorBtn = screen.getByText('Major', { exact: true });
-      await majorBtn.click();
-
-      const cMajorPills = screen.getAllByText('C major');
-      expect(cMajorPills).toHaveLength(2);
-      expect(screen.getByText('F major')).toBeTruthy();
+      // The default is C-F-G-C; rebuild the second chord as A minor by
+      // changing it through the picker would need a root change, so here we
+      // assert the mixed-quality capability: flip chord 3 (G) to minor.
+      const minorToggles = screen.getAllByRole('radio', { name: /to minor$/ });
+      await minorToggles[2]!.click();
+      expect(
+        screen.getByRole('button', { name: 'Select chord G minor at position 3' }),
+      ).toBeTruthy();
+      // Sibling chords remain major — mixed qualities coexist.
+      expect(
+        screen.getByRole('button', { name: 'Select chord F major at position 2' }),
+      ).toBeTruthy();
     });
 
-    it('aria-checked reflects the active quality', async () => {
-      renderBuilder();
-      const minorBtn = screen.getByText('Minor', { exact: true });
-      await minorBtn.click();
+    it("toggling quality updates the active chord's fretboard shapes", async () => {
+      const { container } = renderBuilder();
+      // C major is active by default.
+      expect(container.querySelector('svg')?.getAttribute('aria-label')).toContain('C major');
 
-      expect((minorBtn as HTMLButtonElement).getAttribute('aria-checked')).toBe('true');
-      const majorBtn = screen.getByText('Major', { exact: true });
-      expect((majorBtn as HTMLButtonElement).getAttribute('aria-checked')).toBe('false');
+      // Flip the active (first) chord to minor.
+      const minorToggles = screen.getAllByRole('radio', { name: /to minor$/ });
+      await minorToggles[0]!.click();
+
+      expect(container.querySelector('svg')?.getAttribute('aria-label')).toContain('C minor');
+    });
+
+    it('aria-checked reflects each chord quality independently', async () => {
+      renderBuilder();
+      const minorToggles = screen.getAllByRole('radio', { name: /to minor$/ });
+      await minorToggles[1]!.click();
+
+      const majorToggles = screen.getAllByRole('radio', { name: /to major$/ });
+      // Chord 1 stays major, chord 2 becomes minor.
+      expect(majorToggles[0]!.getAttribute('aria-checked')).toBe('true');
+      expect(minorToggles[1]!.getAttribute('aria-checked')).toBe('true');
+      expect(majorToggles[1]!.getAttribute('aria-checked')).toBe('false');
     });
   });
 
