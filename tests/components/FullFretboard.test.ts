@@ -477,7 +477,7 @@ describe('FullFretboard', () => {
       expect(mutedMarkers.length).toBe(1);
     });
 
-    it('uses semantic colors for O/× indicators (single shape)', () => {
+    it('uses shape color for badge rect, semantic color for O/× text', () => {
       const shapes = [makeCShape()];
       const { container } = render(FullFretboard, {
         shapes,
@@ -488,16 +488,18 @@ describe('FullFretboard', () => {
       const oMarkers = texts.filter((t) => t.textContent === 'O');
       const xMarkers = texts.filter((t) => t.textContent === '×');
 
-      // O always uses green
+      // Badge rect keeps shape color
       oMarkers.forEach((o) => {
         const rect = o.previousElementSibling as Element;
-        expect(rect.getAttribute('fill')).toBe('#22C55E');
+        expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
       });
-      // × always uses red, reduced opacity on the badge
+      // O text is green, × text is red
+      oMarkers.forEach((o) => expect(o.getAttribute('fill')).toBe('#22C55E'));
       xMarkers.forEach((x) => {
         const rect = x.previousElementSibling as Element;
-        expect(rect.getAttribute('fill')).toBe('#DC2626');
+        expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
         expect(rect.getAttribute('opacity')).toBe('0.45');
+        expect(x.getAttribute('fill')).toBe('#DC2626');
       });
     });
 
@@ -517,18 +519,21 @@ describe('FullFretboard', () => {
       expect(total).toBeGreaterThan(3);
       expect(total).toBeLessThan(30);
 
-      // Every O badge is green, every × badge is red
+      // Badge rects use shape colors, text uses semantic colors
+      const shapeColors = Object.values(SHAPE_COLORS);
       oMarkers.forEach((ind) => {
         const rect = ind.previousElementSibling as Element;
-        expect(rect.getAttribute('fill')).toBe('#22C55E');
+        expect(shapeColors).toContain(rect.getAttribute('fill'));
+        expect(ind.getAttribute('fill')).toBe('#22C55E');
       });
       xMarkers.forEach((ind) => {
         const rect = ind.previousElementSibling as Element;
-        expect(rect.getAttribute('fill')).toBe('#DC2626');
+        expect(shapeColors).toContain(rect.getAttribute('fill'));
+        expect(ind.getAttribute('fill')).toBe('#DC2626');
       });
     });
 
-    it('O/× indicators use semantic colors (multi-shape)', () => {
+    it('O/× text uses semantic colors regardless of shape (multi-shape)', () => {
       const shapes = allShapes();
       const { container } = render(FullFretboard, {
         shapes,
@@ -539,15 +544,9 @@ describe('FullFretboard', () => {
       const oMarkers = texts.filter((t) => t.textContent === 'O');
       const xMarkers = texts.filter((t) => t.textContent === '×');
 
-      // Open always green, muted always red — regardless of which shapes are visible
-      oMarkers.forEach((ind) => {
-        const rect = ind.previousElementSibling as Element;
-        expect(rect.getAttribute('fill')).toBe('#22C55E');
-      });
-      xMarkers.forEach((ind) => {
-        const rect = ind.previousElementSibling as Element;
-        expect(rect.getAttribute('fill')).toBe('#DC2626');
-      });
+      // O text always green, × text always red
+      oMarkers.forEach((ind) => expect(ind.getAttribute('fill')).toBe('#22C55E'));
+      xMarkers.forEach((ind) => expect(ind.getAttribute('fill')).toBe('#DC2626'));
 
       // Open-position shapes (C, A, G) should have at least some O indicators
       expect(oMarkers.length).toBeGreaterThan(0);
@@ -582,7 +581,8 @@ describe('FullFretboard', () => {
       // String 3 is null → should show ×
       expect(xMarkers.length).toBe(1);
       const rect = xMarkers[0]!.previousElementSibling as Element;
-      expect(rect.getAttribute('fill')).toBe('#DC2626');
+      expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.G);
+      expect(xMarkers[0]!.getAttribute('fill')).toBe('#DC2626');
     });
 
     it('indicators are grouped by (baseFret, stringIndex)', () => {

@@ -103,7 +103,7 @@
           key: indicator.shape + '-' + group.stringIndex,
           cx: indicatorX(group.baseFret, minFret) - 8 + j * 20,
           cy: stringY(group.stringIndex),
-          color: indicator.type === 'open' ? '#22C55E' : '#DC2626',
+          color: indicator.color,
           type: indicator.type,
         });
       });
@@ -441,7 +441,7 @@
             fill={indicator.color}
             opacity={FL.INDICATOR_OPACITY} />
       <text x="0" y="0" text-anchor="middle" alignment-baseline="central"
-            font-size="10" fill="white"
+            font-size="10" fill={indicator.type === 'open' ? '#22C55E' : '#DC2626'}
             font-weight="bold">
         {indicator.type === 'open' ? 'O' : '×'}
       </text>
