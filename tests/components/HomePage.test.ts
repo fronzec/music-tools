@@ -69,7 +69,7 @@ describe('HomePage', () => {
     it('renders the Progression Builder card as an active tool', () => {
       renderPage();
       expect(screen.getByText('Progression Builder')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(5); // CAGED, Progression, Note Trainer, Tone Generator, Scales Explorer
+      expect(screen.getAllByText('Open').length).toBe(6); // CAGED, Progression, Note Trainer, Tone Generator, Scales Explorer, Signal Lab
     });
 
     it('calls navigate with "progression" when the Progression Builder card is clicked', async () => {
@@ -103,7 +103,7 @@ describe('HomePage', () => {
       renderPage();
       expect(screen.getByText('Note Trainer')).toBeTruthy();
       expect(screen.getByText('Learn every note on the fretboard with visual patterns and quizzes')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(5);
+      expect(screen.getAllByText('Open').length).toBe(6);
     });
 
     it('calls navigate with "note-trainer" when the Note Trainer card is clicked', async () => {
@@ -137,7 +137,7 @@ describe('HomePage', () => {
       renderPage();
       expect(screen.getByText('Tone Generator')).toBeTruthy();
       expect(screen.getByText('Reference tones for tuning by ear')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(5);
+      expect(screen.getAllByText('Open').length).toBe(6);
     });
 
     it('calls navigate with "tone-generator" when the Tone Generator card is clicked', async () => {
