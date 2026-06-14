@@ -103,7 +103,7 @@
           key: indicator.shape + '-' + group.stringIndex,
           cx: indicatorX(group.baseFret, minFret) - 8 + j * 20,
           cy: stringY(group.stringIndex),
-          color: indicator.color,
+          color: indicator.type === 'open' ? '#22C55E' : '#DC2626',
           type: indicator.type,
         });
       });
