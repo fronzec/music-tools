@@ -198,9 +198,19 @@ describe('NoteTrainer', () => {
       expect(texts.some(t => t.textContent === 'B')).toBe(true);
     });
 
-    it('renders string name labels in quiz mode', async () => {
+    it('renders string name labels in quiz easy mode', async () => {
       const { container } = renderTool();
       await fireEvent.click(screen.getByRole('tab', { name: /Quiz/i }));
+      // default difficulty is medium — string names should be hidden
+      const svg = container.querySelector('svg')!;
+      const texts = [...svg.querySelectorAll('text')];
+      expect(texts.some(t => t.textContent === 'e')).toBe(false);
+    });
+
+    it('shows string name labels in quiz easy difficulty', async () => {
+      const { container } = renderTool();
+      await fireEvent.click(screen.getByRole('tab', { name: /Quiz/i }));
+      await fireEvent.click(screen.getByRole('radio', { name: /Easy/i }));
       const svg = container.querySelector('svg')!;
       const texts = [...svg.querySelectorAll('text')];
       expect(texts.some(t => t.textContent === 'e')).toBe(true);
@@ -258,9 +268,9 @@ describe('NoteTrainer', () => {
       const { container } = renderTool();
       await fireEvent.click(screen.getByRole('tab', { name: /Quiz/i }));
       const svg = container.querySelector('svg')!;
-      // In quiz mode before answering: only 6 string name labels + 12 fret number labels = 18 texts
+      // In quiz medium mode before answering: 12 fret number labels only (string names hidden in medium/hard)
       const allTexts = svg.querySelectorAll('text');
-      expect(allTexts.length).toBe(18);
+      expect(allTexts.length).toBe(12);
     });
 
     it('reveals exactly one note label after answering in quiz mode', async () => {
@@ -271,9 +281,9 @@ describe('NoteTrainer', () => {
       );
       await fireEvent.click(answerBtns[0]!);
       const svg = container.querySelector('svg')!;
-      // After answering: 18 static labels + 1 revealed note label = 19
+      // After answering in medium: 12 fret numbers + 1 revealed note label = 13
       const allTexts = svg.querySelectorAll('text');
-      expect(allTexts.length).toBe(19);
+      expect(allTexts.length).toBe(13);
     });
   });
 });

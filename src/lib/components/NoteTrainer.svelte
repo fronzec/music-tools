@@ -336,7 +336,8 @@
         {/if}
       {/each}
 
-      <!-- String name labels -->
+      <!-- String name labels (hidden in quiz medium/hard — tuning is part of what you must know) -->
+      {#if mode !== 'quiz' || difficulty === 'easy'}
       {#each strings as s (s)}
         <text
           x={L.LEFT_PAD - 8}
@@ -348,6 +349,7 @@
           class="fill-gray-400 select-none pointer-events-none"
         >{(['E','A','D','G','B','e'])[s]}</text>
       {/each}
+      {/if}
 
       <!-- Fret number labels -->
       {#each frets.slice(1) as f (f)}
