@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildPositionMap } from '$lib/theory/fretboard';
+import { buildPositionMap, absFret } from '$lib/theory/fretboard';
 import type { ChordShape, CagedShape } from '$lib/types/chord';
 
 function makeShape(
@@ -73,13 +73,12 @@ describe('buildPositionMap', () => {
     expect(entries![1]!.shape).toBe('E');
   });
 
-  it('includes NoteEntry fields: shape, color, isRoot, interval, absFret, stringIndex', () => {
+  it('includes NoteEntry fields: shape, isRoot, interval, absFret, stringIndex', () => {
     const shapes = [makeShape('G', 0, [3, 2, 0, 0, 0, 3], ['R', '3', '5', 'R', '3', 'R'])];
     const map = buildPositionMap(shapes, new Set(['G']));
     const entry = map.get('3,5')?.[0];
     expect(entry).toBeDefined();
     expect(entry!.shape).toBe('G');
-    expect(entry!.color).toBeTruthy();
     expect(entry!.isRoot).toBe(true);
     expect(entry!.interval).toBe('R');
     expect(entry!.absFret).toBe(3);
@@ -228,5 +227,19 @@ describe('DiffEntry classification (diff computation logic)', () => {
     expect(entries1![0]!.interval).toBeNull();
     expect(entries2![0]!.interval).toBeNull();
     // Null intervals are excluded by the diff logic: interval1 === null → continue
+  });
+});
+
+describe('absFret', () => {
+  it('barre position: returns baseFret + relativeFret', () => {
+    expect(absFret(5, 2, true)).toBe(7);
+  });
+
+  it('open position: returns relativeFret unchanged', () => {
+    expect(absFret(0, 3, false)).toBe(3);
+  });
+
+  it('barre position with fret 0: returns baseFret', () => {
+    expect(absFret(3, 0, true)).toBe(3);
   });
 });

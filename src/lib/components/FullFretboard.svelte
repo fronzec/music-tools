@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { ChordShape, LabelMode, CagedShape, OverlapStyle } from '$lib/types/chord';
-  import { STANDARD_TUNING, CAGED_ORDER } from '$lib/types/chord';
-  import { buildPositionMap, type NoteEntry, type DiffEntry } from '$lib/theory/fretboard';
-  import { semitoneToNoteName } from '$lib/theory/notes';
+  import { CAGED_ORDER } from '$lib/types/chord';
+  import { buildPositionMap, absFret, type NoteEntry, type DiffEntry } from '$lib/theory/fretboard';
+  import { getNoteName, getLabel } from '$lib/theory/notes';
+  import { prefersReducedMotion } from '$lib/utils/motion';
   import {
     L,
     FL,
@@ -121,31 +122,6 @@
     return `${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`;
   }
 
-  function getNoteName(stringIndex: number, absoluteFret: number): string {
-    const openSemitone = STANDARD_TUNING[stringIndex];
-    const frettedSemitone = openSemitone + absoluteFret;
-    return semitoneToNoteName(frettedSemitone);
-  }
-
-  function getLabel(
-    stringIndex: number,
-    absoluteFret: number,
-    interval: string | null,
-  ): string | null {
-    if (interval === null) return null;
-    const noteName = getNoteName(stringIndex, absoluteFret);
-    switch (labelMode) {
-      case 'intervals':
-        return interval;
-      case 'notes':
-        return noteName;
-      case 'both':
-        return `${noteName} (${interval})`;
-      default:
-        return interval;
-    }
-  }
-
   // ── Overlap detection ────────────────────────────────────────────
 
   /**
@@ -185,7 +161,7 @@
           color: SHAPE_COLORS[shapeType],
           isRoot: shape.intervals[i] === 'R',
           interval: shape.intervals[i],
-          absFret: isBarre ? shape.baseFret + fret : fret,
+          absFret: absFret(shape.baseFret, fret, isBarre),
           stringIndex: i,
         });
       }
@@ -248,7 +224,7 @@
   });
 
   // ── Reduced motion ───────────────────────────────────────────────
-  let reducedMotion = $state(typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  // Evaluated via utility getter — no local $state needed.
 
   // ── Accessibility ───────────────────────────────────────────────
 
@@ -433,7 +409,7 @@
           {@const by = stringY(barreFirst) - L.BARRE_H / 2}
           {@const bh = stringY(barreLast) - stringY(barreFirst) + L.BARRE_H}
           <g
-            style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+            style={prefersReducedMotion() ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
             transform="translate({bx}, {by})"
           >
             <rect
@@ -455,7 +431,7 @@
   <!-- Open/Muted indicators — flat list with stable shape-string keys -->
   {#each flatIndicators as indicator (indicator.key)}
     <g
-      style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+      style={prefersReducedMotion() ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
       transform="translate({indicator.cx}, {indicator.cy})"
     >
       <rect x="-8" y="-8" width="16" height="14" rx="5" class="indicator-badge"
@@ -476,13 +452,13 @@
     {@const posKey = `${note.absFret},${note.stringIndex}`}
     {@const overlaps = overlapGroups.get(posKey) ?? []}
     {@const overlapIndex = overlaps.findIndex(o => o.stableKey === note.stableKey)}
-    {@const label = getLabel(note.stringIndex, note.absFret, note.interval)}
+    {@const label = getLabel(note.stringIndex, note.absFret, note.interval, labelMode)}
     {@const isRootPos = overlaps.length > 1 ? (overlaps[0]?.isRoot ?? note.isRoot) : note.isRoot}
     {@const baseR = isRootPos ? FL.ROOT_DIAMOND_R : L.TONE_R}
 
     <g
       class="fretboard-note-group"
-      style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+      style={prefersReducedMotion() ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
       transform="translate({cx}, {cy})"
     >
       {#if overlaps.length === 1}

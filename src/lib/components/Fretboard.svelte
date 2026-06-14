@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { ChordShape, LabelMode } from '$lib/types/chord';
-  import { STANDARD_TUNING } from '$lib/types/chord';
-  import { semitoneToNoteName } from '$lib/theory/notes';
+  import { getNoteName, getLabel } from '$lib/theory/notes';
+  import { absFret } from '$lib/theory/fretboard';
+  import { prefersReducedMotion } from '$lib/utils/motion';
   import {
     L,
     FL,
@@ -25,7 +26,7 @@
   let { shape, labelMode, showNotes = true, width }: Props = $props();
 
   // ── Reduced motion ─────────────────────────────────────────────
-  let reducedMotion = $state(typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  // Evaluated via utility getter — no local $state needed.
 
   // ── Fret range calculation ──────────────────────────────────────
   // In open position (baseFret === 1): frets are absolute (0 = open, 1 = 1st fret, …)
@@ -65,32 +66,6 @@
     if (interval === 'R') return 'root';
     if (interval === '3' || interval === 'b3' || interval === '5') return 'tone';
     return 'other';
-  }
-
-  function getNoteName(stringIndex: number, absoluteFret: number): string {
-    const openSemitone = STANDARD_TUNING[stringIndex];
-    const frettedSemitone = openSemitone + absoluteFret;
-    return semitoneToNoteName(frettedSemitone);
-  }
-
-  function getLabel(
-    stringIndex: number,
-    absoluteFret: number,
-    interval: string | null,
-  ): string | null {
-    if (interval === null) return null;
-    const noteName = getNoteName(stringIndex, absoluteFret);
-
-    switch (labelMode) {
-      case 'intervals':
-        return interval;
-      case 'notes':
-        return noteName;
-      case 'both':
-        return `${noteName} (${interval})`;
-      default:
-        return interval;
-    }
   }
 
   // Compute aria-label once
@@ -202,21 +177,21 @@
     {#if fret === 0 && !isBarre}
       <rect x={indicatorXPos - 8} y={stringY(i) - 7} width="16" height="14" rx="5" class="indicator-badge"
             fill={SHAPE_COLORS[shape.shape]} opacity={FL.INDICATOR_OPACITY}
-            style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
+            style={prefersReducedMotion() ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
       <text x={indicatorXPos} y={stringY(i)}
             text-anchor="middle" alignment-baseline="central" font-size="10"
             fill="white"
             font-weight="bold"
-            style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>O</text>
+            style={prefersReducedMotion() ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>O</text>
     {:else if fret === null}
       <rect x={indicatorXPos - 8} y={stringY(i) - 7} width="16" height="14" rx="5" class="indicator-badge"
             fill={SHAPE_COLORS[shape.shape]} opacity={FL.INDICATOR_OPACITY}
-            style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
+            style={prefersReducedMotion() ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
       <text x={indicatorXPos} y={stringY(i)}
             text-anchor="middle" alignment-baseline="central" font-size="10"
             fill="white"
             font-weight="bold"
-            style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>×</text>
+            style={prefersReducedMotion() ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}>×</text>
     {/if}
   {/each}
 
@@ -233,7 +208,7 @@
       fill="#3B82F6"
       opacity="0.75"
       rx="2"
-      style={reducedMotion ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+      style={prefersReducedMotion() ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
     />
   {/if}
 
@@ -244,27 +219,27 @@
       {@const interval = shape.intervals[i]!}
       <!-- Skip muted strings and open strings (shown as O above) -->
       {#if fret !== null && !(fret === 0 && !isBarre)}
-        {@const absFret = isBarre ? shape.baseFret + fret : fret}
-        {@const cx = noteX(absFret, rangeStart)}
+        {@const absoluteFret = absFret(shape.baseFret, fret, isBarre)}
+        {@const cx = noteX(absoluteFret, rangeStart)}
         {@const cy = stringY(i)}
         {@const cls = classifyInterval(interval)}
-        {@const label = getLabel(i, absFret, interval)}
+        {@const label = getLabel(i, absoluteFret, interval, labelMode)}
 
         {#if cls === 'root'}
           <circle cx={cx} cy={cy} r={L.ROOT_R} fill="#3B82F6" stroke="#2563EB" stroke-width="1"
-            style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
+            style={prefersReducedMotion() ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {:else if cls === 'tone'}
           <circle cx={cx} cy={cy} r={L.TONE_R} fill="#22C55E" stroke="#16A34A" stroke-width="1"
-            style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
+            style={prefersReducedMotion() ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {:else}
           <circle cx={cx} cy={cy} r={L.OTHER_R} fill="none" stroke="#9CA3AF" class="stroke-gray-400 dark:stroke-gray-600" stroke-width="1.5"
-            style={reducedMotion ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
+            style={prefersReducedMotion() ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {/if}
 
         {#if label}
           <g
             transform="translate({cx + 7},{cy - 11})"
-            style={reducedMotion ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
+            style={prefersReducedMotion() ? '' : `transition: transform ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
           >
             <text
               x="0"
