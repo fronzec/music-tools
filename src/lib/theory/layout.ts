@@ -1,4 +1,5 @@
 import type { CagedShape } from '$lib/types/chord';
+import type { BoxName } from '$lib/types/scale';
 
 export const L = {
   TOP_PAD: 28,
@@ -66,6 +67,19 @@ export const SHAPE_COLORS: Record<CagedShape, string> = {
   G: '#16A34A', // green-600
   E: '#EF4444', // red-500
   D: '#9333EA', // purple-600
+};
+
+/** Accent color for root notes — distinct from every box color so roots read
+ *  unmistakably across the neck and in the scale-notes list. */
+export const ROOT_COLOR = '#FACC15'; // yellow-400
+
+/** Per-box colors for the pentatonic scale overlay. */
+export const BOX_COLORS: Record<BoxName, string> = {
+  '1': '#2563EB', // blue-600
+  '2': '#16A34A', // green-600
+  '3': '#D97706', // amber-600
+  '4': '#9333EA', // purple-600
+  '5': '#DC2626', // red-600
 };
 
 /**
