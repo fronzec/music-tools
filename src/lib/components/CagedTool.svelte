@@ -286,30 +286,6 @@
   {#if viewMode === 'full'}
     <FullFretboard shapes={shapes} {visibleShapes} labelMode="intervals" {overlapStyle} />
   {:else if viewMode === 'dual'}
-    <!--
-      Accessibility adapter: exposes the same aria-label surface as the old inline
-      dual-mode controls so existing tests continue to pass. These sr-only elements
-      are connected to the same state that DualFretboard receives as props.
-    -->
-    <div class="sr-only">
-      <span>To</span>
-      {#each CHROMATIC as note (note)}
-        <button aria-label="Select {note} for top" aria-pressed={selectedRoot === note} onclick={() => (selectedRoot = note)}>{note}</button>
-      {/each}
-      {#each CHROMATIC as note (note)}
-        <button aria-label="Select {note} for bottom" aria-pressed={secondRoot === note} onclick={() => (secondRoot = note)}>{note}</button>
-      {/each}
-      {#each CHROMATIC as note (note)}
-        <button aria-label="Select {note} as second root" aria-pressed={secondRoot === note} onclick={() => (secondRoot = note)}>{note}</button>
-      {/each}
-      {#each CAGED_ORDER as s (s)}
-        <button aria-label="Toggle {s} on top" aria-pressed={visibleShapes.has(s)} onclick={() => toggleShape(s)}>{s}</button>
-      {/each}
-      {#each CAGED_ORDER as s (s)}
-        {@const isActive2 = secondVisibleShapes.has(s)}
-        <button aria-label="Toggle {s} on bottom" aria-pressed={isActive2} onclick={() => { if (secondVisibleShapes.has(s)) secondVisibleShapes.delete(s); else secondVisibleShapes.add(s); }}>{s}</button>
-      {/each}
-    </div>
     <DualFretboard
       root1={selectedRoot}
       root2={secondRoot}
