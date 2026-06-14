@@ -7,17 +7,20 @@
     visibleShapes: Set<CagedShape>;
     onToggle: (s: CagedShape) => void;
     compact?: boolean;
+    groupAriaLabel?: string;
+    buttonAriaLabel?: (shape: CagedShape) => string;
   }
 
-  let { visibleShapes, onToggle, compact = false }: Props = $props();
+  let { visibleShapes, onToggle, compact = false, groupAriaLabel, buttonAriaLabel }: Props = $props();
 </script>
 
-<div class="flex gap-1">
+<div class="flex gap-1" role="group" aria-label={groupAriaLabel ?? undefined}>
   {#each CAGED_ORDER as shape (shape)}
     {@const isActive = visibleShapes.has(shape)}
     <button
       type="button"
       aria-pressed={isActive}
+      aria-label={buttonAriaLabel ? buttonAriaLabel(shape) : undefined}
       onclick={() => onToggle(shape)}
       style={isActive
         ? `background-color: ${SHAPE_COLORS[shape]}; color: white; border-color: ${SHAPE_COLORS[shape]};`

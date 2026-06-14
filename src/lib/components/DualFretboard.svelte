@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { NoteName, ChordQuality, LabelMode, CagedShape } from '$lib/types/chord';
-  import { CHROMATIC, CAGED_ORDER } from '$lib/types/chord';
+  import type { NoteName, ChordQuality, LabelMode, CagedShape, OverlapStyle } from '$lib/types/chord';
+  import { CHROMATIC } from '$lib/types/chord';
   import { getShapes } from '$lib/data/chords';
-  import { SHAPE_COLORS } from '$lib/theory/layout';
   import { buildPositionMap, type DiffEntry } from '$lib/theory/fretboard';
   import FullFretboard from './FullFretboard.svelte';
+  import RootSelector from './RootSelector.svelte';
+  import ShapeToggleBar from './ShapeToggleBar.svelte';
 
   interface Props {
     root1: NoteName;
@@ -15,6 +16,9 @@
     visibleShapes2: Set<CagedShape>;
     onRoot1Change?: (root: NoteName) => void;
     onRoot2Change?: (root: NoteName) => void;
+    onToggleShape1?: (shape: CagedShape) => void;
+    onToggleShape2?: (shape: CagedShape) => void;
+    overlapStyle?: OverlapStyle;
     width?: number;
   }
 
@@ -27,6 +31,9 @@
     visibleShapes2,
     onRoot1Change,
     onRoot2Change,
+    onToggleShape1,
+    onToggleShape2,
+    overlapStyle = 'split',
     width,
   }: Props = $props();
 
@@ -57,19 +64,28 @@
     return result;
   });
 
+  // Internal fallback toggles — used when external callbacks are not provided
   function toggleShape1(shape: CagedShape) {
-    if (visibleShapes1.has(shape)) {
-      visibleShapes1.delete(shape);
+    if (onToggleShape1) {
+      onToggleShape1(shape);
     } else {
-      visibleShapes1.add(shape);
+      if (visibleShapes1.has(shape)) {
+        visibleShapes1.delete(shape);
+      } else {
+        visibleShapes1.add(shape);
+      }
     }
   }
 
   function toggleShape2(shape: CagedShape) {
-    if (visibleShapes2.has(shape)) {
-      visibleShapes2.delete(shape);
+    if (onToggleShape2) {
+      onToggleShape2(shape);
     } else {
-      visibleShapes2.add(shape);
+      if (visibleShapes2.has(shape)) {
+        visibleShapes2.delete(shape);
+      } else {
+        visibleShapes2.add(shape);
+      }
     }
   }
 </script>
@@ -80,53 +96,30 @@
     <div class="text-sm font-medium text-gray-600 dark:text-gray-400">{root1} {quality}</div>
 
     <!-- Root selector row 1 -->
-    <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Top root selector">
+    <div class="flex flex-wrap items-center gap-1.5">
       <span class="text-xs font-medium text-gray-500 dark:text-gray-400">From:</span>
-      {#each CHROMATIC as note (note)}
-        <button
-          aria-label="Select {note} as top root"
-          aria-pressed={root1 === note}
-          class="rounded-md px-2.5 py-1 text-xs font-medium transition-all duration-200"
-          class:bg-blue-600={root1 === note}
-          class:text-white={root1 === note}
-          class:shadow-sm={root1 === note}
-          class:bg-gray-100={root1 !== note}
-          class:text-gray-700={root1 !== note}
-          class:hover:bg-gray-200={root1 !== note}
-          class:dark:bg-gray-800={root1 !== note}
-          class:dark:text-gray-300={root1 !== note}
-          class:dark:hover:bg-gray-700={root1 !== note}
-          onclick={() => onRoot1Change?.(note)}
-        >
-          {note}
-        </button>
-      {/each}
+      <RootSelector
+        notes={CHROMATIC}
+        selected={root1}
+        onSelect={(note) => onRoot1Change?.(note)}
+        label="Top root selector"
+        size="sm"
+        buttonAriaLabel={(note) => `Select ${note} as top root`}
+      />
     </div>
 
     <!-- Shape toggle bar 1 -->
-    <div class="flex flex-wrap gap-2" role="group" aria-label="Top fretboard shape toggles">
-      {#each CAGED_ORDER as shapeName (shapeName)}
-        {@const color = SHAPE_COLORS[shapeName]}
-        {@const isActive = visibleShapes1.has(shapeName)}
-        <button
-          class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all duration-200 border"
-          style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
-          aria-label="Toggle {shapeName} shape on top fretboard"
-          aria-pressed={isActive}
-          onclick={() => toggleShape1(shapeName)}
-        >
-          <span
-            class="inline-block h-3 w-3 rounded-full"
-            style="background-color: {color}"
-            class:ring-1={!isActive}
-            class:ring-white={!isActive}
-          ></span>
-          {shapeName}
-        </button>
-      {/each}
+    <div class="flex items-center gap-1.5">
+      <span class="text-xs font-medium text-gray-400 dark:text-gray-500">Shapes</span>
+      <ShapeToggleBar
+        visibleShapes={visibleShapes1}
+        onToggle={toggleShape1}
+        groupAriaLabel="Top fretboard shape toggles"
+        buttonAriaLabel={(shape) => `Toggle ${shape} shape on top fretboard`}
+      />
     </div>
 
-    <FullFretboard shapes={shapes1} visibleShapes={visibleShapes1} {labelMode} {width} highlightPositions={diffPositions} />
+    <FullFretboard shapes={shapes1} visibleShapes={visibleShapes1} {labelMode} {width} highlightPositions={diffPositions} {overlapStyle} />
   </section>
 
   <!-- Bottom fretboard -->
@@ -134,52 +127,29 @@
     <div class="text-sm font-medium text-gray-600 dark:text-gray-400">{root2} {quality}</div>
 
     <!-- Root selector row 2 -->
-    <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Bottom root selector">
+    <div class="flex flex-wrap items-center gap-1.5">
       <span class="text-xs font-medium text-gray-500 dark:text-gray-400">To:</span>
-      {#each CHROMATIC as note (note)}
-        <button
-          aria-label="Select {note} as bottom root"
-          aria-pressed={root2 === note}
-          class="rounded-md px-2.5 py-1 text-xs font-medium transition-all duration-200"
-          class:bg-blue-600={root2 === note}
-          class:text-white={root2 === note}
-          class:shadow-sm={root2 === note}
-          class:bg-gray-100={root2 !== note}
-          class:text-gray-700={root2 !== note}
-          class:hover:bg-gray-200={root2 !== note}
-          class:dark:bg-gray-800={root2 !== note}
-          class:dark:text-gray-300={root2 !== note}
-          class:dark:hover:bg-gray-700={root2 !== note}
-          onclick={() => onRoot2Change?.(note)}
-        >
-          {note}
-        </button>
-      {/each}
+      <RootSelector
+        notes={CHROMATIC}
+        selected={root2}
+        onSelect={(note) => onRoot2Change?.(note)}
+        label="Bottom root selector"
+        size="sm"
+        buttonAriaLabel={(note) => `Select ${note} as bottom root`}
+      />
     </div>
 
     <!-- Shape toggle bar 2 -->
-    <div class="flex flex-wrap gap-2" role="group" aria-label="Bottom fretboard shape toggles">
-      {#each CAGED_ORDER as shapeName (shapeName)}
-        {@const color = SHAPE_COLORS[shapeName]}
-        {@const isActive = visibleShapes2.has(shapeName)}
-        <button
-          class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all duration-200 border"
-          style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
-          aria-label="Toggle {shapeName} shape on bottom fretboard"
-          aria-pressed={isActive}
-          onclick={() => toggleShape2(shapeName)}
-        >
-          <span
-            class="inline-block h-3 w-3 rounded-full"
-            style="background-color: {color}"
-            class:ring-1={!isActive}
-            class:ring-white={!isActive}
-          ></span>
-          {shapeName}
-        </button>
-      {/each}
+    <div class="flex items-center gap-1.5">
+      <span class="text-xs font-medium text-gray-400 dark:text-gray-500">Shapes</span>
+      <ShapeToggleBar
+        visibleShapes={visibleShapes2}
+        onToggle={toggleShape2}
+        groupAriaLabel="Bottom fretboard shape toggles"
+        buttonAriaLabel={(shape) => `Toggle ${shape} shape on bottom fretboard`}
+      />
     </div>
 
-    <FullFretboard shapes={shapes2} visibleShapes={visibleShapes2} {labelMode} {width} highlightPositions={diffPositions} />
+    <FullFretboard shapes={shapes2} visibleShapes={visibleShapes2} {labelMode} {width} highlightPositions={diffPositions} {overlapStyle} />
   </section>
 </div>

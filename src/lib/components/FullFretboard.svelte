@@ -445,6 +445,124 @@
     </g>
   {/each}
 
+  <!-- Snippet: single note (no overlap) -->
+  {#snippet renderSingle(note: typeof allNotes[number], posKey: string)}
+    {@const baseR = note.isRoot ? FL.ROOT_DIAMOND_R : L.TONE_R}
+    {#if note.isRoot}
+      <polygon
+        points={diamondPoints(0, 0, baseR)}
+        fill={note.color}
+      />
+      <text
+        x="0" y="4"
+        text-anchor="middle"
+        font-size="9"
+        fill="white"
+        font-weight="bold"
+        style="pointer-events:none"
+      >{getNoteName(note.stringIndex, note.absFret)}</text>
+    {:else}
+      <circle
+        cx="0" cy="0"
+        r={L.TONE_R}
+        fill={note.color}
+        opacity={FL.NOTE_OPACITY}
+      />
+      <text
+        x="0" y="3"
+        text-anchor="middle"
+        font-size="8"
+        fill="white"
+        font-weight="bold"
+        style="pointer-events:none"
+      >{getNoteName(note.stringIndex, note.absFret)}</text>
+    {/if}
+  {/snippet}
+
+  <!-- Snippet: overlapping notes — dispatches by overlapStyle -->
+  {#snippet renderOverlap(overlaps: typeof allNotes, posKey: string, isRootPos: boolean, baseR: number)}
+    {@const note1 = overlaps[0]}
+    {@const note2 = overlaps[1]}
+    {#if overlapStyle === 'split'}
+      {#if isRootPos}
+        <!-- Split diamond: left half + right half -->
+        <polygon points="0,-{baseR} 0,{baseR} -{baseR},0" fill={note1.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+        <polygon points="0,-{baseR} 0,{baseR} {baseR},0" fill={note2.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+      {:else}
+        <!-- Split circle -->
+        <path d="M0,-{baseR} A{baseR},{baseR} 0 0,0 0,{baseR} Z" fill={note1.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+        <path d="M0,-{baseR} A{baseR},{baseR} 0 0,1 0,{baseR} Z" fill={note2.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
+      {/if}
+    {:else if overlapStyle === 'dots'}
+      <!-- Merged dots — handle N shapes by chaining horizontally -->
+      {#each overlaps as n, j}
+        {@const off = (j - (overlaps.length - 1) / 2) * (n.isRoot ? FL.OVERLAP_ROOT_DOT_OFFSET : FL.OVERLAP_DOT_OFFSET)}
+        {#if n.isRoot}
+          <polygon points={diamondPoints(off, 0, baseR)} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
+        {:else}
+          <circle cx={off} cy="0" r={baseR} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
+        {/if}
+      {/each}
+    {:else if overlapStyle === 'gradient'}
+      {#if isRootPos}
+        <polygon points={diamondPoints(0, 0, baseR)} fill="url(#grad-{posKey})" opacity={FL.OVERLAP_GRADIENT_OPACITY} />
+      {:else}
+        <circle cx="0" cy="0" r={baseR} fill="url(#grad-{posKey})" opacity={FL.OVERLAP_GRADIENT_OPACITY} />
+      {/if}
+    {/if}
+    <!-- Note name label on top of overlap -->
+    <text x="0" y="4" text-anchor="middle" font-size="9" fill="white" font-weight="bold" style="pointer-events:none">
+      {getNoteName(overlaps[0].stringIndex, overlaps[0].absFret)}
+    </text>
+  {/snippet}
+
+  <!-- Snippet: diff highlight ring -->
+  {#snippet renderDiffRing(posKey: string, isRootPos: boolean, baseR: number)}
+    {#if highlightPositions?.has(posKey)}
+      {@const diff = highlightPositions.get(posKey)!}
+      {@const ringR = baseR + 4}
+      {#if diff.type === 'different'}
+        {#if isRootPos}
+          <polygon
+            points={diamondPoints(0, 0, ringR)}
+            fill="none"
+            stroke="#F59E0B"
+            stroke-width="2"
+            stroke-dasharray="3 2"
+            opacity="0.6"
+          />
+        {:else}
+          <circle
+            cx="0" cy="0" r={ringR}
+            fill="none"
+            stroke="#F59E0B"
+            stroke-width="2"
+            stroke-dasharray="3 2"
+            opacity="0.6"
+          />
+        {/if}
+      {:else if diff.type === 'same'}
+        {#if isRootPos}
+          <polygon
+            points={diamondPoints(0, 0, ringR)}
+            fill="none"
+            stroke="#22C55E"
+            stroke-width="1.5"
+            opacity="0.5"
+          />
+        {:else}
+          <circle
+            cx="0" cy="0" r={ringR}
+            fill="none"
+            stroke="#22C55E"
+            stroke-width="1.5"
+            opacity="0.5"
+          />
+        {/if}
+      {/if}
+    {/if}
+  {/snippet}
+
   <!-- Note rendering with shape-keyed animation -->
   {#each allNotes as note (note.stableKey)}
     {@const cx = noteX(note.absFret, minFret)}
@@ -462,115 +580,14 @@
       transform="translate({cx}, {cy})"
     >
       {#if overlaps.length === 1}
-        <!-- Single note -->
-        {#if note.isRoot}
-          <polygon
-            points={diamondPoints(0, 0, baseR)}
-            fill={note.color}
-          />
-          <text
-            x="0" y="4"
-            text-anchor="middle"
-            font-size="9"
-            fill="white"
-            font-weight="bold"
-            style="pointer-events:none"
-          >{getNoteName(note.stringIndex, note.absFret)}</text>
-        {:else}
-          <circle
-            cx="0" cy="0"
-            r={L.TONE_R}
-            fill={note.color}
-            opacity={FL.NOTE_OPACITY}
-          />
-          <text
-            x="0" y="3"
-            text-anchor="middle"
-            font-size="8"
-            fill="white"
-            font-weight="bold"
-            style="pointer-events:none"
-          >{getNoteName(note.stringIndex, note.absFret)}</text>
-        {/if}
+        {@render renderSingle(note, posKey)}
       {:else if overlapIndex === 0 && overlaps.length > 1}
-        {@const note1 = overlaps[0]}
-        {@const note2 = overlaps[1]}
-        {#if overlapStyle === 'split'}
-          {#if isRootPos}
-            <!-- Split diamond: left half + right half -->
-            <polygon points="0,-{baseR} 0,{baseR} -{baseR},0" fill={note1.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
-            <polygon points="0,-{baseR} 0,{baseR} {baseR},0" fill={note2.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
-          {:else}
-            <!-- Split circle -->
-            <path d="M0,-{baseR} A{baseR},{baseR} 0 0,0 0,{baseR} Z" fill={note1.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
-            <path d="M0,-{baseR} A{baseR},{baseR} 0 0,1 0,{baseR} Z" fill={note2.color} opacity={FL.OVERLAP_SPLIT_OPACITY} />
-          {/if}
-        {:else if overlapStyle === 'dots'}
-          <!-- Merged dots — handle N shapes by chaining horizontally -->
-          {#each overlaps as n, j}
-            {@const off = (j - (overlaps.length - 1) / 2) * (n.isRoot ? FL.OVERLAP_ROOT_DOT_OFFSET : FL.OVERLAP_DOT_OFFSET)}
-            {#if n.isRoot}
-              <polygon points={diamondPoints(off, 0, baseR)} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
-            {:else}
-              <circle cx={off} cy="0" r={baseR} fill={n.color} opacity={FL.OVERLAP_DOTS_OPACITY} />
-            {/if}
-          {/each}
-        {:else if overlapStyle === 'gradient'}
-          {#if isRootPos}
-            <polygon points={diamondPoints(0, 0, baseR)} fill="url(#grad-{posKey})" opacity={FL.OVERLAP_GRADIENT_OPACITY} />
-          {:else}
-            <circle cx="0" cy="0" r={baseR} fill="url(#grad-{posKey})" opacity={FL.OVERLAP_GRADIENT_OPACITY} />
-          {/if}
-        {/if}
-        <!-- Note name label on top of overlap -->
-        <text x="0" y="4" text-anchor="middle" font-size="9" fill="white" font-weight="bold" style="pointer-events:none">
-          {getNoteName(note.stringIndex, note.absFret)}
-        </text>
+        {@render renderOverlap(overlaps, posKey, isRootPos, baseR)}
       {/if}
 
       <!-- Highlight diff ring (only on first note of a position to avoid duplicates) -->
-      {#if overlapIndex === 0 && highlightPositions?.has(posKey)}
-        {@const diff = highlightPositions.get(posKey)!}
-        {@const ringR = baseR + 4}
-        {#if diff.type === 'different'}
-          {#if isRootPos}
-            <polygon
-              points={diamondPoints(0, 0, ringR)}
-              fill="none"
-              stroke="#F59E0B"
-              stroke-width="2"
-              stroke-dasharray="3 2"
-              opacity="0.6"
-            />
-          {:else}
-            <circle
-              cx="0" cy="0" r={ringR}
-              fill="none"
-              stroke="#F59E0B"
-              stroke-width="2"
-              stroke-dasharray="3 2"
-              opacity="0.6"
-            />
-          {/if}
-        {:else if diff.type === 'same'}
-          {#if isRootPos}
-            <polygon
-              points={diamondPoints(0, 0, ringR)}
-              fill="none"
-              stroke="#22C55E"
-              stroke-width="1.5"
-              opacity="0.5"
-            />
-          {:else}
-            <circle
-              cx="0" cy="0" r={ringR}
-              fill="none"
-              stroke="#22C55E"
-              stroke-width="1.5"
-              opacity="0.5"
-            />
-          {/if}
-        {/if}
+      {#if overlapIndex === 0}
+        {@render renderDiffRing(posKey, isRootPos, baseR)}
       {/if}
 
       <!-- Label (only on first note of a position to avoid duplicates) -->

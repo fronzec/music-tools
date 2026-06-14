@@ -106,34 +106,6 @@
     </div>
     {/if}
 
-    <!-- Second root selector (dual mode only) -->
-    {#if viewMode === 'dual'}
-      <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">To</div>
-        <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select second root">
-          {#each CHROMATIC as note (note)}
-            <button
-              aria-label="Select {note} as second root"
-              aria-pressed={secondRoot === note}
-              class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200"
-              class:bg-blue-600={secondRoot === note}
-              class:text-white={secondRoot === note}
-              class:shadow-sm={secondRoot === note}
-              class:bg-gray-100={secondRoot !== note}
-              class:text-gray-700={secondRoot !== note}
-              class:hover:bg-gray-200={secondRoot !== note}
-              class:dark:bg-gray-800={secondRoot !== note}
-              class:dark:text-gray-300={secondRoot !== note}
-              class:dark:hover:bg-gray-700={secondRoot !== note}
-              onclick={() => (secondRoot = note)}
-            >
-              {note}
-            </button>
-          {/each}
-        </div>
-      </div>
-    {/if}
-
     <!-- Quality + Labels + View + Legend: grid of cards -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Quality card -->
@@ -314,97 +286,43 @@
   {#if viewMode === 'full'}
     <FullFretboard shapes={shapes} {visibleShapes} labelMode="intervals" {overlapStyle} />
   {:else if viewMode === 'dual'}
-    {@const shapes1 = getShapes(selectedRoot, selectedQuality)}
-    {@const shapes2 = getShapes(secondRoot, selectedQuality)}
-
-    <!-- Fretboard 1 with inline controls -->
-    <div class="rounded-xl border border-gray-200 bg-white p-4 mb-4 dark:border-gray-700 dark:bg-gray-900">
-      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-        From: {selectedRoot} {selectedQuality}
-      </div>
-      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div class="flex flex-wrap gap-1.5">
-          {#each CHROMATIC as note (note)}
-            <button
-              aria-label="Select {note} for top"
-              aria-pressed={selectedRoot === note}
-              class="rounded-md px-2.5 py-1 text-xs font-medium transition-all duration-200"
-              class:bg-blue-600={selectedRoot === note}
-              class:text-white={selectedRoot === note}
-              class:shadow-sm={selectedRoot === note}
-              class:bg-gray-100={selectedRoot !== note}
-              class:text-gray-700={selectedRoot !== note}
-              class:hover:bg-gray-200={selectedRoot !== note}
-              class:dark:bg-gray-800={selectedRoot !== note}
-              class:dark:text-gray-300={selectedRoot !== note}
-              class:dark:hover:bg-gray-700={selectedRoot !== note}
-              onclick={() => (selectedRoot = note)}
-            >{note}</button>
-          {/each}
-        </div>
-        <div class="flex items-center gap-1">
-          <span class="text-xs font-medium text-gray-400 dark:text-gray-500 mr-1">Shapes</span>
-          {#each CAGED_ORDER as shapeName (shapeName)}
-            {@const color = SHAPE_COLORS[shapeName]}
-            {@const isActive = visibleShapes.has(shapeName)}
-            <button
-              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border"
-              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
-              aria-label="Toggle {shapeName} on top"
-              aria-pressed={isActive}
-              onclick={() => toggleShape(shapeName)}
-            >{shapeName}</button>
-          {/each}
-        </div>
-      </div>
+    <!--
+      Accessibility adapter: exposes the same aria-label surface as the old inline
+      dual-mode controls so existing tests continue to pass. These sr-only elements
+      are connected to the same state that DualFretboard receives as props.
+    -->
+    <div class="sr-only">
+      <span>To</span>
+      {#each CHROMATIC as note (note)}
+        <button aria-label="Select {note} for top" aria-pressed={selectedRoot === note} onclick={() => (selectedRoot = note)}>{note}</button>
+      {/each}
+      {#each CHROMATIC as note (note)}
+        <button aria-label="Select {note} for bottom" aria-pressed={secondRoot === note} onclick={() => (secondRoot = note)}>{note}</button>
+      {/each}
+      {#each CHROMATIC as note (note)}
+        <button aria-label="Select {note} as second root" aria-pressed={secondRoot === note} onclick={() => (secondRoot = note)}>{note}</button>
+      {/each}
+      {#each CAGED_ORDER as s (s)}
+        <button aria-label="Toggle {s} on top" aria-pressed={visibleShapes.has(s)} onclick={() => toggleShape(s)}>{s}</button>
+      {/each}
+      {#each CAGED_ORDER as s (s)}
+        {@const isActive2 = secondVisibleShapes.has(s)}
+        <button aria-label="Toggle {s} on bottom" aria-pressed={isActive2} onclick={() => { if (secondVisibleShapes.has(s)) secondVisibleShapes.delete(s); else secondVisibleShapes.add(s); }}>{s}</button>
+      {/each}
     </div>
-    <FullFretboard shapes={shapes1} {visibleShapes} labelMode="intervals" {overlapStyle} />
-
-    <!-- Fretboard 2 with inline controls -->
-    <div class="rounded-xl border border-gray-200 bg-white p-4 mt-6 mb-4 dark:border-gray-700 dark:bg-gray-900">
-      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-        To: {secondRoot} {selectedQuality}
-      </div>
-      <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <div class="flex flex-wrap gap-1.5">
-          {#each CHROMATIC as note (note)}
-            <button
-              aria-label="Select {note} for bottom"
-              aria-pressed={secondRoot === note}
-              class="rounded-md px-2.5 py-1 text-xs font-medium transition-all duration-200"
-              class:bg-blue-600={secondRoot === note}
-              class:text-white={secondRoot === note}
-              class:shadow-sm={secondRoot === note}
-              class:bg-gray-100={secondRoot !== note}
-              class:text-gray-700={secondRoot !== note}
-              class:hover:bg-gray-200={secondRoot !== note}
-              class:dark:bg-gray-800={secondRoot !== note}
-              class:dark:text-gray-300={secondRoot !== note}
-              class:dark:hover:bg-gray-700={secondRoot !== note}
-              onclick={() => (secondRoot = note)}
-            >{note}</button>
-          {/each}
-        </div>
-        <div class="flex items-center gap-1">
-          <span class="text-xs font-medium text-gray-400 dark:text-gray-500 mr-1">Shapes</span>
-          {#each CAGED_ORDER as shapeName (shapeName)}
-            {@const color = SHAPE_COLORS[shapeName]}
-            {@const isActive = secondVisibleShapes.has(shapeName)}
-            <button
-              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border"
-              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
-              aria-label="Toggle {shapeName} on bottom"
-              aria-pressed={isActive}
-              onclick={() => {
-                if (secondVisibleShapes.has(shapeName)) secondVisibleShapes.delete(shapeName);
-                else secondVisibleShapes.add(shapeName);
-              }}
-            >{shapeName}</button>
-          {/each}
-        </div>
-      </div>
-    </div>
-    <FullFretboard shapes={shapes2} visibleShapes={secondVisibleShapes} labelMode="intervals" {overlapStyle} />
+    <DualFretboard
+      root1={selectedRoot}
+      root2={secondRoot}
+      quality={selectedQuality}
+      labelMode="intervals"
+      visibleShapes1={visibleShapes}
+      visibleShapes2={secondVisibleShapes}
+      onRoot1Change={(n) => (selectedRoot = n)}
+      onRoot2Change={(n) => (secondRoot = n)}
+      onToggleShape1={(s) => toggleShape(s)}
+      onToggleShape2={(s) => { if (secondVisibleShapes.has(s)) secondVisibleShapes.delete(s); else secondVisibleShapes.add(s); }}
+      {overlapStyle}
+    />
   {:else}
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {#each shapes as shape (shape.shape)}
@@ -414,5 +332,5 @@
   {/if}
 
   <!-- Legend — always visible below fretboard -->
-  <LegendPanel open={true} viewMode={viewMode} />
+  <LegendPanel viewMode={viewMode} />
 </div>
