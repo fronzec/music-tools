@@ -41,7 +41,8 @@ export type ViewName =
   | 'note-trainer'
   | 'tone-generator'
   | 'pentatonic'
-  | 'signal-lab';
+  | 'signal-lab'
+  | 'interval-trainer';
 
 export const CAGED_ORDER: CagedShape[] = ['C', 'A', 'G', 'E', 'D'];
 

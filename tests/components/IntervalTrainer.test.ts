@@ -1,0 +1,294 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/svelte';
+import type { ViewName } from '$lib/types/chord';
+import type { Rng } from '$lib/theory/intervals';
+
+// ---------------------------------------------------------------------------
+// AudioContext stub (same mock shape as ToneGenerator.test.ts)
+// ---------------------------------------------------------------------------
+
+let mockOscillator: {
+  type: string;
+  frequency: { value: number };
+  connect: ReturnType<typeof vi.fn>;
+  start: ReturnType<typeof vi.fn>;
+  stop: ReturnType<typeof vi.fn>;
+};
+
+let mockGain: {
+  gain: {
+    value: number;
+    setValueAtTime: ReturnType<typeof vi.fn>;
+    linearRampToValueAtTime: ReturnType<typeof vi.fn>;
+    cancelScheduledValues: ReturnType<typeof vi.fn>;
+  };
+  connect: ReturnType<typeof vi.fn>;
+};
+
+let mockCtx: {
+  createOscillator: ReturnType<typeof vi.fn>;
+  createGain: ReturnType<typeof vi.fn>;
+  destination: object;
+  currentTime: number;
+  close: ReturnType<typeof vi.fn>;
+};
+
+// ---------------------------------------------------------------------------
+// Mocked playNote module — vi.mock is hoisted, factory runs before imports
+// ---------------------------------------------------------------------------
+
+let mockPlaySequence: ReturnType<typeof vi.fn>;
+let mockDispose: ReturnType<typeof vi.fn>;
+
+vi.mock('$lib/audio/playNote', () => {
+  mockPlaySequence = vi.fn();
+  mockDispose = vi.fn();
+  return {
+    createNotePlayer: vi.fn(() => ({
+      playSequence: mockPlaySequence,
+      dispose: mockDispose,
+    })),
+  };
+});
+
+// Lazy import so vi.mock hoisting has time to run
+async function importComponent() {
+  const mod = await import('$lib/components/IntervalTrainer.svelte');
+  return mod.default;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+async function renderTool(rng?: Rng) {
+  const IntervalTrainer = await importComponent();
+  const navigate = vi.fn() as (view: ViewName) => void;
+  const props: Record<string, unknown> = { navigate };
+  if (rng) props.rng = rng;
+  const result = render(IntervalTrainer as any, props);
+  return { navigate, ...result };
+}
+
+// ---------------------------------------------------------------------------
+// Suite
+// ---------------------------------------------------------------------------
+
+describe('IntervalTrainer', () => {
+  beforeEach(() => {
+    mockOscillator = {
+      type: 'sine',
+      frequency: { value: 0 },
+      connect: vi.fn(),
+      start: vi.fn(),
+      stop: vi.fn(),
+    };
+    mockGain = {
+      gain: {
+        value: 0,
+        setValueAtTime: vi.fn(),
+        linearRampToValueAtTime: vi.fn(),
+        cancelScheduledValues: vi.fn(),
+      },
+      connect: vi.fn(),
+    };
+    mockCtx = {
+      createOscillator: vi.fn().mockReturnValue(mockOscillator),
+      createGain: vi.fn().mockReturnValue(mockGain),
+      destination: {},
+      currentTime: 0,
+      close: vi.fn(),
+    };
+    vi.stubGlobal(
+      'AudioContext',
+      vi.fn(function (this: unknown) {
+        return mockCtx;
+      }),
+    );
+    // Reset call counts for the mocked player methods
+    mockPlaySequence = vi.fn();
+    mockDispose = vi.fn();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.clearAllMocks();
+  });
+
+  // -------------------------------------------------------------------------
+  // TASK 2.1 — render + back navigation
+  // -------------------------------------------------------------------------
+
+  describe('initial render', () => {
+    it('renders without throwing', async () => {
+      await expect(renderTool()).resolves.toBeTruthy();
+    });
+
+    it('renders title "Interval Trainer"', async () => {
+      await renderTool();
+      expect(screen.getByText('Interval Trainer')).toBeTruthy();
+    });
+
+    it('renders a back-to-home control', async () => {
+      await renderTool();
+      const backBtn = screen.getByText('← Back to Home');
+      expect(backBtn).toBeTruthy();
+    });
+  });
+
+  describe('back navigation', () => {
+    it('clicking back-to-home calls navigate("home")', async () => {
+      const { navigate } = await renderTool();
+      const backBtn = screen.getByText('← Back to Home');
+      await fireEvent.click(backBtn);
+      expect(navigate).toHaveBeenCalledWith('home');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // TASK 2.2 — 4 answer buttons + audio plays on mount
+  // -------------------------------------------------------------------------
+
+  describe('question panel', () => {
+    it('renders exactly 4 answer buttons on mount', async () => {
+      await renderTool();
+      const answerBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      expect(answerBtns.length).toBe(4);
+    });
+
+    it('all 4 answer button labels are distinct', async () => {
+      await renderTool();
+      const answerBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      const labels = answerBtns.map((b) => b.getAttribute('aria-label'));
+      const unique = new Set(labels);
+      expect(unique.size).toBe(4);
+    });
+
+    it('plays the two notes exactly once on mount', async () => {
+      await renderTool();
+      expect(mockPlaySequence).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // TASK 2.3 — correct answer flow
+  // -------------------------------------------------------------------------
+
+  describe('correct answer flow', () => {
+    async function clickCorrectAnswer() {
+      const result = await renderTool();
+      // The correct interval name is in aria-label of a button that contains the answer.
+      // We need to identify which button label is the correct answer.
+      // The component exposes the question through the DOM — correct answer button label
+      // includes the interval name. We find it by looking at a data attribute or
+      // by trying each button. Per spec: after clicking correct button → score shows "1 / 1".
+      // Strategy: try all answer buttons until one makes score show "1 / 1"
+      const answerBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      return { result, answerBtns };
+    }
+
+    it('score region has aria-live="polite"', async () => {
+      const { container } = await renderTool();
+      const liveRegion = container.querySelector('[aria-live="polite"]');
+      expect(liveRegion).toBeTruthy();
+    });
+
+    it('answer buttons are disabled after selecting an answer', async () => {
+      await renderTool();
+      const answerBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      await fireEvent.click(answerBtns[0]!);
+      // All answer buttons must be disabled after selection
+      const updatedBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      for (const btn of updatedBtns) {
+        expect(btn.hasAttribute('disabled')).toBe(true);
+      }
+    });
+
+    it('clicking the correct answer scores "1 / 1" and shows positive feedback', async () => {
+      // Deterministic rng: () => 0 always yields "Minor 2nd" as the correct interval.
+      const { container } = await renderTool(() => 0);
+      const correctBtn = screen.getByRole('button', { name: 'Answer Minor 2nd' });
+      await fireEvent.click(correctBtn);
+      expect(container.textContent ?? '').toMatch(/1 \/ 1/);
+      expect(container.textContent ?? '').toContain('Correct!');
+    });
+
+    it('clicking Next after a correct answer cancels the pending auto-advance (no ghost skip)', async () => {
+      vi.useFakeTimers();
+      try {
+        await renderTool(() => 0); // mount plays once
+        await fireEvent.click(screen.getByRole('button', { name: 'Answer Minor 2nd' })); // correct → schedules 1500ms timer
+        await fireEvent.click(screen.getByRole('button', { name: 'Next question' })); // manual advance → plays again + cancels timer
+        const callsAfterManualNext = mockPlaySequence.mock.calls.length;
+        vi.advanceTimersByTime(3000); // a leftover timer would fire next() again
+        expect(mockPlaySequence.mock.calls.length).toBe(callsAfterManualNext);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // TASK 2.4 — wrong answer flow + replay
+  // -------------------------------------------------------------------------
+
+  describe('wrong answer flow', () => {
+    it('clicking a wrong answer scores "0 / 1" and reveals the correct interval', async () => {
+      // rng = () => 0 → correct is "Minor 2nd"; "Major 2nd" is always a distractor.
+      const { container } = await renderTool(() => 0);
+      const wrongBtn = screen.getByRole('button', { name: 'Answer Major 2nd' });
+      await fireEvent.click(wrongBtn);
+      expect(container.textContent ?? '').toMatch(/0 \/ 1/);
+      expect(container.textContent ?? '').toContain('The correct answer was');
+      expect(container.textContent ?? '').toContain('Minor 2nd');
+    });
+
+    it('replay control exists with aria-label containing "Replay"', async () => {
+      await renderTool();
+      const replayBtn = screen.getByRole('button', { name: /Replay/i });
+      expect(replayBtn).toBeTruthy();
+    });
+
+    it('replay button has aria-label "Replay interval"', async () => {
+      await renderTool();
+      const replayBtn = screen.getByRole('button', { name: 'Replay interval' });
+      expect(replayBtn).toBeTruthy();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // TASK 2.5 — Next control
+  // -------------------------------------------------------------------------
+
+  describe('Next control', () => {
+    it('"Next" control appears after answering', async () => {
+      await renderTool();
+      const answerBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      await fireEvent.click(answerBtns[0]!);
+      const nextBtn = screen.getByRole('button', { name: 'Next question' });
+      expect(nextBtn).toBeTruthy();
+    });
+
+    it('"Next" control has aria-label "Next question"', async () => {
+      await renderTool();
+      const answerBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      await fireEvent.click(answerBtns[0]!);
+      const nextBtn = screen.getByRole('button', { name: 'Next question' });
+      expect(nextBtn.getAttribute('aria-label')).toBe('Next question');
+    });
+  });
+});
