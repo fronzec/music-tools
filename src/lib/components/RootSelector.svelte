@@ -7,9 +7,10 @@
     onSelect: (n: NoteName) => void;
     label?: string;
     size?: 'sm' | 'md';
+    buttonAriaLabel?: (note: NoteName) => string;
   }
 
-  let { notes, selected, onSelect, label, size = 'md' }: Props = $props();
+  let { notes, selected, onSelect, label, size = 'md', buttonAriaLabel }: Props = $props();
 </script>
 
 <div
@@ -21,6 +22,7 @@
     <button
       type="button"
       aria-pressed={selected === note}
+      aria-label={buttonAriaLabel ? buttonAriaLabel(note) : undefined}
       onclick={() => onSelect(note)}
       class={[
         'rounded font-semibold transition-colors',
