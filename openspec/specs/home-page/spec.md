@@ -24,9 +24,9 @@ The system MUST render a grid of tool cards on the home page.
 
 ### Requirement: Tool Card Content
 
-Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active CAGED Visualizer card as the first card. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card and before the Tone Generator card. The system MUST include an active Tone Generator card between the Note Trainer card and the placeholder cards.
+Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active CAGED Visualizer card as the first card. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card. The system MUST include an active Tone Generator card after the Note Trainer card. The system MUST include an active Interval Trainer card after the Tone Generator card and before the placeholder cards.
 
-(Previously: Did not include Tone Generator card, Note Trainer card.)
+(Previously: Did not include Interval Trainer card.)
 
 #### Scenario: Card content is complete
 
@@ -85,6 +85,21 @@ Each card MUST display an icon/emoji, a title, a short description, and be click
 - WHEN the user clicks the Tone Generator card
 - THEN `navigate('tone-generator')` is called
 
+#### Scenario: Interval Trainer card exists
+
+- GIVEN the home page renders
+- WHEN the card grid is inspected
+- THEN an Interval Trainer card is present
+- AND it uses the same active-card styling as other active cards
+- AND it is positioned after the Tone Generator card
+- AND it is before the placeholder cards
+
+#### Scenario: Interval Trainer card navigates
+
+- GIVEN the user is on the home page
+- WHEN the user clicks the Interval Trainer card
+- THEN `navigate('interval-trainer')` is called
+
 #### Scenario: Placeholder cards remain inactive
 
 - GIVEN the home page renders
@@ -134,6 +149,17 @@ The Tone Generator card MUST display the 🎵 emoji, the title "Tone Generator",
 - GIVEN the home page renders
 - WHEN the Tone Generator card is inspected
 - THEN it shows the 🎵 emoji, "Tone Generator" title, and "Reference tones for tuning by ear" description
+- AND it includes an "Open" button styled like other active cards
+
+### Requirement: Interval Trainer Card Content
+
+The Interval Trainer card MUST display an appropriate icon, the title "Interval Trainer", and a short description conveying ear-training for musical intervals (e.g. "Train your ear to recognize musical intervals by sound").
+
+#### Scenario: Interval Trainer card content
+
+- GIVEN the home page renders
+- WHEN the Interval Trainer card is inspected
+- THEN it shows an icon, the title "Interval Trainer", and the correct description
 - AND it includes an "Open" button styled like other active cards
 
 ### Requirement: muted.io Aesthetic
