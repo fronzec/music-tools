@@ -466,6 +466,10 @@
           />
         </div>
       </div>
+      <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        The waveform sets a tone's harmonic content — a sine is a single spike, while sawtooth and
+        square are rich in harmonics. Switch waveforms and watch the spectrum change.
+      </p>
     </div>
 
     <!-- Additive synthesis: harmonic slider bank + presets (shown in Additive mode) -->
@@ -511,7 +515,8 @@
           {/each}
         </div>
         <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-          Each slider sets the amplitude of a harmonic. A tone IS a sum of sines — drag to hear it.
+          Each slider sets the amplitude of one harmonic — a tone IS a sum of sines. Drag them, or
+          try a preset, and watch the waveform and spectrum rebuild from pure sines.
         </p>
       </div>
     {/if}
@@ -523,7 +528,10 @@
       <div class="flex flex-wrap items-end gap-6">
         <!-- Distortion on/off (bypass) -->
         <div>
-          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
             Distortion
           </div>
           <div
@@ -597,7 +605,10 @@
       <div class="flex flex-wrap items-end gap-6">
         <!-- Filter on/off (bypass) -->
         <div>
-          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+            </svg>
             Low-pass filter
           </div>
           <div
@@ -692,7 +703,10 @@
       <div class="flex flex-wrap items-end gap-6">
         <!-- Tremolo on/off (bypass) -->
         <div>
-          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 12q3-7 6 0t6 0 6 0" />
+            </svg>
             Tremolo
           </div>
           <div
@@ -787,7 +801,10 @@
       <div class="flex flex-wrap items-end gap-6">
         <!-- Delay on/off (bypass) -->
         <div>
-          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16.023 9.348h4.992v-4.992M2.985 19.644v-4.992h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
             Delay
           </div>
           <div
