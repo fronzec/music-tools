@@ -291,4 +291,176 @@ describe('IntervalTrainer', () => {
       expect(nextBtn.getAttribute('aria-label')).toBe('Next question');
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Mode toggle — Practice ↔ Explore
+  // -------------------------------------------------------------------------
+
+  describe('mode toggle', () => {
+    it('default mode is Practice — role="img" (IntervalFretboard) is NOT in the DOM on mount', async () => {
+      await renderTool();
+      const fretboard = screen.queryByRole('img');
+      expect(fretboard).toBeNull();
+    });
+
+    it('default mode is Practice — exactly 4 answer buttons on mount', async () => {
+      await renderTool();
+      const answerBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      expect(answerBtns.length).toBe(4);
+    });
+
+    it('"Practice" toggle button exists and has aria-pressed="true" on mount', async () => {
+      await renderTool();
+      const practiceBtn = screen.getByRole('button', { name: 'Practice' });
+      expect(practiceBtn.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('"Explore" toggle button exists and has aria-pressed="false" on mount', async () => {
+      await renderTool();
+      const exploreBtn = screen.getByRole('button', { name: 'Explore' });
+      expect(exploreBtn.getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('clicking "Explore" toggle shows role="img" (the fretboard)', async () => {
+      await renderTool();
+      const exploreBtn = screen.getByRole('button', { name: 'Explore' });
+      await fireEvent.click(exploreBtn);
+      const fretboard = screen.queryByRole('img');
+      expect(fretboard).toBeTruthy();
+    });
+
+    it('clicking "Explore" toggle shows a button with aria-label="Play interval"', async () => {
+      await renderTool();
+      const exploreBtn = screen.getByRole('button', { name: 'Explore' });
+      await fireEvent.click(exploreBtn);
+      const playBtn = screen.queryByRole('button', { name: 'Play interval' });
+      expect(playBtn).toBeTruthy();
+    });
+
+    it('clicking "Explore" toggle hides the 4 answer buttons', async () => {
+      await renderTool();
+      const exploreBtn = screen.getByRole('button', { name: 'Explore' });
+      await fireEvent.click(exploreBtn);
+      const answerBtns = screen
+        .queryAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      expect(answerBtns.length).toBe(0);
+    });
+
+    it('clicking "Explore" then "Practice" restores exactly 4 answer buttons', async () => {
+      await renderTool();
+      const exploreBtn = screen.getByRole('button', { name: 'Explore' });
+      await fireEvent.click(exploreBtn);
+      const practiceBtn = screen.getByRole('button', { name: 'Practice' });
+      await fireEvent.click(practiceBtn);
+      const answerBtns = screen
+        .getAllByRole('button')
+        .filter((b) => /^Answer /.test(b.getAttribute('aria-label') ?? ''));
+      expect(answerBtns.length).toBe(4);
+    });
+
+    it('clicking "Explore" then "Practice" re-establishes aria-pressed="true" on Practice button', async () => {
+      await renderTool();
+      const exploreBtn = screen.getByRole('button', { name: 'Explore' });
+      await fireEvent.click(exploreBtn);
+      const practiceBtn = screen.getByRole('button', { name: 'Practice' });
+      await fireEvent.click(practiceBtn);
+      const practiceBtnAfter = screen.getByRole('button', { name: 'Practice' });
+      expect(practiceBtnAfter.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('(a11y) active toggle button has aria-pressed="true"', async () => {
+      await renderTool();
+      // Practice is active on mount
+      const practiceBtn = screen.getByRole('button', { name: 'Practice' });
+      expect(practiceBtn.getAttribute('aria-pressed')).toBe('true');
+      // Switch to Explore — now Explore should be active
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      const exploreBtnAfter = screen.getByRole('button', { name: 'Explore' });
+      expect(exploreBtnAfter.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('switching to Explore cancels a pending Practice auto-advance (no late audio)', async () => {
+      vi.useFakeTimers();
+      try {
+        await renderTool(() => 0); // mount plays once; rng=()=>0 → correct answer is "Minor 2nd"
+        await fireEvent.click(screen.getByRole('button', { name: 'Answer Minor 2nd' })); // correct → schedules setTimeout(next, 1500)
+        await fireEvent.click(screen.getByRole('button', { name: 'Explore' })); // setMode must cancel the pending timer
+        const callsBefore = mockPlaySequence.mock.calls.length;
+        vi.advanceTimersByTime(3000); // a leftover timer would fire next() → playSequence
+        expect(mockPlaySequence.mock.calls.length).toBe(callsBefore);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('Explore controls are visible button radiogroups (not dropdowns)', async () => {
+      await renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      // 12 chromatic root radios + 12 interval radios, all visible (no <select>).
+      expect(screen.getAllByRole('radio').length).toBe(24);
+    });
+
+    it('clicking an interval button selects it and updates the displayed interval', async () => {
+      const { container } = await renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      const m3Btn = screen.getByRole('radio', { name: 'Interval Major 3rd' });
+      await fireEvent.click(m3Btn);
+      expect(m3Btn.getAttribute('aria-checked')).toBe('true');
+      expect(container.textContent ?? '').toContain('Major 3rd');
+    });
+
+    it('clicking a root note button selects it', async () => {
+      await renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      const rootD = screen.getByRole('radio', { name: 'Root D' });
+      await fireEvent.click(rootD);
+      expect(rootD.getAttribute('aria-checked')).toBe('true');
+    });
+
+    // T10 — Explore mode audio tests
+    it('clicking "Explore" then "Play interval" calls mockPlaySequence', async () => {
+      await renderTool();
+      mockPlaySequence.mockClear();
+      const exploreBtn = screen.getByRole('button', { name: 'Explore' });
+      await fireEvent.click(exploreBtn);
+      const playBtn = screen.getByRole('button', { name: 'Play interval' });
+      await fireEvent.click(playBtn);
+      expect(mockPlaySequence).toHaveBeenCalledTimes(1);
+    });
+
+    it('clicking "Play interval" in Explore calls mockPlaySequence with an array of exactly 2 numbers', async () => {
+      await renderTool();
+      mockPlaySequence.mockClear();
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      await fireEvent.click(screen.getByRole('button', { name: 'Play interval' }));
+      expect(mockPlaySequence).toHaveBeenCalledTimes(1);
+      const [freqs] = mockPlaySequence.mock.calls[0] as [number[]];
+      expect(Array.isArray(freqs)).toBe(true);
+      expect(freqs.length).toBe(2);
+    });
+
+    it('default exploreRootPc=0, exploreSemitones=7: two frequencies match midiToFreq(60) and midiToFreq(67)', async () => {
+      const { midiToFreq } = await import('$lib/theory/intervals');
+      await renderTool();
+      mockPlaySequence.mockClear();
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      await fireEvent.click(screen.getByRole('button', { name: 'Play interval' }));
+      const [freqs] = mockPlaySequence.mock.calls[0] as [number[]];
+      expect(freqs[0]).toBeCloseTo(midiToFreq(60), 5);
+      expect(freqs[1]).toBeCloseTo(midiToFreq(67), 5);
+    });
+
+    it('switching back to Practice after Explore does NOT call mockPlaySequence again', async () => {
+      await renderTool();
+      // Mount plays once (Practice auto-plays)
+      const callsAfterMount = mockPlaySequence.mock.calls.length;
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      await fireEvent.click(screen.getByRole('button', { name: 'Practice' }));
+      // Switching back should not trigger audio
+      expect(mockPlaySequence.mock.calls.length).toBe(callsAfterMount);
+    });
+  });
 });

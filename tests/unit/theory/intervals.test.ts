@@ -6,6 +6,7 @@ import {
   generateQuestion,
   ROOT_MIN,
   ROOT_SPAN,
+  intervalPositions,
 } from '$lib/theory/intervals';
 import type { Rng } from '$lib/theory/intervals';
 
@@ -170,5 +171,105 @@ describe('generateQuestion', () => {
     expect(q.rootMidi).toBe(57);
     expect(q.lowMidi).toBe(57);
     expect(q.highMidi).toBe(58); // 57 + 1 semitone
+  });
+});
+
+// ---------------------------------------------------------------------------
+// intervalPositions
+// ---------------------------------------------------------------------------
+describe('intervalPositions', () => {
+  it('returns an array (basic smoke)', () => {
+    const result = intervalPositions(0, 7);
+    expect(Array.isArray(result)).toBe(true);
+  });
+
+  it('every returned position has fret in [0, 14]', () => {
+    const result = intervalPositions(0, 7);
+    for (const pos of result) {
+      expect(pos.fret).toBeGreaterThanOrEqual(0);
+      expect(pos.fret).toBeLessThanOrEqual(14);
+    }
+  });
+
+  it('every returned position has stringIndex in [0, 5]', () => {
+    const result = intervalPositions(0, 7);
+    for (const pos of result) {
+      expect(pos.stringIndex).toBeGreaterThanOrEqual(0);
+      expect(pos.stringIndex).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('all role:root positions have pitchClass === 0', () => {
+    const result = intervalPositions(0, 7);
+    const roots = result.filter((p) => p.role === 'root');
+    for (const p of roots) {
+      expect(p.pitchClass).toBe(0);
+    }
+  });
+
+  it('all role:target positions have pitchClass === 7', () => {
+    const result = intervalPositions(0, 7);
+    const targets = result.filter((p) => p.role === 'target');
+    for (const p of targets) {
+      expect(p.pitchClass).toBe(7);
+    }
+  });
+
+  it('low E string (stringIndex 0, open pc 4): root C at fret 8 is present, fret 20 is NOT present', () => {
+    // Low E open = pc 4; fret 8 → (4+8)%12 = 0 = C (root). Fret 20 > 14 so excluded.
+    const result = intervalPositions(0, 7);
+    const rootAtFret8 = result.find((p) => p.stringIndex === 0 && p.fret === 8 && p.role === 'root');
+    expect(rootAtFret8).toBeTruthy();
+    const fret20 = result.find((p) => p.fret === 20);
+    expect(fret20).toBeUndefined();
+  });
+
+  it('Perfect Octave (intervalSemitones=12) — zero marks with role:target; all matching marks have role:root', () => {
+    const result = intervalPositions(0, 12);
+    const targets = result.filter((p) => p.role === 'target');
+    expect(targets.length).toBe(0);
+    const roots = result.filter((p) => p.role === 'root');
+    expect(roots.length).toBeGreaterThan(0);
+  });
+
+  it('is deterministic — calling twice with same args returns identical arrays', () => {
+    const a = intervalPositions(0, 7);
+    const b = intervalPositions(0, 7);
+    expect(a).toEqual(b);
+  });
+
+  it('negative root normalizes — intervalPositions(-1, 7) all role:root have pitchClass === 11', () => {
+    const result = intervalPositions(-1, 7);
+    const roots = result.filter((p) => p.role === 'root');
+    for (const p of roots) {
+      expect(p.pitchClass).toBe(11);
+    }
+  });
+
+  // T4 — spot-check known coordinates + regression guard
+  it('known coordinate: intervalPositions(0, 7) has { stringIndex:0, fret:8, role:"root" }', () => {
+    // Low E open = pc 4; fret 8 → (4+8)%12 = 0 = C root ✓
+    const result = intervalPositions(0, 7);
+    const found = result.find((p) => p.stringIndex === 0 && p.fret === 8 && p.role === 'root');
+    expect(found).toBeTruthy();
+  });
+
+  it('known coordinate: intervalPositions(0, 7) has { stringIndex:0, fret:3, role:"target" }', () => {
+    // Low E open = pc 4; fret 3 → (4+3)%12 = 7 = G target ✓
+    const result = intervalPositions(0, 7);
+    const found = result.find((p) => p.stringIndex === 0 && p.fret === 3 && p.role === 'target');
+    expect(found).toBeTruthy();
+  });
+
+  it('no fret > 14 — regression guard', () => {
+    const result = intervalPositions(0, 7);
+    const outOfBounds = result.find((p) => p.fret > 14);
+    expect(outOfBounds).toBeUndefined();
+  });
+
+  it('total mark count > 0 and ≤ 90 for intervalPositions(0, 7)', () => {
+    const result = intervalPositions(0, 7);
+    expect(result.length).toBeGreaterThan(0);
+    expect(result.length).toBeLessThanOrEqual(90);
   });
 });

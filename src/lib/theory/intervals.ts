@@ -2,14 +2,24 @@
  * Interval theory module for the Interval Ear Trainer.
  *
  * Provides the canonical 12-entry interval table, MIDI frequency conversion,
- * and a pure question-generation function with injectable RNG for deterministic tests.
+ * a pure question-generation function with injectable RNG for deterministic tests,
+ * and a pure fretboard position calculator for the Explore mode.
  */
+
+import { STANDARD_TUNING } from '$lib/types/chord';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 export type Rng = () => number;
+
+export interface IntervalPosition {
+  stringIndex: number; // 0..5, tablature order (low E .. high E)
+  fret: number;        // 0..MAX_FRET inclusive
+  pitchClass: number;  // 0..11
+  role: 'root' | 'target';
+}
 
 export type IntervalName =
   | 'Minor 2nd'
@@ -42,6 +52,9 @@ export interface Question {
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
+
+/** Maximum fret index on the full-neck explorer (0-indexed). */
+export const MAX_FRET = 14;
 
 /** Lowest comfortable root note (A3). */
 export const ROOT_MIN = 57;
@@ -89,6 +102,38 @@ export function intervalBySemitones(n: number): Interval {
     throw new RangeError(`semitones must be between 1 and 12, got ${n}`);
   }
   return INTERVALS[n - 1];
+}
+
+/**
+ * Returns every fret position on a 6-string standard-tuned neck (frets 0..MAX_FRET)
+ * whose pitch class equals the root or the target (root + intervalSemitones).
+ *
+ * Pure: no DOM, no audio. Bounded double for-loop — no while-loops.
+ * Edge case: if intervalSemitones % 12 === 0 (unison/octave), targetPc === rootPc;
+ * the else-if ordering ensures such positions are marked 'root', never duplicated.
+ */
+export function intervalPositions(
+  rootPc: number,
+  intervalSemitones: number,
+): IntervalPosition[] {
+  const normalizedRoot = ((rootPc % 12) + 12) % 12;
+  const targetPc = (normalizedRoot + intervalSemitones) % 12;
+
+  const positions: IntervalPosition[] = [];
+
+  for (let stringIndex = 0; stringIndex <= 5; stringIndex++) {
+    const openNote = STANDARD_TUNING[stringIndex];
+    for (let fret = 0; fret <= MAX_FRET; fret++) {
+      const pc = (openNote + fret) % 12;
+      if (pc === normalizedRoot) {
+        positions.push({ stringIndex, fret, pitchClass: pc, role: 'root' });
+      } else if (pc === targetPc) {
+        positions.push({ stringIndex, fret, pitchClass: pc, role: 'target' });
+      }
+    }
+  }
+
+  return positions;
 }
 
 /**
