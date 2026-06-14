@@ -7,6 +7,7 @@
   import ToneGenerator from '$lib/components/ToneGenerator.svelte';
   import PentatonicTool from '$lib/components/PentatonicTool.svelte';
   import SignalLab from '$lib/components/SignalLab.svelte';
+  import IntervalTrainer from '$lib/components/IntervalTrainer.svelte';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
   let currentView: ViewName = $state('home');
@@ -58,6 +59,10 @@
   {:else if currentView === 'signal-lab'}
     <svelte:boundary failed={errorFallback}>
       <SignalLab {navigate} />
+    </svelte:boundary>
+  {:else if currentView === 'interval-trainer'}
+    <svelte:boundary failed={errorFallback}>
+      <IntervalTrainer {navigate} />
     </svelte:boundary>
   {/if}
 </main>
