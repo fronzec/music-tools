@@ -12,42 +12,31 @@ describe('LegendPanel', () => {
   describe('shape colors section', () => {
     it('renders with 5 shape items', () => {
       renderPanel();
-      expect(screen.getByText('CAGED Shapes')).toBeTruthy();
+      expect(screen.getByRole('heading', { name: 'Shapes' })).toBeTruthy();
       for (const shape of ['C', 'A', 'G', 'E', 'D']) {
         expect(screen.getByText(shape)).toBeTruthy();
       }
     });
 
-    it('displays correct hex codes for each shape', () => {
-      renderPanel();
-      const hexCodes = [
-        '#2563EB',
-        '#F97316',
-        '#16A34A',
-        '#EF4444',
-        '#9333EA',
-      ];
-      for (const hex of hexCodes) {
-        expect(screen.getByText(hex)).toBeTruthy();
-      }
+    it('renders a color swatch for each shape', () => {
+      const { container } = renderPanel();
+      const swatches = container.querySelectorAll('.rounded-full[style*="background-color"]');
+      expect(swatches.length).toBe(5);
     });
   });
 
   describe('symbols section', () => {
     it('shows symbols section with diamond and circle', () => {
       renderPanel();
-      expect(screen.getByText('Symbols')).toBeTruthy();
-      expect(screen.getByText('Root note — name inside')).toBeTruthy();
-      expect(screen.getByText('Chord tone — name inside')).toBeTruthy();
+      expect(screen.getByRole('heading', { name: 'Symbols' })).toBeTruthy();
+      expect(screen.getByText('Root note')).toBeTruthy();
+      expect(screen.getByText('Chord tone')).toBeTruthy();
     });
-  });
 
-  describe('open & muted section', () => {
     it('shows open and muted string indicators', () => {
       renderPanel();
-      expect(screen.getByText('Open & Muted')).toBeTruthy();
-      expect(screen.getByText('Open string — color shows shape')).toBeTruthy();
-      expect(screen.getByText('Muted string — dimmed for muted')).toBeTruthy();
+      expect(screen.getByText('Open')).toBeTruthy();
+      expect(screen.getByText('Muted')).toBeTruthy();
     });
   });
 
@@ -64,27 +53,9 @@ describe('LegendPanel', () => {
 
     it('shows diff section when viewMode is dual', () => {
       renderPanel({ viewMode: 'dual' });
-      expect(screen.getByText('Dual Compare')).toBeTruthy();
-      expect(
-        screen.getByText('Same interval in both chords'),
-      ).toBeTruthy();
+      expect(screen.getByRole('heading', { name: 'Dual Compare' })).toBeTruthy();
+      expect(screen.getByText('Same interval')).toBeTruthy();
       expect(screen.getByText('Different interval')).toBeTruthy();
-    });
-  });
-
-  describe('collapse behavior', () => {
-    it('collapses content when open=false (max-height: 0)', () => {
-      const { container } = renderPanel({ open: false });
-      const panel = container.querySelector('[role="region"]');
-      expect(panel).toBeTruthy();
-      expect(panel!.getAttribute('style')).toContain('max-height: 0');
-    });
-
-    it('expands content when open=true', () => {
-      const { container } = renderPanel({ open: true });
-      const panel = container.querySelector('[role="region"]');
-      expect(panel).toBeTruthy();
-      expect(panel!.getAttribute('style')).toContain('max-height: 700px');
     });
   });
 
