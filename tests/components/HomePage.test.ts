@@ -28,13 +28,13 @@ describe('HomePage', () => {
       expect(openButtons.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('renders at least 2 placeholder cards', () => {
+    it('renders at least 1 placeholder card', () => {
       renderPage();
       const comingSoonBadges = screen.getAllByText('Coming soon');
-      expect(comingSoonBadges.length).toBeGreaterThanOrEqual(2);
+      expect(comingSoonBadges.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('renders a Scales Explorer placeholder card', () => {
+    it('renders a Scales Explorer card', () => {
       renderPage();
       expect(screen.getByText('Scales Explorer')).toBeTruthy();
     });
@@ -69,7 +69,7 @@ describe('HomePage', () => {
     it('renders the Progression Builder card as an active tool', () => {
       renderPage();
       expect(screen.getByText('Progression Builder')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(4); // CAGED, Progression, Note Trainer, Tone Generator
+      expect(screen.getAllByText('Open').length).toBe(5); // CAGED, Progression, Note Trainer, Tone Generator, Scales Explorer
     });
 
     it('calls navigate with "progression" when the Progression Builder card is clicked', async () => {
@@ -103,7 +103,7 @@ describe('HomePage', () => {
       renderPage();
       expect(screen.getByText('Note Trainer')).toBeTruthy();
       expect(screen.getByText('Learn every note on the fretboard with visual patterns and quizzes')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(4);
+      expect(screen.getAllByText('Open').length).toBe(5);
     });
 
     it('calls navigate with "note-trainer" when the Note Trainer card is clicked', async () => {
@@ -137,7 +137,7 @@ describe('HomePage', () => {
       renderPage();
       expect(screen.getByText('Tone Generator')).toBeTruthy();
       expect(screen.getByText('Reference tones for tuning by ear')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(4);
+      expect(screen.getAllByText('Open').length).toBe(5);
     });
 
     it('calls navigate with "tone-generator" when the Tone Generator card is clicked', async () => {
@@ -171,7 +171,7 @@ describe('HomePage', () => {
       const { container } = renderPage();
       // Placeholder cards have opacity-60 class
       const mutedCards = container.querySelectorAll('.opacity-60');
-      expect(mutedCards.length).toBeGreaterThanOrEqual(2);
+      expect(mutedCards.length).toBeGreaterThanOrEqual(1);
     });
 
     it('placeholder cards are not buttons (not clickable)', () => {

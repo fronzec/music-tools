@@ -5,6 +5,7 @@
   import ProgressionBuilder from '$lib/components/ProgressionBuilder.svelte';
   import NoteTrainer from '$lib/components/NoteTrainer.svelte';
   import ToneGenerator from '$lib/components/ToneGenerator.svelte';
+  import PentatonicTool from '$lib/components/PentatonicTool.svelte';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
   let currentView: ViewName = $state('home');
@@ -48,6 +49,10 @@
   {:else if currentView === 'tone-generator'}
     <svelte:boundary failed={errorFallback}>
       <ToneGenerator {navigate} />
+    </svelte:boundary>
+  {:else if currentView === 'pentatonic'}
+    <svelte:boundary failed={errorFallback}>
+      <PentatonicTool {navigate} />
     </svelte:boundary>
   {/if}
 </main>
