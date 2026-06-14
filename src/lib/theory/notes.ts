@@ -1,5 +1,5 @@
-import type { NoteName, ChordQuality } from '$lib/types/chord';
-import { CHROMATIC } from '$lib/types/chord';
+import type { NoteName, ChordQuality, LabelMode } from '$lib/types/chord';
+import { CHROMATIC, STANDARD_TUNING } from '$lib/types/chord';
 
 /**
  * Converts a semitone index (0-11) to its note name.
@@ -38,4 +38,48 @@ export function getIntervalName(semitone: number, quality: ChordQuality): string
 
   // Non-chord tone
   return '';
+}
+
+/**
+ * Returns the note name for a given string and absolute fret position.
+ *
+ * @param stringIndex - String index 0–5 (low E to high E, tablature order).
+ * @param absoluteFret - Absolute fret number (not relative to baseFret).
+ */
+export function getNoteName(stringIndex: number, absoluteFret: number): string {
+  const openSemitone = STANDARD_TUNING[stringIndex];
+  const frettedSemitone = openSemitone + absoluteFret;
+  return semitoneToNoteName(frettedSemitone);
+}
+
+/**
+ * Returns the display label for a note given the active label mode.
+ *
+ * Unlike the component-local versions, `labelMode` is an explicit parameter
+ * rather than a closed-over prop — making this function pure and importable.
+ *
+ * @param stringIndex - String index 0–5.
+ * @param absoluteFret - Absolute fret number.
+ * @param interval - Interval label ('R', '3', 'b3', '5') or null for muted strings.
+ * @param labelMode - Display mode: 'intervals', 'notes', or 'both'.
+ */
+export function getLabel(
+  stringIndex: number,
+  absoluteFret: number,
+  interval: string | null,
+  labelMode: LabelMode,
+): string | null {
+  if (interval === null) return null;
+  const noteName = getNoteName(stringIndex, absoluteFret);
+
+  switch (labelMode) {
+    case 'intervals':
+      return interval;
+    case 'notes':
+      return noteName;
+    case 'both':
+      return `${noteName} (${interval})`;
+    default:
+      return interval;
+  }
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getShapes, getAllRoots, getAllQualities, validate } from '$lib/data/chords';
+import { getShapes, getAllRoots, getAllQualities } from '$lib/data/chords';
 import type { NoteName, ChordQuality, CagedShape } from '$lib/types/chord';
 import { CHROMATIC } from '$lib/types/chord';
 
@@ -318,9 +318,74 @@ describe('known open chords', () => {
   });
 });
 
-describe('validate', () => {
-  it('returns true for the generated dataset', () => {
-    expect(validate()).toBe(true);
+describe('dataset integrity (validate)', () => {
+  it('has exactly 12 roots', () => {
+    expect(getAllRoots()).toHaveLength(12);
+  });
+
+  it('each root+quality has exactly 5 shapes in CAGED order', () => {
+    const expectedOrder = ['C', 'A', 'G', 'E', 'D'];
+    for (const root of getAllRoots()) {
+      for (const quality of getAllQualities()) {
+        const shapes = getShapes(root, quality);
+        expect(shapes).toHaveLength(5);
+        expect(shapes.map((s) => s.shape)).toEqual(expectedOrder);
+      }
+    }
+  });
+
+  it('all baseFret values are >= 0', () => {
+    for (const root of getAllRoots()) {
+      for (const quality of getAllQualities()) {
+        for (const shape of getShapes(root, quality)) {
+          expect(shape.baseFret).toBeGreaterThanOrEqual(0);
+        }
+      }
+    }
+  });
+
+  it('rootString is in range 0..5 for all shapes', () => {
+    for (const root of getAllRoots()) {
+      for (const quality of getAllQualities()) {
+        for (const shape of getShapes(root, quality)) {
+          expect(shape.rootString).toBeGreaterThanOrEqual(0);
+          expect(shape.rootString).toBeLessThanOrEqual(5);
+        }
+      }
+    }
+  });
+
+  it('root and quality fields match lookup key', () => {
+    for (const root of getAllRoots()) {
+      for (const quality of getAllQualities()) {
+        for (const shape of getShapes(root, quality)) {
+          expect(shape.root).toBe(root);
+          expect(shape.quality).toBe(quality);
+        }
+      }
+    }
+  });
+
+  it('null consistency: frets[i] null iff intervals[i] null', () => {
+    for (const root of getAllRoots()) {
+      for (const quality of getAllQualities()) {
+        for (const shape of getShapes(root, quality)) {
+          for (let i = 0; i < 6; i++) {
+            expect((shape.frets[i] === null)).toBe(shape.intervals[i] === null);
+          }
+        }
+      }
+    }
+  });
+
+  it('total shape count is exactly 120', () => {
+    let total = 0;
+    for (const root of getAllRoots()) {
+      for (const quality of getAllQualities()) {
+        total += getShapes(root, quality).length;
+      }
+    }
+    expect(total).toBe(120);
   });
 });
 

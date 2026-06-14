@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { semitoneToNoteName, noteNameToSemitone, getIntervalName } from '$lib/theory/notes';
+import { semitoneToNoteName, noteNameToSemitone, getIntervalName, getNoteName, getLabel } from '$lib/theory/notes';
 
 describe('semitoneToNoteName', () => {
   it('returns C for semitone 0', () => {
@@ -109,5 +109,56 @@ describe('getIntervalName', () => {
     it('returns empty string for semitone 4 (major third — not in minor)', () => {
       expect(getIntervalName(4, 'minor')).toBe('');
     });
+  });
+});
+
+describe('getNoteName', () => {
+  it('open low E string (stringIndex=0, fret=0) returns E', () => {
+    // STANDARD_TUNING[0] = 4 (E) + 0 = 4 → E
+    expect(getNoteName(0, 0)).toBe('E');
+  });
+
+  it('open A string (stringIndex=1, fret=0) returns A', () => {
+    // STANDARD_TUNING[1] = 9 (A) + 0 = 9 → A
+    expect(getNoteName(1, 0)).toBe('A');
+  });
+
+  it('5th fret on low E string returns A', () => {
+    // STANDARD_TUNING[0] = 4 (E) + 5 = 9 → A
+    expect(getNoteName(0, 5)).toBe('A');
+  });
+
+  it('5th fret on A string returns D', () => {
+    // STANDARD_TUNING[1] = 9 (A) + 5 = 14 → wraps to 2 → D
+    expect(getNoteName(1, 5)).toBe('D');
+  });
+
+  it('open high E string (stringIndex=5, fret=0) returns E', () => {
+    // STANDARD_TUNING[5] = 4 (E) + 0 = 4 → E
+    expect(getNoteName(5, 0)).toBe('E');
+  });
+});
+
+describe('getLabel', () => {
+  it('intervals mode returns the interval string', () => {
+    expect(getLabel(0, 5, 'R', 'intervals')).toBe('R');
+    expect(getLabel(0, 5, '3', 'intervals')).toBe('3');
+    expect(getLabel(0, 5, 'b3', 'intervals')).toBe('b3');
+  });
+
+  it('notes mode returns the note name', () => {
+    // stringIndex=0, fret=5 → A
+    expect(getLabel(0, 5, 'R', 'notes')).toBe('A');
+  });
+
+  it('both mode returns note and interval combined', () => {
+    // stringIndex=0, fret=5 → A
+    expect(getLabel(0, 5, 'R', 'both')).toBe('A (R)');
+  });
+
+  it('returns null when interval is null', () => {
+    expect(getLabel(0, 5, null, 'notes')).toBeNull();
+    expect(getLabel(0, 5, null, 'intervals')).toBeNull();
+    expect(getLabel(0, 5, null, 'both')).toBeNull();
   });
 });
