@@ -676,7 +676,7 @@ describe('FullFretboard', () => {
       const viewBox = svg.getAttribute('viewBox');
       expect(viewBox).toBeTruthy();
       const parts = viewBox!.split(' ').map(Number);
-      expect(parts[0]).toBe(0);
+      expect(parts[0]).toBe(-24); // left extension covers open-string notes
       expect(parts[1]).toBe(0);
       expect(parts[2]).toBeGreaterThan(0);
       expect(parts[3]).toBeGreaterThan(0);
@@ -692,7 +692,7 @@ describe('FullFretboard', () => {
       });
       const svg = container.querySelector('svg')!;
       const vbW = Number(svg.getAttribute('viewBox')!.split(' ')[2]);
-      expect(vbW).toBe(400);
+      expect(vbW).toBe(424); // width prop 400 + 24px left extension
     });
   });
 

@@ -257,7 +257,7 @@
 </script>
 
 <svg
-  viewBox="0 0 {vbW} {vbH}"
+  viewBox="-24 0 {vbW + 24} {vbH + 18}"
   xmlns="http://www.w3.org/2000/svg"
   role="img"
   aria-label={ariaLabel}
