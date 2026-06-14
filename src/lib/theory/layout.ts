@@ -65,7 +65,7 @@ export const SHAPE_COLORS: Record<CagedShape, string> = {
   A: '#F97316', // orange-500
   G: '#16A34A', // green-600
   E: '#EF4444', // red-500
-  D: '#9333EA', // purple-600
+  D: '#0891B2', // cyan-600
 };
 
 /**

@@ -193,8 +193,8 @@ describe('SHAPE_COLORS', () => {
     expect(SHAPE_COLORS.E).toBe('#EF4444');
   });
 
-  it('D shape is purple-600', () => {
-    expect(SHAPE_COLORS.D).toBe('#9333EA');
+  it('D shape is cyan-600', () => {
+    expect(SHAPE_COLORS.D).toBe('#0891B2');
   });
 
   it('all shape colors are distinct', () => {
