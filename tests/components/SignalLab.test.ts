@@ -54,13 +54,17 @@ describe('SignalLab', () => {
   let mockDelayOutput: GainMock;
   let mockWetGain: GainMock;
   let mockDelay: DelayMock;
-  let mockAnalyser: {
+  type AnalyserMock = {
     fftSize: number;
     frequencyBinCount: number;
     getByteTimeDomainData: ReturnType<typeof vi.fn>;
     getByteFrequencyData: ReturnType<typeof vi.fn>;
     connect: ReturnType<typeof vi.fn>;
   };
+  // Two analysers: the processed tap (end of the effect chain) and the clean
+  // tap (raw oscillator), so the scopes can show input vs output side by side.
+  let mockAnalyser: AnalyserMock;
+  let mockCleanAnalyser: AnalyserMock;
   let mockCtx: {
     createOscillator: ReturnType<typeof vi.fn>;
     createGain: ReturnType<typeof vi.fn>;
@@ -95,6 +99,16 @@ describe('SignalLab', () => {
       },
       connect: vi.fn(),
       disconnect: vi.fn(),
+    };
+  }
+
+  function makeAnalyser(): AnalyserMock {
+    return {
+      fftSize: 0,
+      frequencyBinCount: 1024,
+      getByteTimeDomainData: vi.fn(),
+      getByteFrequencyData: vi.fn(),
+      connect: vi.fn(),
     };
   }
 
@@ -137,17 +151,15 @@ describe('SignalLab', () => {
       connect: vi.fn(),
       disconnect: vi.fn(),
     };
-    mockAnalyser = {
-      fftSize: 0,
-      frequencyBinCount: 1024,
-      getByteTimeDomainData: vi.fn(),
-      getByteFrequencyData: vi.fn(),
-      connect: vi.fn(),
-    };
+    // Processed analyser is created first, clean tap second (matches start()).
+    mockAnalyser = makeAnalyser();
+    mockCleanAnalyser = makeAnalyser();
+    const analysers = [mockAnalyser, mockCleanAnalyser];
+    let analyserIdx = 0;
     mockCtx = {
       createOscillator: vi.fn(() => oscillators[oscIdx++] ?? makeOscillator()),
       createGain: vi.fn(() => gains[gainIdx++] ?? makeGain()),
-      createAnalyser: vi.fn().mockReturnValue(mockAnalyser),
+      createAnalyser: vi.fn(() => analysers[analyserIdx++] ?? makeAnalyser()),
       createWaveShaper: vi.fn().mockReturnValue(mockWaveShaper),
       createBiquadFilter: vi.fn().mockReturnValue(mockBiquad),
       createDelay: vi.fn().mockReturnValue(mockDelay),
@@ -205,9 +217,10 @@ describe('SignalLab', () => {
       expect(screen.getByRole('slider', { name: 'Volume' })).toBeTruthy();
     });
 
-    it('renders the oscilloscope and spectrum canvases', () => {
+    it('renders clean + processed oscilloscope and spectrum canvases', () => {
       const { container } = renderTool();
-      expect(container.querySelectorAll('canvas')).toHaveLength(2);
+      // Two columns (clean vs processed), each with a scope + spectrum = 4.
+      expect(container.querySelectorAll('canvas')).toHaveLength(4);
     });
 
     it('does not create an AudioContext until played', () => {
@@ -478,6 +491,42 @@ describe('SignalLab', () => {
         expect.any(Number),
         expect.any(Number),
       );
+    });
+  });
+
+  describe('clean vs processed comparison', () => {
+    it('creates a second analyser for the clean (pre-effects) tap on play', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      // One analyser for the processed output, one for the clean input.
+      expect(mockCtx.createAnalyser).toHaveBeenCalledTimes(2);
+    });
+
+    it('taps the raw oscillator into the clean analyser', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      // The clean scope observes the oscillator directly, before any effect.
+      expect(mockOscillator.connect).toHaveBeenCalledWith(mockCleanAnalyser);
+    });
+
+    it('keeps the clean tap wired after an effect is toggled', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      mockOscillator.connect.mockClear();
+      // rebuildChain() disconnects the oscillator, so it must re-establish the
+      // clean tap on every rewire — otherwise toggling an effect kills it.
+      await fireEvent.click(effectGroup('Distortion').getByRole('radio', { name: 'On' }));
+      expect(mockOscillator.connect).toHaveBeenCalledWith(mockCleanAnalyser);
+    });
+
+    it('never wires the clean analyser onward (stays a passive leaf)', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      // Safety invariant: the clean tap only observes. If it ever connected
+      // forward it would feed the audible chain — so it must have NO outputs,
+      // even after rewiring from an effect toggle.
+      await fireEvent.click(effectGroup('Distortion').getByRole('radio', { name: 'On' }));
+      expect(mockCleanAnalyser.connect).not.toHaveBeenCalled();
     });
   });
 

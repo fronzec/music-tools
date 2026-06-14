@@ -24,9 +24,13 @@
   let delayInput: GainNode | null = null;
   let delayOutput: GainNode | null = null;
   let wetGain: GainNode | null = null;
-  // Plain ref used for graph wiring; `analyser` ($state) is for the scopes.
+  // Plain refs used for graph wiring; the `$state` ones drive the scopes.
+  // `analyser` taps the processed signal (end of chain); `cleanAnalyser` taps
+  // the raw oscillator, so the two can be shown side by side (input vs output).
   let analyserNode: AnalyserNode | null = null;
   let analyser = $state<AnalyserNode | null>(null);
+  let cleanAnalyserNode: AnalyserNode | null = null;
+  let cleanAnalyser = $state<AnalyserNode | null>(null);
 
   type Wave = 'sine' | 'triangle' | 'sawtooth' | 'square';
 
@@ -86,6 +90,10 @@
     // Severs delayOutput → next only; the dry/wet/feedback wiring feeding INTO
     // delayOutput stays intact (those nodes are the sources of those edges).
     delayOutput?.disconnect();
+    // The oscillator.disconnect() above also drops the clean tap, so re-add it
+    // on every rewire. It's a passive leaf (never connected onward), so it only
+    // observes the raw signal and never feeds the audible chain.
+    if (cleanAnalyserNode) oscillator.connect(cleanAnalyserNode);
     const stages: Stage[] = [{ in: oscillator, out: oscillator }];
     if (distOn && waveShaper) stages.push({ in: waveShaper, out: waveShaper });
     if (filtOn && biquad) stages.push({ in: biquad, out: biquad });
@@ -160,6 +168,10 @@
     feedbackGain.connect(delayNode); // feedback loop
     const an = audioCtx.createAnalyser();
     an.fftSize = FFT_SIZE;
+    // Clean tap: a second analyser on the raw oscillator, for the side-by-side
+    // input-vs-output comparison. Same fftSize so both scopes share a scale.
+    const cleanAn = audioCtx.createAnalyser();
+    cleanAn.fftSize = FFT_SIZE;
 
     oscillator.type = waveType;
     oscillator.frequency.value = frequency;
@@ -172,11 +184,13 @@
     an.connect(masterGain);
     masterGain.connect(audioCtx.destination);
     analyserNode = an;
+    cleanAnalyserNode = cleanAn;
     rebuildChain(distortionOn, filterOn, tremoloOn, delayOn);
     oscillator.start();
     lfo.start();
 
     analyser = an;
+    cleanAnalyser = cleanAn;
     isPlaying = true;
   }
 
@@ -207,6 +221,8 @@
     wetGain = null;
     analyserNode = null;
     analyser = null;
+    cleanAnalyserNode = null;
+    cleanAnalyser = null;
     isPlaying = false;
   }
 
@@ -781,12 +797,57 @@
       </p>
     </div>
 
-    <!-- Visualizations -->
+    <!-- Visualizations: clean (raw oscillator) vs processed (after effects) -->
     <div
-      class="space-y-5 rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+      class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
     >
-      <SignalScope {analyser} mode="scope" active={isPlaying} color="#3B82F6" label="Oscilloscope" />
-      <SignalScope {analyser} mode="spectrum" active={isPlaying} color="#16A34A" label="Spectrum" />
+      <p class="mb-5 text-xs text-gray-500 dark:text-gray-400">
+        Left is the raw oscillator; right is the signal after the effect chain. Toggle an effect and
+        watch only the right column change.
+      </p>
+      <div class="grid gap-6 md:grid-cols-2">
+        <!-- Clean (input) -->
+        <div class="space-y-5">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+            Clean — input
+          </h2>
+          <SignalScope
+            analyser={cleanAnalyser}
+            mode="scope"
+            active={isPlaying}
+            color="#3B82F6"
+            label="Oscilloscope"
+          />
+          <SignalScope
+            analyser={cleanAnalyser}
+            mode="spectrum"
+            active={isPlaying}
+            color="#16A34A"
+            label="Spectrum"
+          />
+        </div>
+
+        <!-- Processed (output) -->
+        <div class="space-y-5">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+            Processed — output
+          </h2>
+          <SignalScope
+            {analyser}
+            mode="scope"
+            active={isPlaying}
+            color="#3B82F6"
+            label="Oscilloscope"
+          />
+          <SignalScope
+            {analyser}
+            mode="spectrum"
+            active={isPlaying}
+            color="#16A34A"
+            label="Spectrum"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </div>
