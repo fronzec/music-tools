@@ -19,6 +19,11 @@
   let lfo: OscillatorNode | null = null;
   let tremoloGain: GainNode | null = null;
   let lfoDepth: GainNode | null = null;
+  let delayNode: DelayNode | null = null;
+  let feedbackGain: GainNode | null = null;
+  let delayInput: GainNode | null = null;
+  let delayOutput: GainNode | null = null;
+  let wetGain: GainNode | null = null;
   // Plain ref used for graph wiring; `analyser` ($state) is for the scopes.
   let analyserNode: AnalyserNode | null = null;
   let analyser = $state<AnalyserNode | null>(null);
@@ -57,8 +62,19 @@
   let tremRate = $state(5); // Hz
   let tremDepth = $state(0.5); // 0..1
 
+  // ── Delay (echo / comb filtering) ───────────────────────────────────
+  let delayOn = $state(false);
+  let delayTime = $state(0.25); // seconds
+  let feedback = $state(0.4); // 0..0.9 (loop gain)
+  let mix = $state(0.5); // wet level 0..1
+
+  // Most effects are a single in-line node, but the delay is a sub-graph with
+  // a dry/wet split, so each stage carries both an `in` and an `out` endpoint.
+  // Single-node effects use the same node for both.
+  type Stage = { in: AudioNode; out: AudioNode };
+
   /** (Re)wires the effect chain in order: oscillator → [active effects] → analyser. */
-  function rebuildChain(distOn: boolean, filtOn: boolean, tremOn: boolean) {
+  function rebuildChain(distOn: boolean, filtOn: boolean, tremOn: boolean, delOn: boolean) {
     if (!oscillator || !analyserNode) return;
     oscillator.disconnect();
     waveShaper?.disconnect();
@@ -67,12 +83,16 @@
     // path is unaffected (disconnect removes connections where the node is the
     // source, and lfoDepth — not tremoloGain — is the source of that one).
     tremoloGain?.disconnect();
-    const chain: AudioNode[] = [oscillator];
-    if (distOn && waveShaper) chain.push(waveShaper);
-    if (filtOn && biquad) chain.push(biquad);
-    if (tremOn && tremoloGain) chain.push(tremoloGain);
-    chain.push(analyserNode);
-    for (let i = 0; i < chain.length - 1; i++) chain[i].connect(chain[i + 1]);
+    // Severs delayOutput → next only; the dry/wet/feedback wiring feeding INTO
+    // delayOutput stays intact (those nodes are the sources of those edges).
+    delayOutput?.disconnect();
+    const stages: Stage[] = [{ in: oscillator, out: oscillator }];
+    if (distOn && waveShaper) stages.push({ in: waveShaper, out: waveShaper });
+    if (filtOn && biquad) stages.push({ in: biquad, out: biquad });
+    if (tremOn && tremoloGain) stages.push({ in: tremoloGain, out: tremoloGain });
+    if (delOn && delayInput && delayOutput) stages.push({ in: delayInput, out: delayOutput });
+    stages.push({ in: analyserNode, out: analyserNode });
+    for (let i = 0; i < stages.length - 1; i++) stages[i].out.connect(stages[i + 1].in);
   }
 
   const WAVE_TYPES: Wave[] = ['sine', 'triangle', 'sawtooth', 'square'];
@@ -82,6 +102,9 @@
   const MAX_FREQ = 1000;
   const MIN_RATE = 0.5; // Hz (tremolo LFO)
   const MAX_RATE = 20; // Hz (tremolo LFO)
+  const MIN_DELAY = 0.05; // seconds
+  const MAX_DELAY = 0.9; // seconds (slider ceiling)
+  const MAX_FEEDBACK = 0.9; // keep < 1 so the loop always decays
   const MAX_GAIN = 0.4; // hearing-safety ceiling
   const FFT_SIZE = 2048;
   const ATTACK = 0.02; // fade-in seconds (avoids click on start)
@@ -114,6 +137,27 @@
     lfoDepth.gain.value = tremDepth / 2;
     lfo.connect(lfoDepth);
     lfoDepth.connect(tremoloGain.gain);
+    // Delay: a dry/wet split around a delay line with a feedback loop. Input
+    // fans out to a dry path and a wet path; the wet path is the delay line
+    // (delayNode → wetGain) plus a feedback loop (delayNode → feedbackGain →
+    // delayNode) that produces successive, decaying repeats. On a continuous
+    // tone this reads as comb filtering (notches in the spectrum) rather than
+    // discrete echoes. Internal wiring is permanent; rebuildChain only routes
+    // delayInput/delayOutput in and out of the main chain.
+    delayNode = audioCtx.createDelay(1);
+    delayNode.delayTime.value = delayTime;
+    feedbackGain = audioCtx.createGain();
+    feedbackGain.gain.value = feedback;
+    delayInput = audioCtx.createGain();
+    delayOutput = audioCtx.createGain();
+    wetGain = audioCtx.createGain();
+    wetGain.gain.value = mix;
+    delayInput.connect(delayOutput); // dry
+    delayInput.connect(delayNode); // wet entry
+    delayNode.connect(wetGain);
+    wetGain.connect(delayOutput); // wet
+    delayNode.connect(feedbackGain);
+    feedbackGain.connect(delayNode); // feedback loop
     const an = audioCtx.createAnalyser();
     an.fftSize = FFT_SIZE;
 
@@ -128,7 +172,7 @@
     an.connect(masterGain);
     masterGain.connect(audioCtx.destination);
     analyserNode = an;
-    rebuildChain(distortionOn, filterOn, tremoloOn);
+    rebuildChain(distortionOn, filterOn, tremoloOn, delayOn);
     oscillator.start();
     lfo.start();
 
@@ -156,6 +200,11 @@
     lfo = null;
     tremoloGain = null;
     lfoDepth = null;
+    delayNode = null;
+    feedbackGain = null;
+    delayInput = null;
+    delayOutput = null;
+    wetGain = null;
     analyserNode = null;
     analyser = null;
     isPlaying = false;
@@ -185,7 +234,7 @@
   // Re-wire the chain when any effect is toggled. Reading the flags as args
   // here registers them as dependencies, so this re-runs on either toggle.
   $effect(() => {
-    rebuildChain(distortionOn, filterOn, tremoloOn);
+    rebuildChain(distortionOn, filterOn, tremoloOn, delayOn);
   });
 
   // Regenerate the waveshaper curve when the drive changes while playing.
@@ -218,6 +267,22 @@
       tremoloGain.gain.setTargetAtTime(1 - d / 2, audioCtx.currentTime, 0.02);
       lfoDepth.gain.setTargetAtTime(d / 2, audioCtx.currentTime, 0.02);
     }
+  });
+
+  // Live delay parameters.
+  $effect(() => {
+    const t = delayTime;
+    if (delayNode && audioCtx) delayNode.delayTime.setTargetAtTime(t, audioCtx.currentTime, 0.01);
+  });
+
+  $effect(() => {
+    const fb = feedback;
+    if (feedbackGain && audioCtx) feedbackGain.gain.setTargetAtTime(fb, audioCtx.currentTime, 0.01);
+  });
+
+  $effect(() => {
+    const m = mix;
+    if (wetGain && audioCtx) wetGain.gain.setTargetAtTime(m, audioCtx.currentTime, 0.02);
   });
 
   $effect(() => {
@@ -596,6 +661,123 @@
       </div>
       <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
         Turn tremolo on to watch the waveform pulse — its amplitude rises and falls at the LFO rate.
+      </p>
+    </div>
+
+    <!-- Delay -->
+    <div
+      class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+    >
+      <div class="flex flex-wrap items-end gap-6">
+        <!-- Delay on/off (bypass) -->
+        <div>
+          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            Delay
+          </div>
+          <div
+            class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
+            role="radiogroup"
+            aria-label="Delay"
+          >
+            <button
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+              class:bg-white={!delayOn}
+              class:dark:bg-gray-900={!delayOn}
+              class:text-gray-900={!delayOn}
+              class:dark:text-gray-100={!delayOn}
+              class:shadow-sm={!delayOn}
+              class:text-gray-500={delayOn}
+              class:dark:text-gray-400={delayOn}
+              role="radio"
+              aria-checked={!delayOn}
+              onclick={() => (delayOn = false)}
+            >
+              Off
+            </button>
+            <button
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
+              class:bg-white={delayOn}
+              class:dark:bg-gray-900={delayOn}
+              class:text-gray-900={delayOn}
+              class:dark:text-gray-100={delayOn}
+              class:shadow-sm={delayOn}
+              class:text-gray-500={!delayOn}
+              class:dark:text-gray-400={!delayOn}
+              role="radio"
+              aria-checked={delayOn}
+              onclick={() => (delayOn = true)}
+            >
+              On
+            </button>
+          </div>
+        </div>
+
+        <!-- Time -->
+        <div class="min-w-[10rem] flex-1" class:opacity-50={!delayOn}>
+          <label
+            for="delay-time-slider"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+          >
+            Time — {Math.round(delayTime * 1000)} ms
+          </label>
+          <input
+            id="delay-time-slider"
+            type="range"
+            min={MIN_DELAY}
+            max={MAX_DELAY}
+            step="0.01"
+            bind:value={delayTime}
+            disabled={!delayOn}
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            aria-label="Delay time"
+          />
+        </div>
+
+        <!-- Feedback -->
+        <div class="min-w-[8rem] flex-1" class:opacity-50={!delayOn}>
+          <label
+            for="delay-feedback-slider"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+          >
+            Feedback — {Math.round(feedback * 100)}%
+          </label>
+          <input
+            id="delay-feedback-slider"
+            type="range"
+            min="0"
+            max={MAX_FEEDBACK}
+            step="0.01"
+            bind:value={feedback}
+            disabled={!delayOn}
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            aria-label="Delay feedback"
+          />
+        </div>
+
+        <!-- Mix -->
+        <div class="min-w-[8rem] flex-1" class:opacity-50={!delayOn}>
+          <label
+            for="delay-mix-slider"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+          >
+            Mix — {Math.round(mix * 100)}%
+          </label>
+          <input
+            id="delay-mix-slider"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            bind:value={mix}
+            disabled={!delayOn}
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            aria-label="Delay mix"
+          />
+        </div>
+      </div>
+      <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        Mixing the delayed signal back in creates comb filtering — watch the notches carve into the
+        spectrum, sharpening as you raise the feedback.
       </p>
     </div>
 
