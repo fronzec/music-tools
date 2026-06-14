@@ -4,7 +4,7 @@ import SignalLab from '$lib/components/SignalLab.svelte';
 import type { ViewName } from '$lib/types/chord';
 
 describe('SignalLab', () => {
-  let mockOscillator: {
+  type OscillatorMock = {
     type: string;
     frequency: { value: number; setTargetAtTime: ReturnType<typeof vi.fn> };
     connect: ReturnType<typeof vi.fn>;
@@ -12,6 +12,21 @@ describe('SignalLab', () => {
     start: ReturnType<typeof vi.fn>;
     stop: ReturnType<typeof vi.fn>;
   };
+  type GainMock = {
+    gain: {
+      value: number;
+      setValueAtTime: ReturnType<typeof vi.fn>;
+      linearRampToValueAtTime: ReturnType<typeof vi.fn>;
+      setTargetAtTime: ReturnType<typeof vi.fn>;
+      cancelScheduledValues: ReturnType<typeof vi.fn>;
+    };
+    connect: ReturnType<typeof vi.fn>;
+    disconnect: ReturnType<typeof vi.fn>;
+  };
+  // First oscillator/gain created are the tone osc + master gain; the rest
+  // (LFO, tremolo gain, depth gain) back the tremolo effect.
+  let mockOscillator: OscillatorMock;
+  let mockLfo: OscillatorMock;
   let mockWaveShaper: {
     oversample: string;
     curve: Float32Array | null;
@@ -25,16 +40,9 @@ describe('SignalLab', () => {
     connect: ReturnType<typeof vi.fn>;
     disconnect: ReturnType<typeof vi.fn>;
   };
-  let mockGain: {
-    gain: {
-      value: number;
-      setValueAtTime: ReturnType<typeof vi.fn>;
-      linearRampToValueAtTime: ReturnType<typeof vi.fn>;
-      setTargetAtTime: ReturnType<typeof vi.fn>;
-      cancelScheduledValues: ReturnType<typeof vi.fn>;
-    };
-    connect: ReturnType<typeof vi.fn>;
-  };
+  let mockGain: GainMock;
+  let mockTremoloGain: GainMock;
+  let mockLfoDepth: GainMock;
   let mockAnalyser: {
     fftSize: number;
     frequencyBinCount: number;
@@ -53,8 +61,8 @@ describe('SignalLab', () => {
     close: ReturnType<typeof vi.fn>;
   };
 
-  beforeEach(() => {
-    mockOscillator = {
+  function makeOscillator(): OscillatorMock {
+    return {
       type: 'sine',
       frequency: { value: 0, setTargetAtTime: vi.fn() },
       connect: vi.fn(),
@@ -62,15 +70,10 @@ describe('SignalLab', () => {
       start: vi.fn(),
       stop: vi.fn(),
     };
-    mockWaveShaper = { oversample: '', curve: null, connect: vi.fn(), disconnect: vi.fn() };
-    mockBiquad = {
-      type: '',
-      frequency: { value: 0, setTargetAtTime: vi.fn() },
-      Q: { value: 0, setTargetAtTime: vi.fn() },
-      connect: vi.fn(),
-      disconnect: vi.fn(),
-    };
-    mockGain = {
+  }
+
+  function makeGain(): GainMock {
+    return {
       gain: {
         value: 0,
         setValueAtTime: vi.fn(),
@@ -79,6 +82,30 @@ describe('SignalLab', () => {
         cancelScheduledValues: vi.fn(),
       },
       connect: vi.fn(),
+      disconnect: vi.fn(),
+    };
+  }
+
+  beforeEach(() => {
+    // Creation order in start(): tone osc, master gain, …, LFO, tremolo gain,
+    // depth gain. Hand each create() call the next distinct mock so the tests
+    // can assert on the tremolo nodes independently of the tone/master ones.
+    mockOscillator = makeOscillator();
+    mockLfo = makeOscillator();
+    mockGain = makeGain();
+    mockTremoloGain = makeGain();
+    mockLfoDepth = makeGain();
+    const oscillators = [mockOscillator, mockLfo];
+    const gains = [mockGain, mockTremoloGain, mockLfoDepth];
+    let oscIdx = 0;
+    let gainIdx = 0;
+    mockWaveShaper = { oversample: '', curve: null, connect: vi.fn(), disconnect: vi.fn() };
+    mockBiquad = {
+      type: '',
+      frequency: { value: 0, setTargetAtTime: vi.fn() },
+      Q: { value: 0, setTargetAtTime: vi.fn() },
+      connect: vi.fn(),
+      disconnect: vi.fn(),
     };
     mockAnalyser = {
       fftSize: 0,
@@ -88,8 +115,8 @@ describe('SignalLab', () => {
       connect: vi.fn(),
     };
     mockCtx = {
-      createOscillator: vi.fn().mockReturnValue(mockOscillator),
-      createGain: vi.fn().mockReturnValue(mockGain),
+      createOscillator: vi.fn(() => oscillators[oscIdx++] ?? makeOscillator()),
+      createGain: vi.fn(() => gains[gainIdx++] ?? makeGain()),
       createAnalyser: vi.fn().mockReturnValue(mockAnalyser),
       createWaveShaper: vi.fn().mockReturnValue(mockWaveShaper),
       createBiquadFilter: vi.fn().mockReturnValue(mockBiquad),
@@ -293,6 +320,69 @@ describe('SignalLab', () => {
       );
       expect(mockBiquad.Q.setTargetAtTime).toHaveBeenCalledWith(
         5,
+        expect.any(Number),
+        expect.any(Number),
+      );
+    });
+  });
+
+  describe('tremolo effect', () => {
+    it('is off (bypassed) by default', () => {
+      renderTool();
+      expect(
+        effectGroup('Tremolo').getByRole('radio', { name: 'Off' }).getAttribute('aria-checked'),
+      ).toBe('true');
+    });
+
+    it('creates an LFO and tremolo gain on play and starts the LFO', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      // Two oscillators: the tone osc plus the tremolo LFO.
+      expect(mockCtx.createOscillator).toHaveBeenCalledTimes(2);
+      expect(mockLfo.start).toHaveBeenCalled();
+      // LFO → depth gain → tremolo gain's gain param (the modulation path).
+      expect(mockLfo.connect).toHaveBeenCalledWith(mockLfoDepth);
+      expect(mockLfoDepth.connect).toHaveBeenCalledWith(mockTremoloGain.gain);
+    });
+
+    it('routes the oscillator through the tremolo gain when turned on', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.click(effectGroup('Tremolo').getByRole('radio', { name: 'On' }));
+      // With other effects off and tremolo on: oscillator → tremolo gain → analyser.
+      expect(mockOscillator.connect).toHaveBeenCalledWith(mockTremoloGain);
+      expect(mockTremoloGain.connect).toHaveBeenCalledWith(mockAnalyser);
+    });
+
+    it('stops the LFO when playback stops', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.click(screen.getByRole('button', { name: 'Stop tone' }));
+      expect(mockLfo.stop).toHaveBeenCalled();
+    });
+
+    it('updates rate and depth live', async () => {
+      renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Play tone' }));
+      await fireEvent.input(screen.getByRole('slider', { name: 'Tremolo rate' }), {
+        target: { value: '8' },
+      });
+      await fireEvent.input(screen.getByRole('slider', { name: 'Tremolo depth' }), {
+        target: { value: '0.8' },
+      });
+      expect(mockLfo.frequency.setTargetAtTime).toHaveBeenCalledWith(
+        8,
+        expect.any(Number),
+        expect.any(Number),
+      );
+      // Depth centers the tremolo gain at 1 - depth/2 and scales the LFO by depth/2.
+      expect(mockTremoloGain.gain.setTargetAtTime).toHaveBeenCalledWith(
+        1 - 0.8 / 2,
+        expect.any(Number),
+        expect.any(Number),
+      );
+      expect(mockLfoDepth.gain.setTargetAtTime).toHaveBeenCalledWith(
+        0.8 / 2,
         expect.any(Number),
         expect.any(Number),
       );
