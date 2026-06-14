@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ViewName } from '$lib/types/chord';
   import SignalScope from './SignalScope.svelte';
+  import { N, DEFAULT_HARMONIC_AMPS, buildPeriodicWave, presetAmps } from '$lib/audio/additive.js';
 
   interface Props {
     navigate: (view: ViewName) => void;
@@ -38,6 +39,10 @@
   let waveType = $state<Wave>('sawtooth');
   let frequency = $state(220);
   let volume = $state(0.3);
+
+  // ── Source mode: Waveform (built-in oscillator.type) vs Additive (PeriodicWave) ──
+  let sourceMode = $state<'waveform' | 'additive'>('waveform');
+  let harmonicAmps = $state<number[]>([...DEFAULT_HARMONIC_AMPS]);
 
   // ── Distortion (WaveShaper) ─────────────────────────────────────────
   let distortionOn = $state(false);
@@ -173,7 +178,11 @@
     const cleanAn = audioCtx.createAnalyser();
     cleanAn.fftSize = FFT_SIZE;
 
-    oscillator.type = waveType;
+    if (sourceMode === 'additive' && audioCtx) {
+      oscillator.setPeriodicWave(buildPeriodicWave(audioCtx, harmonicAmps));
+    } else {
+      oscillator.type = waveType;
+    }
     oscillator.frequency.value = frequency;
 
     const now = audioCtx.currentTime;
@@ -232,9 +241,20 @@
   }
 
   // Live updates while playing.
+  // SOURCE-OF-TRUTH GUARD: only runs in waveform mode so it never stomps a PeriodicWave.
   $effect(() => {
     const t = waveType;
-    if (oscillator) oscillator.type = t;
+    const mode = sourceMode;
+    if (oscillator && mode === 'waveform') oscillator.type = t;
+  });
+
+  // Additive mode: rebuild PeriodicWave whenever harmonicAmps change or mode switches in.
+  $effect(() => {
+    const mode = sourceMode;
+    const amps = harmonicAmps;
+    if (oscillator && audioCtx && mode === 'additive') {
+      oscillator.setPeriodicWave(buildPeriodicWave(audioCtx, amps));
+    }
   });
 
   $effect(() => {
@@ -344,6 +364,36 @@
           {isPlaying ? '■ Stop' : '▶ Play'}
         </button>
 
+        <!-- Source mode: Waveform vs Additive -->
+        <div>
+          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            Source
+          </div>
+          <div
+            class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
+            role="radiogroup"
+            aria-label="Source"
+          >
+            {#each (['waveform', 'additive'] as const) as sm (sm)}
+              <button
+                class="rounded-md px-3 py-1 text-sm font-medium capitalize transition-all duration-200"
+                class:bg-white={sourceMode === sm}
+                class:dark:bg-gray-900={sourceMode === sm}
+                class:text-gray-900={sourceMode === sm}
+                class:dark:text-gray-100={sourceMode === sm}
+                class:shadow-sm={sourceMode === sm}
+                class:text-gray-500={sourceMode !== sm}
+                class:dark:text-gray-400={sourceMode !== sm}
+                role="radio"
+                aria-checked={sourceMode === sm}
+                onclick={() => (sourceMode = sm)}
+              >
+                {sm === 'waveform' ? 'Waveform' : 'Additive'}
+              </button>
+            {/each}
+          </div>
+        </div>
+
         <!-- Waveform -->
         <div>
           <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -364,8 +414,10 @@
                 class:shadow-sm={waveType === wt}
                 class:text-gray-500={waveType !== wt}
                 class:dark:text-gray-400={waveType !== wt}
+                class:opacity-50={sourceMode === 'additive'}
                 role="radio"
                 aria-checked={waveType === wt}
+                disabled={sourceMode === 'additive'}
                 onclick={() => (waveType = wt)}
               >
                 {wt}
@@ -415,6 +467,54 @@
         </div>
       </div>
     </div>
+
+    <!-- Additive synthesis: harmonic slider bank + presets (shown in Additive mode) -->
+    {#if sourceMode === 'additive'}
+      <div
+        class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+      >
+        <div class="mb-4 flex flex-wrap items-center gap-3">
+          <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+            Presets
+          </span>
+          {#each (['sine', 'sawtooth', 'square'] as const) as preset (preset)}
+            <button
+              class="rounded-md border border-gray-300 bg-gray-50 px-3 py-1 text-sm font-medium capitalize text-gray-700 transition-all duration-200 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              aria-label="{preset.charAt(0).toUpperCase() + preset.slice(1)} preset"
+              onclick={() => (harmonicAmps = presetAmps(preset))}
+            >
+              {preset.charAt(0).toUpperCase() + preset.slice(1)}
+            </button>
+          {/each}
+        </div>
+        <div class="grid grid-cols-4 gap-4 sm:grid-cols-8">
+          {#each harmonicAmps as amp, i}
+            <div class="flex flex-col items-center gap-1">
+              <label
+                for="harmonic-{i + 1}-slider"
+                class="text-xs font-medium text-gray-500 dark:text-gray-400"
+              >
+                H{i + 1}
+              </label>
+              <input
+                id="harmonic-{i + 1}-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                bind:value={harmonicAmps[i]}
+                class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 dark:bg-gray-700"
+                aria-label="Harmonic {i + 1} amplitude"
+              />
+              <span class="text-xs text-gray-400">{amp.toFixed(2)}</span>
+            </div>
+          {/each}
+        </div>
+        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+          Each slider sets the amplitude of a harmonic. A tone IS a sum of sines — drag to hear it.
+        </p>
+      </div>
+    {/if}
 
     <!-- Effects -->
     <div
