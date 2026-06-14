@@ -396,6 +396,30 @@ describe('IntervalTrainer', () => {
       }
     });
 
+    it('Explore controls are visible button radiogroups (not dropdowns)', async () => {
+      await renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      // 12 chromatic root radios + 12 interval radios, all visible (no <select>).
+      expect(screen.getAllByRole('radio').length).toBe(24);
+    });
+
+    it('clicking an interval button selects it and updates the displayed interval', async () => {
+      const { container } = await renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      const m3Btn = screen.getByRole('radio', { name: 'Interval Major 3rd' });
+      await fireEvent.click(m3Btn);
+      expect(m3Btn.getAttribute('aria-checked')).toBe('true');
+      expect(container.textContent ?? '').toContain('Major 3rd');
+    });
+
+    it('clicking a root note button selects it', async () => {
+      await renderTool();
+      await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
+      const rootD = screen.getByRole('radio', { name: 'Root D' });
+      await fireEvent.click(rootD);
+      expect(rootD.getAttribute('aria-checked')).toBe('true');
+    });
+
     // T10 — Explore mode audio tests
     it('clicking "Explore" then "Play interval" calls mockPlaySequence', async () => {
       await renderTool();

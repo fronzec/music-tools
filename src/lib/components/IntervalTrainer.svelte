@@ -256,36 +256,56 @@
     {/if}
   {:else}
     <!-- Explore mode -->
-    <div class="mb-4 flex flex-wrap gap-4">
-      <label class="flex flex-col gap-1">
+    <div class="mb-4 flex flex-col gap-3">
+      <!-- Root note -->
+      <div class="flex flex-col gap-1.5">
         <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Root note</span>
-        <select
-          class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
-          aria-label="Root note"
-          onchange={(e) => { exploreRootPc = parseInt((e.target as HTMLSelectElement).value, 10); }}
-        >
+        <div class="flex flex-wrap gap-1" role="radiogroup" aria-label="Root note">
           {#each CHROMATIC as note, i (note)}
-            <option value={i} selected={i === exploreRootPc}>{note}</option>
+            <button
+              class="min-w-[2.5rem] rounded-md px-2.5 py-1 text-sm font-medium transition-colors"
+              class:bg-blue-600={i === exploreRootPc}
+              class:text-white={i === exploreRootPc}
+              class:bg-gray-100={i !== exploreRootPc}
+              class:text-gray-700={i !== exploreRootPc}
+              class:dark:bg-gray-800={i !== exploreRootPc}
+              class:dark:text-gray-300={i !== exploreRootPc}
+              role="radio"
+              aria-checked={i === exploreRootPc ? 'true' : 'false'}
+              aria-label="Root {note}"
+              onclick={() => (exploreRootPc = i)}
+            >
+              {note}
+            </button>
           {/each}
-        </select>
-      </label>
+        </div>
+      </div>
 
-      <label class="flex flex-col gap-1">
+      <!-- Interval -->
+      <div class="flex flex-col gap-1.5">
         <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Interval</span>
-        <select
-          class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
-          aria-label="Interval"
-          onchange={(e) => { exploreSemitones = parseInt((e.target as HTMLSelectElement).value, 10); }}
-        >
+        <div class="flex flex-wrap gap-1" role="radiogroup" aria-label="Interval">
           {#each INTERVALS as interval (interval.semitones)}
-            <option value={interval.semitones} selected={interval.semitones === exploreSemitones}>
-              {interval.short} — {interval.name}
-            </option>
+            <button
+              class="min-w-[2.5rem] rounded-md px-2.5 py-1 text-sm font-medium transition-colors"
+              class:bg-blue-600={interval.semitones === exploreSemitones}
+              class:text-white={interval.semitones === exploreSemitones}
+              class:bg-gray-100={interval.semitones !== exploreSemitones}
+              class:text-gray-700={interval.semitones !== exploreSemitones}
+              class:dark:bg-gray-800={interval.semitones !== exploreSemitones}
+              class:dark:text-gray-300={interval.semitones !== exploreSemitones}
+              role="radio"
+              aria-checked={interval.semitones === exploreSemitones ? 'true' : 'false'}
+              aria-label="Interval {interval.name}"
+              onclick={() => (exploreSemitones = interval.semitones)}
+            >
+              {interval.short}
+            </button>
           {/each}
-        </select>
-      </label>
+        </div>
+      </div>
 
-      <div class="flex items-end">
+      <div>
         <button
           class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
           aria-label="Play interval"
