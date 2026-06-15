@@ -69,7 +69,7 @@ describe('HomePage', () => {
     it('renders the Progression Builder card as an active tool', () => {
       renderPage();
       expect(screen.getByText('Progression Builder')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(7); // CAGED, Progression, Note Trainer, Tone Generator, Scales Explorer, Signal Lab, Interval Trainer
+      expect(screen.getAllByText('Open').length).toBe(8); // CAGED, Progression, Note Trainer, Tone Generator, Scales Explorer, Signal Lab, Interval Trainer, Tab Player
     });
 
     it('calls navigate with "progression" when the Progression Builder card is clicked', async () => {
@@ -103,7 +103,7 @@ describe('HomePage', () => {
       renderPage();
       expect(screen.getByText('Note Trainer')).toBeTruthy();
       expect(screen.getByText('Learn every note on the fretboard with visual patterns and quizzes')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(7);
+      expect(screen.getAllByText('Open').length).toBe(8);
     });
 
     it('calls navigate with "note-trainer" when the Note Trainer card is clicked', async () => {
@@ -137,7 +137,7 @@ describe('HomePage', () => {
       renderPage();
       expect(screen.getByText('Tone Generator')).toBeTruthy();
       expect(screen.getByText('Reference tones for tuning by ear')).toBeTruthy();
-      expect(screen.getAllByText('Open').length).toBe(7);
+      expect(screen.getAllByText('Open').length).toBe(8);
     });
 
     it('calls navigate with "tone-generator" when the Tone Generator card is clicked', async () => {
@@ -231,7 +231,7 @@ describe('HomePage', () => {
 
     it('Open badge count is 7 after adding Interval Trainer card', () => {
       renderPage();
-      expect(screen.getAllByText('Open').length).toBe(7);
+      expect(screen.getAllByText('Open').length).toBe(8);
     });
 
     it('calls navigate with "interval-trainer" when the Interval Trainer card is clicked', async () => {
@@ -248,6 +248,11 @@ describe('HomePage', () => {
       expect(btn.getAttribute('aria-label')).toContain('Interval Trainer');
     });
 
+    it('Open badge count is 8 after adding Tab Player card', () => {
+      renderPage();
+      expect(screen.getAllByText('Open').length).toBe(8);
+    });
+
     it('Interval Trainer card appears after Tone Generator card (DOM order)', () => {
       renderPage();
       const openBtns = screen.getAllByText('Open');
@@ -260,6 +265,32 @@ describe('HomePage', () => {
       const order = toneGenBtn!.compareDocumentPosition(intervalTrainerBtn!);
       // Node.DOCUMENT_POSITION_FOLLOWING = 4 (intervalTrainer is after toneGen)
       expect(order & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+  });
+
+  describe('Tab Player card', () => {
+    it('renders the Tab Player card', () => {
+      renderPage();
+      expect(screen.getByText('Tab Player')).toBeTruthy();
+    });
+
+    it('renders the Tab Player card description', () => {
+      renderPage();
+      expect(screen.getByText('Play through curated guitar tabs with fretboard visualization')).toBeTruthy();
+    });
+
+    it('calls navigate with "tab-player" when the Tab Player card is clicked', async () => {
+      const { navigate } = renderPage();
+      const card = screen.getByText('Tab Player');
+      await card.click();
+      expect(navigate).toHaveBeenCalledWith('tab-player');
+      expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('Tab Player card button has aria-label containing "Tab Player"', () => {
+      renderPage();
+      const btn = screen.getByRole('button', { name: /Tab Player/i });
+      expect(btn.getAttribute('aria-label')).toContain('Tab Player');
     });
   });
 });

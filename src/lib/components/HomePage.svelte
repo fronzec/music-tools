@@ -133,6 +133,22 @@
       </span>
     </button>
 
+    <!-- Tab Player — Active -->
+    <button
+      class="rounded-xl border border-gray-200 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:shadow-md hover:border-blue-300 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-blue-700 sm:p-6"
+      aria-label="Open Tab Player tool"
+      onclick={() => navigate('tab-player')}
+    >
+      <div class="mb-3 text-3xl">🎸</div>
+      <h2 class="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-100">Tab Player</h2>
+      <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
+        Play through curated guitar tabs with fretboard visualization
+      </p>
+      <span class="inline-block rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white transition-colors">
+        Open
+      </span>
+    </button>
+
     <!-- Placeholder: Chord Library -->
     <div class="rounded-xl border border-gray-100 bg-gray-50 p-5 text-left opacity-60 dark:border-gray-800 dark:bg-gray-800 sm:p-6">
       <div class="mb-3 text-3xl">🎹</div>

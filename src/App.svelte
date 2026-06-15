@@ -8,6 +8,7 @@
   import PentatonicTool from '$lib/components/PentatonicTool.svelte';
   import SignalLab from '$lib/components/SignalLab.svelte';
   import IntervalTrainer from '$lib/components/IntervalTrainer.svelte';
+  import TabPlayer from '$lib/components/TabPlayer.svelte';
   import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
   let currentView: ViewName = $state('home');
@@ -63,6 +64,10 @@
   {:else if currentView === 'interval-trainer'}
     <svelte:boundary failed={errorFallback}>
       <IntervalTrainer {navigate} />
+    </svelte:boundary>
+  {:else if currentView === 'tab-player'}
+    <svelte:boundary failed={errorFallback}>
+      <TabPlayer {navigate} />
     </svelte:boundary>
   {/if}
 </main>

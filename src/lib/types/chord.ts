@@ -42,7 +42,8 @@ export type ViewName =
   | 'tone-generator'
   | 'pentatonic'
   | 'signal-lab'
-  | 'interval-trainer';
+  | 'interval-trainer'
+  | 'tab-player';
 
 export const CAGED_ORDER: CagedShape[] = ['C', 'A', 'G', 'E', 'D'];
 
