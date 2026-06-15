@@ -24,9 +24,9 @@ The system MUST render a grid of tool cards on the home page.
 
 ### Requirement: Tool Card Content
 
-Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active CAGED Visualizer card as the first card. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card. The system MUST include an active Tone Generator card after the Note Trainer card. The system MUST include an active Interval Trainer card after the Tone Generator card and before the placeholder cards.
+Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active CAGED Visualizer card as the first card. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card. The system MUST include an active Tone Generator card after the Note Trainer card. The system MUST include an active Interval Trainer card after the Tone Generator card. The system MUST include an active Tab Player card after the Interval Trainer card and before the placeholder cards.
 
-(Previously: Did not include Interval Trainer card.)
+(Previously: Did not include Tab Player card.)
 
 #### Scenario: Card content is complete
 
@@ -100,6 +100,21 @@ Each card MUST display an icon/emoji, a title, a short description, and be click
 - WHEN the user clicks the Interval Trainer card
 - THEN `navigate('interval-trainer')` is called
 
+#### Scenario: Tab Player card exists
+
+- GIVEN the home page renders
+- WHEN the card grid is inspected
+- THEN a Tab Player card is present
+- AND it uses the same active-card styling as other active cards
+- AND it is positioned after the Interval Trainer card
+- AND it is before the placeholder cards
+
+#### Scenario: Tab Player card navigates
+
+- GIVEN the user is on the home page
+- WHEN the user clicks the Tab Player card
+- THEN `navigate('tab-player')` is called
+
 #### Scenario: Placeholder cards remain inactive
 
 - GIVEN the home page renders
@@ -160,6 +175,17 @@ The Interval Trainer card MUST display an appropriate icon, the title "Interval 
 - GIVEN the home page renders
 - WHEN the Interval Trainer card is inspected
 - THEN it shows an icon, the title "Interval Trainer", and the correct description
+- AND it includes an "Open" button styled like other active cards
+
+### Requirement: Tab Player Card Content
+
+The Tab Player card MUST display an appropriate icon, the title "Tab Player", and a short description conveying reading tabs with visual fretboard guidance and audio playback (e.g., "Read guitar tabs with fretboard highlights and audio playback").
+
+#### Scenario: Tab Player card content
+
+- GIVEN the home page renders
+- WHEN the Tab Player card is inspected
+- THEN it shows an icon, the title "Tab Player", and the correct description
 - AND it includes an "Open" button styled like other active cards
 
 ### Requirement: muted.io Aesthetic
