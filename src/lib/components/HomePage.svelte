@@ -10,30 +10,75 @@
   let { navigate }: Props = $props();
 </script>
 
-<div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-  <!-- Header -->
-  <header class="mb-8 text-center sm:mb-12">
-    <h1 class="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl">
-      🎸 Music Tools
-    </h1>
-    <p class="text-base text-gray-500 dark:text-gray-400 sm:text-lg">
-      Interactive tools for learning music
-    </p>
-  </header>
+<!--
+  Studio / pedalboard skin: the home reads as the front panel of a piece of
+  audio gear. Dark chassis, amber indicator LEDs, monospace engraved labels,
+  cards as "rack units". Self-contained dark surface (independent of the app's
+  light/dark theme) — this aesthetic only makes sense dark.
+-->
+<div
+  class="studio-grain relative min-h-screen overflow-hidden bg-studio-panel font-plex text-studio-ink"
+>
+  <!-- top edge highlight, like a chassis bevel -->
+  <div
+    class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-studio-led/30 to-transparent"
+  ></div>
 
-  <!-- Tool sections, grouped by learning goal -->
-  {#each TOOL_CATEGORIES as category (category.id)}
-    <section class="mb-8 sm:mb-10">
-      <h2
-        class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 sm:mb-4"
-      >
-        {category.label}
-      </h2>
-      <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {#each category.tools as tool (tool.title)}
-          <ToolCard {tool} {navigate} />
+  <div class="relative mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
+    <!-- Device header -->
+    <header class="mb-10 flex items-end justify-between border-b border-studio-rule pb-5 sm:mb-12">
+      <div>
+        <div class="mb-2 flex items-center gap-2.5">
+          <span class="studio-led animate-led-pulse inline-block h-2.5 w-2.5" aria-hidden="true"
+          ></span>
+          <span
+            class="font-plex-mono text-[0.65rem] uppercase tracking-[0.35em] text-studio-dim"
+          >
+            Power
+          </span>
+        </div>
+        <h1
+          class="text-3xl font-semibold uppercase tracking-tight text-studio-ink sm:text-4xl"
+        >
+          Music Tools
+        </h1>
+        <p class="mt-1 font-plex-mono text-xs tracking-wide text-studio-dim sm:text-sm">
+          Interactive tools for learning music
+        </p>
+      </div>
+
+      <!-- decorative level meter -->
+      <div class="hidden items-end gap-1 sm:flex" aria-hidden="true">
+        {#each [5, 8, 12, 9, 14, 7] as h, i (i)}
+          <span
+            class="w-1 rounded-sm"
+            class:bg-studio-led={i > 2}
+            class:bg-studio-rule={i <= 2}
+            style="height: {h * 2}px"
+          ></span>
         {/each}
       </div>
-    </section>
-  {/each}
+    </header>
+
+    <!-- Tool sections, grouped by learning goal -->
+    {#each TOOL_CATEGORIES as category (category.id)}
+      <section class="mb-10 sm:mb-12">
+        <div class="mb-4 flex items-center gap-3">
+          <h2
+            class="font-plex-mono text-xs font-medium uppercase tracking-[0.25em] text-studio-dim"
+          >
+            {category.label}
+          </h2>
+          <span class="h-px flex-1 bg-studio-rule"></span>
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {#each category.tools as tool, i (tool.title)}
+            <div class="animate-rack-in" style="animation-delay: {i * 60}ms">
+              <ToolCard {tool} {navigate} />
+            </div>
+          {/each}
+        </div>
+      </section>
+    {/each}
+  </div>
 </div>
