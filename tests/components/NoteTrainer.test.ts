@@ -234,11 +234,11 @@ describe('NoteTrainer', () => {
       await clickNoteFilter('E');
       const svg = container.querySelector('svg')!;
       const lines = [...svg.querySelectorAll('line')].filter(
-        l => l.getAttribute('stroke') === '#16A34A'
+        l => l.classList.contains('stroke-success')
       );
       expect(lines.length).toBeGreaterThan(0);
       const greenCircles = [...svg.querySelectorAll('circle')].filter(
-        c => c.getAttribute('stroke') === '#16A34A'
+        c => c.classList.contains('stroke-success')
       );
       expect(greenCircles.length).toBe(0);
     });
@@ -247,7 +247,7 @@ describe('NoteTrainer', () => {
       const { container } = renderTool();
       const svg = container.querySelector('svg')!;
       const lines = [...svg.querySelectorAll('line')].filter(
-        l => l.getAttribute('stroke') === '#16A34A'
+        l => l.classList.contains('stroke-success')
       );
       expect(lines.length).toBe(0);
     });
@@ -257,7 +257,7 @@ describe('NoteTrainer', () => {
       await fireEvent.click(screen.getByRole('tab', { name: /Quiz/i }));
       const svg = container.querySelector('svg')!;
       const lines = [...svg.querySelectorAll('line')].filter(
-        l => l.getAttribute('stroke') === '#16A34A'
+        l => l.classList.contains('stroke-success')
       );
       expect(lines.length).toBe(0);
     });
