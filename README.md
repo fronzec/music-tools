@@ -18,6 +18,12 @@ single-page app with Svelte 5 (runes), Vite, and Tailwind CSS.
 Navigation is client-side state (no router/URLs). Dark mode is supported via a
 theme toggle.
 
+## Design & theming
+
+The UI uses a semantic **design-token system** (CSS variables in `src/app.css`),
+so the visual identity can be changed in one place. To re-skin the app, see
+[`docs/rebranding.md`](docs/rebranding.md) — it includes notes for AI agents.
+
 ## Tech Stack
 
 - **Svelte 5** with runes (`runes: true`) — no SvelteKit, plain `vite-plugin-svelte`
