@@ -102,49 +102,35 @@
 
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
   <button
-    class="mb-6 text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+    class="mb-6 text-sm font-medium text-muted transition-colors hover:text-accent-soft hover:underline"
     aria-label="Back to Home"
     onclick={() => navigate('home')}
   >
     ← Back to Home
   </button>
 
-  <h1 class="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">Tone Generator</h1>
+  <h1 class="mb-6 text-2xl font-bold tracking-tight text-ink sm:text-3xl">Tone Generator</h1>
 
   <div class="space-y-6">
     <!-- Strings Card -->
-    <div class="rounded-xl border border-gray-200 bg-white p-5 sm:p-6 dark:border-gray-700 dark:bg-gray-900">
-      <div class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Strings</div>
+    <div class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6">
+      <div class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted font-technical">Strings</div>
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {#each STRINGS as s, i (s.name)}
           <button
-            class="flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-all duration-200"
-            class:border-blue-400={activeString === i}
-            class:bg-blue-50={activeString === i}
-            class:border-gray-200={activeString !== i}
-            class:hover:border-blue-300={activeString !== i}
-            class:hover:bg-gray-50={activeString !== i}
-            class:dark:border-gray-700={activeString !== i}
-            class:dark:hover:border-blue-700={activeString !== i}
-            class:dark:hover:bg-gray-800={activeString !== i}
+            class="flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-all duration-200 {activeString === i ? 'border-accent/50 bg-accent/15' : 'border-hairline hover:border-accent/40'}"
             aria-label="{activeString === i ? 'Stop' : 'Play'} {s.label} ({s.name}) {s.freq} Hz"
             onclick={() => toggle(s.freq, i)}
           >
-            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface text-xs font-bold text-muted">
               {s.num}
             </span>
             <div class="flex-1">
-              <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">{s.label} <span class="font-normal text-gray-400 dark:text-gray-500">({s.name})</span></div>
-              <div class="text-xs text-gray-500 dark:text-gray-400">{s.freq} Hz</div>
+              <div class="text-sm font-semibold text-ink">{s.label} <span class="font-normal text-muted">({s.name})</span></div>
+              <div class="text-xs text-muted">{s.freq} Hz</div>
             </div>
             <span
-              class="ml-auto shrink-0 rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
-              class:bg-blue-600={activeString === i}
-              class:text-white={activeString === i}
-              class:bg-gray-100={activeString !== i}
-              class:text-gray-600={activeString !== i}
-              class:dark:bg-gray-800={activeString !== i}
-              class:dark:text-gray-300={activeString !== i}
+              class="ml-auto shrink-0 rounded-md px-2.5 py-1 text-xs font-medium transition-colors {activeString === i ? 'bg-accent/15 text-accent-soft border border-accent/50' : 'bg-surface text-muted border border-transparent'}"
             >
               {activeString === i ? '■ Stop' : '▶ Play'}
             </span>
@@ -154,12 +140,12 @@
     </div>
 
     <!-- Sound Card -->
-    <div class="rounded-xl border border-gray-200 bg-white p-5 sm:p-6 dark:border-gray-700 dark:bg-gray-900">
-      <div class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Sound</div>
+    <div class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6">
+      <div class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted font-technical">Sound</div>
 
       <!-- Volume -->
       <div class="mb-4">
-        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300" for="volume-slider">
+        <label class="mb-1.5 block text-sm font-medium text-muted" for="volume-slider">
           Volume
         </label>
         <input
@@ -169,30 +155,21 @@
           max={MAX_GAIN}
           step="0.01"
           bind:value={volume}
-          class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 dark:bg-gray-700"
+          class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent"
           aria-label="Volume"
         />
-        <div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+        <div class="mt-1 text-xs text-muted">
           {Math.round((volume / MAX_GAIN) * 100)}%
         </div>
       </div>
 
       <!-- Wave Type -->
       <div>
-        <div class="mb-1.5 text-sm font-medium text-gray-700 dark:text-gray-300">Waveform</div>
-        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800" role="radiogroup" aria-label="Waveform">
+        <div class="mb-1.5 text-sm font-medium text-muted">Waveform</div>
+        <div class="inline-flex rounded-lg border border-hairline bg-surface p-0.5" role="radiogroup" aria-label="Waveform">
           {#each WAVE_TYPES as wt (wt)}
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium capitalize transition-all duration-200"
-              class:bg-white={waveType === wt}
-              class:dark:bg-gray-900={waveType === wt}
-              class:text-gray-900={waveType === wt}
-              class:dark:text-gray-100={waveType === wt}
-              class:shadow-sm={waveType === wt}
-              class:text-gray-500={waveType !== wt}
-              class:dark:text-gray-400={waveType !== wt}
-              class:hover:text-gray-700={waveType !== wt}
-              class:dark:hover:text-gray-300={waveType !== wt}
+              class="rounded-md px-3 py-1 text-sm font-medium capitalize transition-all duration-200 {waveType === wt ? 'bg-surface-raised text-ink shadow-sm' : 'text-muted hover:text-ink'}"
               role="radio"
               aria-checked={waveType === wt}
               onclick={() => (waveType = wt)}

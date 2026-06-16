@@ -151,35 +151,29 @@
 <div class="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8">
   <!-- Back button -->
   <button
-    class="mb-6 text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+    class="mb-6 text-sm font-medium text-muted transition-colors hover:text-accent-soft hover:underline"
     aria-label="Back to Home"
     onclick={() => navigate('home')}
   >
     ← Back to Home
   </button>
 
-  <h1 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl">
+  <h1 class="mb-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
     Tab Player
   </h1>
-  <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
+  <p class="mb-6 text-sm text-muted">
     Play through curated guitar tabs with fretboard visualization.
   </p>
 
   <!-- Tab selector -->
   <div class="mb-6">
-    <span class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+    <span class="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted font-technical">
       Select Tab
     </span>
     <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Tab selector">
       {#each TABS as tab, i (tab.title)}
         <button
-          class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
-          class:bg-blue-600={selectedTab.title === tab.title}
-          class:text-white={selectedTab.title === tab.title}
-          class:bg-gray-100={selectedTab.title !== tab.title}
-          class:text-gray-700={selectedTab.title !== tab.title}
-          class:dark:bg-gray-800={selectedTab.title !== tab.title}
-          class:dark:text-gray-300={selectedTab.title !== tab.title}
+          class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors {selectedTab.title === tab.title ? 'bg-accent/15 text-accent-soft border border-accent/50' : 'bg-surface text-muted border border-transparent hover:border-accent/40'}"
           role="radio"
           aria-checked={selectedTab.title === tab.title ? 'true' : 'false'}
           aria-label={tab.title}
@@ -194,10 +188,10 @@
 
   <!-- Notation row: lightweight text representation of current step -->
   <div
-    class="mb-4 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 font-mono text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+    class="mb-4 rounded-lg border border-hairline bg-surface px-4 py-2 font-technical text-sm text-ink"
     aria-label="Current step notation"
   >
-    <span class="mr-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+    <span class="mr-3 text-xs font-semibold uppercase tracking-wider text-muted">
       Step {stepIndex + 1}/{selectedTab.steps.length}
     </span>
     {notationLabel}
@@ -212,7 +206,7 @@
   <div class="flex flex-wrap items-center gap-3">
     <!-- Play button -->
     <button
-      class="min-h-[44px] min-w-[80px] rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+      class="min-h-[44px] min-w-[80px] rounded-lg border border-accent/50 bg-accent/10 px-5 py-2 text-sm font-semibold text-accent-soft transition-all hover:bg-accent/20 hover:shadow-led-sm disabled:cursor-not-allowed disabled:opacity-50"
       aria-label="Play"
       disabled={isPlaying}
       onclick={play}
@@ -222,7 +216,7 @@
 
     <!-- Stop button -->
     <button
-      class="min-h-[44px] min-w-[80px] rounded-lg border border-gray-300 bg-gray-50 px-5 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+      class="min-h-[44px] min-w-[80px] rounded-lg border border-hairline bg-surface px-5 py-2 text-sm font-semibold text-muted transition-colors hover:text-ink hover:border-accent/40 disabled:cursor-not-allowed disabled:opacity-50"
       aria-label="Stop"
       disabled={!isPlaying}
       onclick={stop}
@@ -232,7 +226,7 @@
 
     <!-- Previous step -->
     <button
-      class="min-h-[44px] rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+      class="min-h-[44px] rounded-lg border border-hairline bg-surface px-4 py-2 text-sm font-medium text-muted transition-colors hover:text-ink hover:border-accent/40 disabled:cursor-not-allowed disabled:opacity-50"
       aria-label="Previous step"
       disabled={isPlaying || stepIndex === 0}
       onclick={() => stepTo(Math.max(0, stepIndex - 1))}
@@ -242,7 +236,7 @@
 
     <!-- Next step -->
     <button
-      class="min-h-[44px] rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+      class="min-h-[44px] rounded-lg border border-hairline bg-surface px-4 py-2 text-sm font-medium text-muted transition-colors hover:text-ink hover:border-accent/40 disabled:cursor-not-allowed disabled:opacity-50"
       aria-label="Next step"
       disabled={isPlaying || stepIndex >= selectedTab.steps.length - 1}
       onclick={() => stepTo(Math.min(selectedTab.steps.length - 1, stepIndex + 1))}
@@ -253,7 +247,7 @@
     <!-- Tempo control -->
     <div class="flex items-center gap-2">
       <label
-        class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+        class="text-xs font-semibold uppercase tracking-wider text-muted font-technical"
         for="tempo-input"
       >
         Tempo (BPM)
@@ -261,7 +255,7 @@
       <input
         id="tempo-input"
         type="number"
-        class="w-20 rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+        class="w-20 rounded-lg border border-hairline bg-surface px-2 py-1.5 text-sm text-ink focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/30"
         aria-label="Tempo in BPM"
         min="40"
         max="200"
