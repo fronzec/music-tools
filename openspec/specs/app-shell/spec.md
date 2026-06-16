@@ -155,3 +155,62 @@ The system MUST render the `ProgressionBuilder` component when `currentView` is 
 - GIVEN `currentView` is set to an unknown value
 - WHEN `App.svelte` renders
 - THEN nothing is rendered (no branch matches)
+
+### Requirement: navigate() Syncs URL
+
+The `navigate(view: ViewName)` function in `App.svelte` MUST remain the single
+chokepoint for all view transitions. In addition to updating `currentView`, it
+MUST call `history.pushState({}, '', viewToPath(view))` to sync the address bar.
+
+(Previously: `navigate(view)` only assigned `currentView = view` and did not touch the URL.)
+
+#### Scenario: Switching to a non-home tool updates the address bar
+
+- GIVEN `currentView` is `'home'`
+- WHEN `navigate('caged')` is called
+- THEN `currentView` becomes `'caged'`
+- AND `location.pathname` becomes `'/caged'`
+
+#### Scenario: Navigating to home updates the address bar to root
+
+- GIVEN `currentView` is `'interval-trainer'`
+- WHEN `navigate('home')` is called
+- THEN `currentView` becomes `'home'`
+- AND `location.pathname` becomes `'/'`
+
+#### Scenario: No feedback loop — navigate() never triggers popstate
+
+- GIVEN `navigate('pentatonic')` is called
+- WHEN `history.pushState` executes
+- THEN no `popstate` event fires (pushState never dispatches popstate)
+- AND the popstate listener is NOT invoked
+
+### Requirement: Initial View Derived From Pathname
+
+On application load, `currentView` MUST be initialised to
+`pathToView(location.pathname)` instead of the hardcoded value `'home'`. If the
+pathname matches a known view, that view renders immediately. If the pathname is
+unknown or `/`, `home` renders.
+
+(Previously: `currentView` was initialised to `'home'` unconditionally.)
+
+#### Scenario: App loads at root and shows home
+
+- GIVEN the browser address bar shows `'/'`
+- WHEN the app initialises
+- THEN `currentView` is initialised to `'home'`
+- AND the Home page renders
+
+#### Scenario: App loads at a known tool path and shows that tool
+
+- GIVEN the browser address bar shows `'/tab-player'`
+- WHEN the app initialises
+- THEN `currentView` is initialised to `'tab-player'`
+- AND the Tab Player renders without first rendering the home page
+
+#### Scenario: App loads at an unknown path and shows home
+
+- GIVEN the browser address bar shows `'/unknown-tool'`
+- WHEN the app initialises
+- THEN `currentView` is initialised to `'home'`
+- AND the Home page renders
