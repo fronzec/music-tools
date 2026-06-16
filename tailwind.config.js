@@ -23,6 +23,8 @@ export default {
         'accent-soft': 'rgb(var(--accent-soft-rgb) / <alpha-value>)',
         success: 'rgb(var(--success-rgb) / <alpha-value>)',
         error: 'rgb(var(--error-rgb) / <alpha-value>)',
+        'note-root': 'rgb(var(--note-root-rgb) / <alpha-value>)',
+        'note-tone': 'rgb(var(--note-tone-rgb) / <alpha-value>)',
       },
       fontFamily: {
         // Role-based families (avoid overriding Tailwind's global `mono`, which

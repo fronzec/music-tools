@@ -183,7 +183,7 @@
       y={vbH / 2}
       text-anchor="middle"
       font-size="14"
-      fill="#6B7280"
+      class="fill-muted"
       font-weight="500"
     >
       No boxes selected
@@ -197,8 +197,7 @@
       y1={stringY(0)}
       x2={fretLineX(f)}
       y2={stringY(5)}
-      stroke="#374151"
-      class="stroke-gray-300 dark:stroke-gray-600"
+      class="stroke-hairline"
       stroke-width="1"
     />
   {/each}
@@ -211,8 +210,7 @@
         y={stringY(5)}
         width={L.FRET_SP}
         height={stringY(0) - stringY(5)}
-        fill="#111827"
-        class="fill-gray-100 dark:fill-gray-800"
+        class="fill-hairline"
       />
     {/if}
   {/each}
@@ -224,8 +222,7 @@
       y1={stringY(i)}
       x2={fretLineX(displaySpan)}
       y2={stringY(i)}
-      stroke="#9CA3AF"
-      class="stroke-gray-300 dark:stroke-gray-700"
+      class="stroke-hairline"
       stroke-width="1"
     />
   {/each}
@@ -239,23 +236,20 @@
         cx={mx}
         cy={my}
         r={L.MARKER_R}
-        fill="#4B5563"
-        class="fill-gray-400 dark:fill-gray-600"
+        class="fill-hairline"
       />
       {#if mf === 12}
         <circle
           cx={mx}
           cy={stringY(1.5)}
           r={L.MARKER_R}
-          fill="#4B5563"
-          class="fill-gray-400 dark:fill-gray-600"
+          class="fill-hairline"
         />
         <circle
           cx={mx}
           cy={stringY(3.5)}
           r={L.MARKER_R}
-          fill="#4B5563"
-          class="fill-gray-400 dark:fill-gray-600"
+          class="fill-hairline"
         />
       {/if}
     {/if}
@@ -268,8 +262,7 @@
       y1={stringY(0)}
       x2={fretLineX(0)}
       y2={stringY(5)}
-      stroke="#D1D5DB"
-      class="stroke-gray-800 dark:stroke-gray-400"
+      class="stroke-muted"
       stroke-width="4"
     />
   {:else}
@@ -278,8 +271,7 @@
       y={L.TOP_PAD - 6}
       text-anchor="middle"
       font-size={L.LABEL_FS + 1}
-      fill="#9CA3AF"
-      class="fill-gray-500 dark:fill-gray-400"
+      class="fill-muted"
       font-weight="bold">{rangeStart + 1}fr</text
     >
     <line
@@ -287,8 +279,7 @@
       y1={stringY(0)}
       x2={fretLineX(0)}
       y2={stringY(5)}
-      stroke="#D1D5DB"
-      class="stroke-gray-800 dark:stroke-gray-400"
+      class="stroke-muted"
       stroke-width="4"
     />
   {/if}
@@ -327,24 +318,22 @@
         <polygon
           points={diamondPoints(0, 0, FL.ROOT_DIAMOND_R)}
           fill={ROOT_COLOR}
-          stroke="#111827"
+          class="stroke-surface"
           stroke-width="1.5"
         />
       {:else}
-        <!-- Non-root: light filled circle with a subtle border so it reads on
-             both the light and dark fretboard. -->
+        <!-- Non-root: token-skinned circle so it reads on the dark fretboard. -->
         <circle
           cx="0"
           cy="0"
           r={NOTE_R}
-          fill="white"
-          stroke="#9CA3AF"
+          class="fill-surface-raised stroke-muted"
           stroke-width="1"
-          class="fill-white stroke-gray-400 dark:stroke-gray-500"
         />
       {/if}
 
-      <!-- Note name inside the figure -->
+      <!-- Note name inside the figure — on top of a bright fill (root diamond)
+           use fill-surface (near-black); on the dark non-root circle use fill-ink. -->
       <text
         x="0"
         y="0"
@@ -352,7 +341,7 @@
         dominant-baseline="central"
         font-size="8.5"
         font-weight="bold"
-        fill="#111827"
+        class={note.isRoot ? 'fill-surface' : 'fill-ink'}
         style="pointer-events:none">{noteName}</text
       >
 
@@ -362,8 +351,7 @@
         y="-10"
         text-anchor="start"
         font-size={L.LABEL_FS}
-        fill="#E5E7EB"
-        class="fill-gray-600 dark:fill-gray-300"
+        class="fill-ink"
         font-weight="bold"
         style="pointer-events:none">{note.interval}</text
       >
@@ -379,8 +367,7 @@
       y={ny}
       text-anchor="middle"
       font-size={FL.FRET_NUM_FS}
-      fill="#6B7280"
-      class="fill-gray-500 dark:fill-gray-400">{n}</text
+      class="fill-muted">{n}</text
     >
   {/each}
 </svg>

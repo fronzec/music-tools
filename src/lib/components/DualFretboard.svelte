@@ -93,11 +93,11 @@
 <div class="flex flex-col gap-3 w-full overflow-auto">
   <!-- Top fretboard -->
   <section aria-label={`${root1} ${quality} — top fretboard`} class="flex flex-col gap-2">
-    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">{root1} {quality}</div>
+    <div class="text-sm font-medium text-muted">{root1} {quality}</div>
 
     <!-- Root selector row 1 -->
     <div class="flex flex-wrap items-center gap-1.5">
-      <span class="text-xs font-medium text-gray-500 dark:text-gray-400">From:</span>
+      <span class="text-xs font-medium text-muted">From:</span>
       <RootSelector
         notes={CHROMATIC}
         selected={root1}
@@ -110,7 +110,7 @@
 
     <!-- Shape toggle bar 1 -->
     <div class="flex items-center gap-1.5">
-      <span class="text-xs font-medium text-gray-400 dark:text-gray-500">Shapes</span>
+      <span class="text-xs font-medium text-muted">Shapes</span>
       <ShapeToggleBar
         visibleShapes={visibleShapes1}
         onToggle={toggleShape1}
@@ -124,11 +124,11 @@
 
   <!-- Bottom fretboard -->
   <section aria-label={`${root2} ${quality} — bottom fretboard`} class="flex flex-col gap-2">
-    <div class="text-sm font-medium text-gray-600 dark:text-gray-400">{root2} {quality}</div>
+    <div class="text-sm font-medium text-muted">{root2} {quality}</div>
 
     <!-- Root selector row 2 -->
     <div class="flex flex-wrap items-center gap-1.5">
-      <span class="text-xs font-medium text-gray-500 dark:text-gray-400">To:</span>
+      <span class="text-xs font-medium text-muted">To:</span>
       <RootSelector
         notes={CHROMATIC}
         selected={root2}
@@ -141,7 +141,7 @@
 
     <!-- Shape toggle bar 2 -->
     <div class="flex items-center gap-1.5">
-      <span class="text-xs font-medium text-gray-400 dark:text-gray-500">Shapes</span>
+      <span class="text-xs font-medium text-muted">Shapes</span>
       <ShapeToggleBar
         visibleShapes={visibleShapes2}
         onToggle={toggleShape2}

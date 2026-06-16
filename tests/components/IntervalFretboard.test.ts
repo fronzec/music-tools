@@ -62,23 +62,23 @@ describe('IntervalFretboard', () => {
     expect(targetMarks.length).toBe(expected);
   });
 
-  it('[data-role="root"] elements have fill="#FACC15"', async () => {
+  it('[data-role="root"] elements have fill-accent class', async () => {
     const IntervalFretboard = await importComponent();
     const { container } = render(IntervalFretboard as any, { rootPc: 0, intervalSemitones: 7 });
     const rootMarks = container.querySelectorAll('[data-role="root"]');
     expect(rootMarks.length).toBeGreaterThan(0);
     for (const el of rootMarks) {
-      expect(el.getAttribute('fill')).toBe('#FACC15');
+      expect(el.classList.contains('fill-accent')).toBe(true);
     }
   });
 
-  it('[data-role="target"] elements have fill="#2563EB"', async () => {
+  it('[data-role="target"] elements have fill-note-root class', async () => {
     const IntervalFretboard = await importComponent();
     const { container } = render(IntervalFretboard as any, { rootPc: 0, intervalSemitones: 7 });
     const targetMarks = container.querySelectorAll('[data-role="target"]');
     expect(targetMarks.length).toBeGreaterThan(0);
     for (const el of targetMarks) {
-      expect(el.getAttribute('fill')).toBe('#2563EB');
+      expect(el.classList.contains('fill-note-root')).toBe(true);
     }
   });
 

@@ -192,27 +192,25 @@ describe('Fretboard', () => {
       expect(noteCircles.length).toBe(3);
     });
 
-    it('root notes have larger circles with blue fill', () => {
+    it('root notes have larger circles with fill-note-root class', () => {
       const shape = makeCShape(); // rootString=1 → string 1 is R
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const circles = [...container.querySelectorAll('circle')];
       const rootCircles = circles.filter((c) => {
         const r = parseFloat(c.getAttribute('r') ?? '0');
-        const fill = c.getAttribute('fill');
-        return r === L.ROOT_R && fill === '#3B82F6';
+        return r === L.ROOT_R && c.classList.contains('fill-note-root');
       });
       // String 1 (R) and string 4 (R) should be root
       expect(rootCircles.length).toBe(2);
     });
 
-    it('chord tone notes (3, 5) have medium circles with green fill', () => {
+    it('chord tone notes (3, 5) have medium circles with fill-note-tone class', () => {
       const shape = makeCShape();
       const { container } = render(Fretboard, { shape, labelMode: 'intervals' as LabelMode });
       const circles = [...container.querySelectorAll('circle')];
       const toneCircles = circles.filter((c) => {
         const r = parseFloat(c.getAttribute('r') ?? '0');
-        const fill = c.getAttribute('fill');
-        return r === L.TONE_R && fill === '#22C55E';
+        return r === L.TONE_R && c.classList.contains('fill-note-tone');
       });
       // String 2 has interval '3' → tone
       expect(toneCircles.length).toBe(1);
@@ -229,8 +227,7 @@ describe('Fretboard', () => {
       const circles = [...container.querySelectorAll('circle')];
       const toneCircles = circles.filter((c) => {
         const r = parseFloat(c.getAttribute('r') ?? '0');
-        const fill = c.getAttribute('fill');
-        return r === L.TONE_R && fill === '#22C55E';
+        return r === L.TONE_R && c.classList.contains('fill-note-tone');
       });
       // String 2 (b3, fret 1) → 1 tone circle; string 5 (b3, fret 0) is open → no circle
       expect(toneCircles.length).toBe(1);

@@ -24,10 +24,11 @@
       onclick={() => onToggle(shape)}
       style={isActive
         ? `background-color: ${SHAPE_COLORS[shape]}; color: white; border-color: ${SHAPE_COLORS[shape]};`
-        : 'background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;'}
+        : undefined}
       class={[
         'rounded font-semibold border transition-colors',
         compact ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm',
+        !isActive ? 'bg-surface-raised text-muted border-hairline' : '',
       ].join(' ')}
     >
       {shape}

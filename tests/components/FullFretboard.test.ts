@@ -493,13 +493,15 @@ describe('FullFretboard', () => {
         const rect = o.previousElementSibling as Element;
         expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
       });
-      // O text is green, × text is red
-      oMarkers.forEach((o) => expect(o.getAttribute('fill')).toBe('#22C55E'));
+      // O text is green (class-based), × text is red (class-based)
+      oMarkers.forEach((o) => {
+        expect(o.classList.contains('fill-success')).toBe(true);
+      });
       xMarkers.forEach((x) => {
         const rect = x.previousElementSibling as Element;
         expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.C);
         expect(rect.getAttribute('opacity')).toBe('0.45');
-        expect(x.getAttribute('fill')).toBe('#DC2626');
+        expect(x.classList.contains('fill-error')).toBe(true);
       });
     });
 
@@ -524,12 +526,12 @@ describe('FullFretboard', () => {
       oMarkers.forEach((ind) => {
         const rect = ind.previousElementSibling as Element;
         expect(shapeColors).toContain(rect.getAttribute('fill'));
-        expect(ind.getAttribute('fill')).toBe('#22C55E');
+        expect(ind.classList.contains('fill-success')).toBe(true);
       });
       xMarkers.forEach((ind) => {
         const rect = ind.previousElementSibling as Element;
         expect(shapeColors).toContain(rect.getAttribute('fill'));
-        expect(ind.getAttribute('fill')).toBe('#DC2626');
+        expect(ind.classList.contains('fill-error')).toBe(true);
       });
     });
 
@@ -544,9 +546,9 @@ describe('FullFretboard', () => {
       const oMarkers = texts.filter((t) => t.textContent === 'O');
       const xMarkers = texts.filter((t) => t.textContent === '×');
 
-      // O text always green, × text always red
-      oMarkers.forEach((ind) => expect(ind.getAttribute('fill')).toBe('#22C55E'));
-      xMarkers.forEach((ind) => expect(ind.getAttribute('fill')).toBe('#DC2626'));
+      // O text always green (class-based), × text always red (class-based)
+      oMarkers.forEach((ind) => expect(ind.classList.contains('fill-success')).toBe(true));
+      xMarkers.forEach((ind) => expect(ind.classList.contains('fill-error')).toBe(true));
 
       // Open-position shapes (C, A, G) should have at least some O indicators
       expect(oMarkers.length).toBeGreaterThan(0);
@@ -582,7 +584,7 @@ describe('FullFretboard', () => {
       expect(xMarkers.length).toBe(1);
       const rect = xMarkers[0]!.previousElementSibling as Element;
       expect(rect.getAttribute('fill')).toBe(SHAPE_COLORS.G);
-      expect(xMarkers[0]!.getAttribute('fill')).toBe('#DC2626');
+      expect(xMarkers[0]!.classList.contains('fill-error')).toBe(true);
     });
 
     it('indicators are grouped by (baseFret, stringIndex)', () => {
@@ -717,7 +719,7 @@ describe('FullFretboard', () => {
       const circles = [...container.querySelectorAll('circle')];
       const greenRings = circles.filter(
         (c) =>
-          c.getAttribute('stroke') === '#22C55E' &&
+          c.classList.contains('stroke-success') &&
           c.getAttribute('fill') === 'none' &&
           c.getAttribute('stroke-width') === '1.5',
       );
@@ -741,7 +743,7 @@ describe('FullFretboard', () => {
       const circles = [...container.querySelectorAll('circle')];
       const greenRings = circles.filter(
         (c) =>
-          c.getAttribute('stroke') === '#22C55E' &&
+          c.classList.contains('stroke-success') &&
           c.getAttribute('fill') === 'none' &&
           parseFloat(c.getAttribute('opacity') ?? '1') === 0.5,
       );
@@ -764,7 +766,7 @@ describe('FullFretboard', () => {
       const circles = [...container.querySelectorAll('circle')];
       const amberRings = circles.filter(
         (c) =>
-          c.getAttribute('stroke') === '#F59E0B' &&
+          c.classList.contains('stroke-accent') &&
           c.getAttribute('fill') === 'none' &&
           c.getAttribute('stroke-width') === '2' &&
           c.getAttribute('stroke-dasharray') === '3 2',
@@ -788,7 +790,7 @@ describe('FullFretboard', () => {
       const polygons = [...container.querySelectorAll('polygon')];
       const greenPolygons = polygons.filter(
         (p) =>
-          p.getAttribute('stroke') === '#22C55E' &&
+          p.classList.contains('stroke-success') &&
           p.getAttribute('fill') === 'none',
       );
       expect(greenPolygons.length).toBeGreaterThanOrEqual(1);
@@ -810,7 +812,7 @@ describe('FullFretboard', () => {
       const polygons = [...container.querySelectorAll('polygon')];
       const amberPolygons = polygons.filter(
         (p) =>
-          p.getAttribute('stroke') === '#F59E0B' &&
+          p.classList.contains('stroke-accent') &&
           p.getAttribute('fill') === 'none' &&
           p.getAttribute('stroke-dasharray') === '3 2',
       );
@@ -828,10 +830,10 @@ describe('FullFretboard', () => {
       const circles = [...container.querySelectorAll('circle')];
       const polygons = [...container.querySelectorAll('polygon')];
       const ringCircles = circles.filter(
-        (c) => c.getAttribute('fill') === 'none' && c.getAttribute('stroke') === '#22C55E',
+        (c) => c.getAttribute('fill') === 'none' && c.classList.contains('stroke-success'),
       );
       const ringPolygons = polygons.filter(
-        (p) => p.getAttribute('fill') === 'none' && p.getAttribute('stroke') === '#22C55E',
+        (p) => p.getAttribute('fill') === 'none' && p.classList.contains('stroke-success'),
       );
       expect(ringCircles.length).toBe(0);
       expect(ringPolygons.length).toBe(0);
@@ -848,7 +850,7 @@ describe('FullFretboard', () => {
 
       const circles = [...container.querySelectorAll('circle')];
       const ringCircles = circles.filter(
-        (c) => c.getAttribute('fill') === 'none' && (c.getAttribute('stroke') === '#22C55E' || c.getAttribute('stroke') === '#F59E0B'),
+        (c) => c.getAttribute('fill') === 'none' && (c.classList.contains('stroke-success') || c.classList.contains('stroke-accent')),
       );
       expect(ringCircles.length).toBe(0);
     });
@@ -869,7 +871,7 @@ describe('FullFretboard', () => {
       const circles = [...container.querySelectorAll('circle')];
       const greenRings = circles.filter(
         (c) =>
-          c.getAttribute('stroke') === '#22C55E' &&
+          c.classList.contains('stroke-success') &&
           c.getAttribute('fill') === 'none',
       );
       expect(greenRings.length).toBeGreaterThanOrEqual(1);
@@ -893,7 +895,7 @@ describe('FullFretboard', () => {
       const polygons = [...container.querySelectorAll('polygon')];
       const greenPolygons = polygons.filter(
         (p) =>
-          p.getAttribute('stroke') === '#22C55E' &&
+          p.classList.contains('stroke-success') &&
           p.getAttribute('fill') === 'none',
       );
       expect(greenPolygons.length).toBeGreaterThanOrEqual(1);
@@ -925,7 +927,7 @@ describe('FullFretboard', () => {
       const circles = [...container.querySelectorAll('circle')];
       const greenIdx = circles.findIndex(
         (c) =>
-          c.getAttribute('stroke') === '#22C55E' &&
+          c.classList.contains('stroke-success') &&
           c.getAttribute('fill') === 'none',
       );
       // The note circle with fill should come before the ring
