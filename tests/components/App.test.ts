@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
+import { tick } from 'svelte';
 import App from '../../src/App.svelte';
 
 describe('App routing integration', () => {
@@ -62,23 +63,12 @@ describe('App routing integration', () => {
       const result = render(App);
       unmount = result.unmount;
 
-      // The CagedTool has a Back/Home button; click the error boundary "Back to Home" isn't
-      // reachable without error. Instead navigate programmatically via a known back button.
-      // CagedTool renders a "Back" button that calls navigate('home').
-      const backBtn = screen.getAllByRole('button').find(
-        (b) => b.textContent?.toLowerCase().includes('back') || b.getAttribute('aria-label')?.toLowerCase().includes('home')
-      );
-      if (backBtn) {
-        await backBtn.click();
-        expect(window.location.pathname).toBe('/');
-      } else {
-        // If no back button is accessible, verify navigate to home via dispatchEvent approach.
-        // Dispatch popstate manually to simulate going back to /
-        history.replaceState({}, '', '/');
-        window.dispatchEvent(new PopStateEvent('popstate'));
-        // Just confirm we can reach home
-        expect(window.location.pathname).toBe('/');
-      }
+      // CagedTool renders a "Back to Home" button that calls navigate('home').
+      // getByRole throws if it is missing, so this can never pass vacuously.
+      const backBtn = screen.getByRole('button', { name: /back to home/i });
+      await backBtn.click();
+
+      expect(window.location.pathname).toBe('/');
     });
   });
 
@@ -95,6 +85,9 @@ describe('App routing integration', () => {
       // Simulate back/forward: manually set pathname and fire popstate
       history.replaceState({}, '', '/caged');
       window.dispatchEvent(new PopStateEvent('popstate'));
+      // Wait for Svelte to flush the $state change to the DOM (sync mode schedules
+      // the update on a microtask; assert after tick() so this is not timing-fragile).
+      await tick();
 
       // After popstate, the view should update to caged
       // Check that CagedTool content is present

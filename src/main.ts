@@ -1,5 +1,4 @@
 import { mount } from 'svelte';
-import { inject } from '@vercel/analytics';
 import App from './App.svelte';
 // Studio skin typography — self-hosted, only the weights we use.
 import '@fontsource/ibm-plex-sans/400.css';
@@ -19,13 +18,20 @@ function shouldEnableAnalytics(): boolean {
 try {
   mount(App, { target });
   console.log('[music-tools] App mounted');
-  if (shouldEnableAnalytics()) {
-    inject();
-  }
 } catch (err) {
   console.error('[music-tools] Failed to mount:', err);
   target.innerHTML = `<div style="padding:2rem;color:red;font-family:monospace">
     <h2>Startup Error</h2>
     <pre>${err instanceof Error ? err.message : String(err)}</pre>
   </div>`;
+}
+
+// Analytics is mounted AFTER and OUTSIDE the app's try/catch so a failure in the
+// analytics SDK can never clobber a successfully mounted app. The dynamic import
+// also keeps @vercel/analytics out of the bundle path except when the gate
+// passes (production on Vercel only).
+if (shouldEnableAnalytics()) {
+  import('@vercel/analytics')
+    .then(({ inject }) => inject())
+    .catch((err) => console.error('[music-tools] Analytics failed to load:', err));
 }
