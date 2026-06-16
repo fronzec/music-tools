@@ -24,11 +24,12 @@
     class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-studio-led/30 to-transparent"
   ></div>
 
-  <!-- ambient amber glow bleeding from the top, as if the panel is lit from within -->
+  <!-- ambient amber glow bleeding from the top, as if the panel is lit from within.
+       A brighter core over a wider soft bleed for a richer falloff. -->
   <div
     class="pointer-events-none absolute inset-0"
     aria-hidden="true"
-    style="background: radial-gradient(125% 55% at 50% -8%, rgba(255, 158, 44, 0.11), transparent 55%);"
+    style="background: radial-gradient(75% 38% at 50% -4%, rgba(255, 158, 44, 0.28), transparent 60%), radial-gradient(140% 70% at 50% -10%, rgba(255, 158, 44, 0.14), transparent 62%);"
   ></div>
 
   <!-- edge vignette for depth — darkens the corners so the center feels focused -->
