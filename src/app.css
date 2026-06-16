@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * ============================================================================
+ * DESIGN TOKENS — single source of truth for the visual identity.
+ * ============================================================================
+ * Everything reads from these semantic variables: Tailwind utilities
+ * (bg-surface, text-accent, …), the CSS below, and component inline styles.
+ *
+ * To REBRAND: change these values — or add a scoped `.theme-x { … }` block
+ * that overrides them — and the whole UI follows (palette, glow, grain, LED).
+ * No component hardcodes a colour or font.
+ *
+ * Colours are space-separated RGB triplets so they compose with alpha via
+ * `rgb(var(--accent-rgb) / 0.2)` and Tailwind's `/opacity` modifier.
+ */
+:root {
+  --surface-rgb: 11 11 13; /* device chassis — near-black */
+  --surface-raised-rgb: 22 22 25; /* a card sitting on the panel */
+  --hairline-rgb: 42 42 49; /* engraved borders / rules */
+  --ink-rgb: 233 231 226; /* primary label text */
+  --muted-rgb: 141 138 132; /* secondary / muted text */
+  --accent-rgb: 255 158 44; /* amber indicator */
+  --accent-soft-rgb: 255 192 107; /* lit highlight */
+  --accent-deep-rgb: 179 94 0; /* hot-core shade for the LED */
+
+  --font-display: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-technical: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
 body {
   margin: 0;
   font-family:
@@ -16,5 +44,43 @@ body {
     outline: 2px solid #3b82f6;
     outline-offset: 2px;
     border-radius: 4px;
+  }
+}
+
+@layer components {
+  /*
+   * Surface atmosphere. A faint SVG noise overlay gives the dark panel a
+   * tactile, non-flat texture (like a brushed chassis). Theme-agnostic — the
+   * texture is neutral; only the surface colour underneath it changes on rebrand.
+   */
+  .surface-grain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* A lit accent indicator LED (reads entirely from the accent token). */
+  .indicator-led {
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle at 35% 35%,
+      rgb(var(--accent-soft-rgb)),
+      rgb(var(--accent-rgb)) 55%,
+      rgb(var(--accent-deep-rgb))
+    );
+    box-shadow:
+      0 0 6px rgb(var(--accent-rgb) / 0.9),
+      0 0 12px rgb(var(--accent-rgb) / 0.5);
+  }
+}
+
+/* Respect users who prefer reduced motion — kill the studio animations. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-led-pulse,
+  .animate-rack-in {
+    animation: none !important;
   }
 }
