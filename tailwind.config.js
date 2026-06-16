@@ -5,30 +5,34 @@ export default {
   theme: {
     extend: {
       // ----------------------------------------------------------------------
-      // Studio / pedalboard design tokens (additive — scoped by usage, not
-      // applied globally). Change the skin by editing these values.
+      // Semantic design tokens. These map Tailwind utilities to the CSS
+      // variables defined in app.css (:root). They are intentionally named by
+      // ROLE (surface, accent, ink…), not by aesthetic, so a future rebrand is
+      // a token-value change — never a class rename across components.
+      //
+      // The `<alpha-value>` placeholder lets the `/opacity` modifier work
+      // (e.g. bg-accent/10, border-hairline/60).
       // ----------------------------------------------------------------------
       colors: {
-        studio: {
-          panel: '#0b0b0d', // device chassis — near-black
-          raised: '#161619', // a card sitting on the panel
-          rule: '#2a2a31', // hairline borders / engraving
-          ink: '#e9e7e2', // warm off-white label text
-          dim: '#8d8a84', // secondary / muted text
-          led: '#ff9e2c', // amber indicator
-          'led-soft': '#ffc06b', // lit highlight
-        },
+        surface: 'rgb(var(--surface-rgb) / <alpha-value>)',
+        'surface-raised': 'rgb(var(--surface-raised-rgb) / <alpha-value>)',
+        hairline: 'rgb(var(--hairline-rgb) / <alpha-value>)',
+        ink: 'rgb(var(--ink-rgb) / <alpha-value>)',
+        muted: 'rgb(var(--muted-rgb) / <alpha-value>)',
+        accent: 'rgb(var(--accent-rgb) / <alpha-value>)',
+        'accent-soft': 'rgb(var(--accent-soft-rgb) / <alpha-value>)',
       },
       fontFamily: {
-        // Distinct families, applied only inside the studio scope.
-        plex: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
-        'plex-mono': ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+        // Role-based families (avoid overriding Tailwind's global `mono`, which
+        // other tools use). Both resolve to CSS-variable font stacks.
+        display: ['var(--font-display)'],
+        technical: ['var(--font-technical)'],
       },
       boxShadow: {
-        led: '0 0 0 1px rgba(255,158,44,.45), 0 0 14px rgba(255,158,44,.45)',
-        'led-sm': '0 0 8px rgba(255,158,44,.35)',
+        led: '0 0 0 1px rgb(var(--accent-rgb) / 0.45), 0 0 14px rgb(var(--accent-rgb) / 0.45)',
+        'led-sm': '0 0 8px rgb(var(--accent-rgb) / 0.35)',
         'panel-raised':
-          'inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.6), 0 8px 24px rgba(0,0,0,.45)',
+          'inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1px 2px rgb(0 0 0 / 0.6), 0 8px 24px rgb(0 0 0 / 0.45)',
       },
       keyframes: {
         'led-pulse': {
