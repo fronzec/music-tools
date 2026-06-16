@@ -168,8 +168,15 @@ describe('IntervalTrainer', () => {
       expect(unique.size).toBe(4);
     });
 
-    it('plays the two notes exactly once on mount', async () => {
+    it('does NOT play any audio on mount (no autoplay before a user gesture)', async () => {
       await renderTool();
+      expect(mockPlaySequence).not.toHaveBeenCalled();
+    });
+
+    it('clicking Replay plays the interval (gesture-driven audio)', async () => {
+      await renderTool();
+      mockPlaySequence.mockClear();
+      await fireEvent.click(screen.getByRole('button', { name: 'Replay interval' }));
       expect(mockPlaySequence).toHaveBeenCalledTimes(1);
     });
   });
@@ -223,12 +230,25 @@ describe('IntervalTrainer', () => {
       expect(container.textContent ?? '').toContain('Correct!');
     });
 
+    it('auto-advances and plays the next interval ~1500ms after a correct answer', async () => {
+      vi.useFakeTimers();
+      try {
+        await renderTool(() => 0); // silent mount; rng=()=>0 → correct answer is "Minor 2nd"
+        await fireEvent.click(screen.getByRole('button', { name: 'Answer Minor 2nd' })); // correct → schedules setTimeout(next, 1500)
+        mockPlaySequence.mockClear(); // answering does not play; baseline is 0
+        vi.advanceTimersByTime(1500); // auto-advance fires next() → must play the new interval
+        expect(mockPlaySequence).toHaveBeenCalledTimes(1);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
     it('clicking Next after a correct answer cancels the pending auto-advance (no ghost skip)', async () => {
       vi.useFakeTimers();
       try {
-        await renderTool(() => 0); // mount plays once
+        await renderTool(() => 0); // mount is silent (no autoplay)
         await fireEvent.click(screen.getByRole('button', { name: 'Answer Minor 2nd' })); // correct → schedules 1500ms timer
-        await fireEvent.click(screen.getByRole('button', { name: 'Next question' })); // manual advance → plays again + cancels timer
+        await fireEvent.click(screen.getByRole('button', { name: 'Next question' })); // manual advance → plays + cancels timer
         const callsAfterManualNext = mockPlaySequence.mock.calls.length;
         vi.advanceTimersByTime(3000); // a leftover timer would fire next() again
         expect(mockPlaySequence.mock.calls.length).toBe(callsAfterManualNext);
@@ -385,7 +405,7 @@ describe('IntervalTrainer', () => {
     it('switching to Explore cancels a pending Practice auto-advance (no late audio)', async () => {
       vi.useFakeTimers();
       try {
-        await renderTool(() => 0); // mount plays once; rng=()=>0 → correct answer is "Minor 2nd"
+        await renderTool(() => 0); // mount is silent; rng=()=>0 → correct answer is "Minor 2nd"
         await fireEvent.click(screen.getByRole('button', { name: 'Answer Minor 2nd' })); // correct → schedules setTimeout(next, 1500)
         await fireEvent.click(screen.getByRole('button', { name: 'Explore' })); // setMode must cancel the pending timer
         const callsBefore = mockPlaySequence.mock.calls.length;
@@ -455,7 +475,7 @@ describe('IntervalTrainer', () => {
 
     it('switching back to Practice after Explore does NOT call mockPlaySequence again', async () => {
       await renderTool();
-      // Mount plays once (Practice auto-plays)
+      // Mount is silent (no autoplay)
       const callsAfterMount = mockPlaySequence.mock.calls.length;
       await fireEvent.click(screen.getByRole('button', { name: 'Explore' }));
       await fireEvent.click(screen.getByRole('button', { name: 'Practice' }));

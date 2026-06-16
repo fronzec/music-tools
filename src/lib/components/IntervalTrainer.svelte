@@ -77,12 +77,22 @@
     mode = m;
   }
 
-  function next() {
+  // Generate a fresh question WITHOUT playing audio. Used on mount so entering
+  // the tool never triggers autoplay (jarring UX + the AudioContext is suspended
+  // until a user gesture, so mount-time playback is unreliable anyway).
+  function loadQuestion(): Question {
     cancelPending();
     const q = generateQuestion(rng);
     question = q;
     lastAnswer = null;
     selected = null;
+    return q;
+  }
+
+  // Advance to a new question AND play it. Only ever runs from a user gesture
+  // (the Next button, or auto-advance after a correct answer).
+  function next() {
+    const q = loadQuestion();
     player.playSequence([midiToFreq(q.lowMidi), midiToFreq(q.highMidi)]);
   }
 
@@ -110,9 +120,10 @@
   // ---------------------------------------------------------------------------
 
   $effect(() => {
-    // Run once on mount: untrack so the (reactive) rng prop can't retrigger
-    // this effect and restart audio / dispose the player mid-use.
-    untrack(() => next());
+    // Run once on mount: generate the first question SILENTLY (no autoplay).
+    // untrack so the (reactive) rng prop can't retrigger this effect and
+    // regenerate the question / dispose the player mid-use.
+    untrack(() => loadQuestion());
     return () => {
       cancelPending();
       player.dispose();
