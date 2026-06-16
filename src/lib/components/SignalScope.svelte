@@ -24,8 +24,12 @@
   function drawIdle(ctx: CanvasRenderingContext2D) {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     if (mode === 'scope') {
-      // Flat center line when idle.
-      ctx.strokeStyle = 'rgba(148,163,184,0.5)';
+      // Flat center line when idle — reads --muted-rgb token for rebrand safety.
+      // Falls back to a literal so jsdom (no CSS vars) still produces a valid color.
+      const muted =
+        (canvas ? getComputedStyle(canvas).getPropertyValue('--muted-rgb').trim() : '') ||
+        '141 138 132';
+      ctx.strokeStyle = `rgb(${muted} / 0.5)`;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, HEIGHT / 2);
@@ -92,7 +96,7 @@
 
 <figure class="m-0">
   <figcaption
-    class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+    class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted"
   >
     {label}
   </figcaption>
@@ -100,7 +104,7 @@
     bind:this={canvas}
     width={WIDTH}
     height={HEIGHT}
-    class="h-auto w-full rounded-lg bg-gray-50 dark:bg-gray-950"
+    class="h-auto w-full rounded-lg bg-surface"
     aria-label="{label} visualization"
   ></canvas>
 </figure>
