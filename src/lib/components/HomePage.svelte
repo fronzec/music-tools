@@ -24,6 +24,20 @@
     class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-studio-led/30 to-transparent"
   ></div>
 
+  <!-- ambient amber glow bleeding from the top, as if the panel is lit from within -->
+  <div
+    class="pointer-events-none absolute inset-0"
+    aria-hidden="true"
+    style="background: radial-gradient(125% 55% at 50% -8%, rgba(255, 158, 44, 0.11), transparent 55%);"
+  ></div>
+
+  <!-- edge vignette for depth — darkens the corners so the center feels focused -->
+  <div
+    class="pointer-events-none absolute inset-0"
+    aria-hidden="true"
+    style="background: radial-gradient(115% 85% at 50% 28%, transparent 52%, rgba(0, 0, 0, 0.55));"
+  ></div>
+
   <div class="relative mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
     <!-- Device header -->
     <header class="mb-10 flex items-end justify-between border-b border-studio-rule pb-5 sm:mb-12">
