@@ -81,7 +81,7 @@
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
   <!-- Back button -->
   <button
-    class="mb-6 text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+    class="mb-6 text-sm font-medium text-muted transition-colors hover:text-accent-soft hover:underline"
     aria-label="Back to Home"
     onclick={() => navigate('home')}
   >
@@ -89,7 +89,7 @@
   </button>
 
   <!-- Title -->
-  <h1 class="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl" id="progression-heading">
+  <h1 class="mb-6 text-2xl font-bold tracking-tight text-ink sm:text-3xl" id="progression-heading">
     Progression Builder
   </h1>
 
@@ -109,11 +109,11 @@
 
     <!-- Fretboard + Playback (side by side on desktop) -->
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
-      <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+      <div class="rounded-xl border border-hairline bg-surface-raised p-4">
         {#if progression.length > 0}
           <FullFretboard {shapes} {visibleShapes} labelMode="intervals" />
         {:else}
-          <p class="py-8 text-center text-gray-400 dark:text-gray-500">Add chords to see shapes</p>
+          <p class="py-8 text-center text-muted">Add chords to see shapes</p>
         {/if}
       </div>
 
