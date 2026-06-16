@@ -331,7 +331,7 @@
 
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
   <button
-    class="mb-6 text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+    class="mb-6 text-sm font-medium text-muted transition-colors hover:text-accent-soft hover:underline"
     aria-label="Back to Home"
     onclick={() => navigate('home')}
   >
@@ -339,7 +339,7 @@
   </button>
 
   <h1
-    class="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl"
+    class="mb-6 text-2xl font-bold tracking-tight text-ink sm:text-3xl"
     id="signal-lab-heading"
   >
     Signal Lab
@@ -348,16 +348,14 @@
   <div class="space-y-6">
     <!-- Controls -->
     <div
-      class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+      class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6"
     >
       <div class="flex flex-wrap items-end gap-6">
         <!-- Play / Stop -->
         <button
-          class="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200"
-          class:bg-blue-600={!isPlaying}
-          class:hover:bg-blue-700={!isPlaying}
-          class:bg-red-600={isPlaying}
-          class:hover:bg-red-700={isPlaying}
+          class="rounded-lg border px-5 py-2.5 text-sm font-semibold transition-all duration-200 {isPlaying
+            ? 'border-error/50 bg-error/10 text-error hover:bg-error/20'
+            : 'border-accent/50 bg-accent/10 text-accent-soft hover:bg-accent/20 hover:shadow-led-sm'}"
           aria-label={isPlaying ? 'Stop tone' : 'Play tone'}
           onclick={toggle}
         >
@@ -366,24 +364,19 @@
 
         <!-- Source mode: Waveform vs Additive -->
         <div>
-          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted font-technical">
             Source
           </div>
           <div
-            class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
+            class="inline-flex rounded-lg border border-hairline bg-surface p-0.5"
             role="radiogroup"
             aria-label="Source"
           >
             {#each (['waveform', 'additive'] as const) as sm (sm)}
               <button
-                class="rounded-md px-3 py-1 text-sm font-medium capitalize transition-all duration-200"
-                class:bg-white={sourceMode === sm}
-                class:dark:bg-gray-900={sourceMode === sm}
-                class:text-gray-900={sourceMode === sm}
-                class:dark:text-gray-100={sourceMode === sm}
-                class:shadow-sm={sourceMode === sm}
-                class:text-gray-500={sourceMode !== sm}
-                class:dark:text-gray-400={sourceMode !== sm}
+                class="rounded-md px-3 py-1 text-sm font-medium capitalize transition-all duration-200 {sourceMode === sm
+                  ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                  : 'text-muted hover:border-accent/40'}"
                 role="radio"
                 aria-checked={sourceMode === sm}
                 onclick={() => (sourceMode = sm)}
@@ -396,25 +389,19 @@
 
         <!-- Waveform -->
         <div>
-          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted font-technical">
             Waveform
           </div>
           <div
-            class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
+            class="inline-flex rounded-lg border border-hairline bg-surface p-0.5"
             role="radiogroup"
             aria-label="Waveform"
           >
             {#each WAVE_TYPES as wt (wt)}
               <button
-                class="rounded-md px-3 py-1 text-sm font-medium capitalize transition-all duration-200"
-                class:bg-white={waveType === wt}
-                class:dark:bg-gray-900={waveType === wt}
-                class:text-gray-900={waveType === wt}
-                class:dark:text-gray-100={waveType === wt}
-                class:shadow-sm={waveType === wt}
-                class:text-gray-500={waveType !== wt}
-                class:dark:text-gray-400={waveType !== wt}
-                class:opacity-50={sourceMode === 'additive'}
+                class="rounded-md px-3 py-1 text-sm font-medium capitalize transition-all duration-200 {waveType === wt
+                  ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                  : 'text-muted hover:border-accent/40'} {sourceMode === 'additive' ? 'opacity-50' : ''}"
                 role="radio"
                 aria-checked={waveType === wt}
                 disabled={sourceMode === 'additive'}
@@ -430,7 +417,7 @@
         <div class="min-w-[12rem] flex-1">
           <label
             for="freq-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Frequency — {Math.round(frequency)} Hz
           </label>
@@ -441,7 +428,7 @@
             max={MAX_FREQ}
             step="1"
             bind:value={frequency}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent"
             aria-label="Frequency"
           />
         </div>
@@ -450,7 +437,7 @@
         <div class="min-w-[8rem] flex-1">
           <label
             for="vol-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Volume — {Math.round((volume / MAX_GAIN) * 100)}%
           </label>
@@ -461,12 +448,12 @@
             max={MAX_GAIN}
             step="0.01"
             bind:value={volume}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent"
             aria-label="Volume"
           />
         </div>
       </div>
-      <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+      <p class="mt-3 text-xs text-muted">
         The waveform sets a tone's harmonic content — a sine is a single spike, while sawtooth and
         square are rich in harmonics. Switch waveforms and watch the spectrum change.
       </p>
@@ -475,15 +462,15 @@
     <!-- Additive synthesis: harmonic slider bank + presets (shown in Additive mode) -->
     {#if sourceMode === 'additive'}
       <div
-        class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+        class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6"
       >
         <div class="mb-4 flex flex-wrap items-center gap-3">
-          <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <span class="text-xs font-semibold uppercase tracking-wider text-muted font-technical">
             Presets
           </span>
           {#each (['sine', 'sawtooth', 'square'] as const) as preset (preset)}
             <button
-              class="rounded-md border border-gray-300 bg-gray-50 px-3 py-1 text-sm font-medium capitalize text-gray-700 transition-all duration-200 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              class="rounded-md border border-hairline bg-surface px-3 py-1 text-sm font-medium capitalize text-muted transition-all duration-200 hover:text-ink hover:border-accent/40"
               aria-label="{preset.charAt(0).toUpperCase() + preset.slice(1)} preset"
               onclick={() => (harmonicAmps = presetAmps(preset))}
             >
@@ -492,11 +479,11 @@
           {/each}
         </div>
         <div class="grid grid-cols-4 gap-4 sm:grid-cols-8">
-          {#each harmonicAmps as amp, i}
+          {#each harmonicAmps as amp, i (i)}
             <div class="flex flex-col items-center gap-1">
               <label
                 for="harmonic-{i + 1}-slider"
-                class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                class="text-xs font-medium text-muted font-technical"
               >
                 H{i + 1}
               </label>
@@ -507,14 +494,14 @@
                 max="1"
                 step="0.01"
                 bind:value={harmonicAmps[i]}
-                class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 dark:bg-gray-700"
+                class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent"
                 aria-label="Harmonic {i + 1} amplitude"
               />
-              <span class="text-xs text-gray-400">{amp.toFixed(2)}</span>
+              <span class="text-xs text-muted">{amp.toFixed(2)}</span>
             </div>
           {/each}
         </div>
-        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        <p class="mt-3 text-xs text-muted">
           Each slider sets the amplitude of one harmonic — a tone IS a sum of sines. Drag them, or
           try a preset, and watch the waveform and spectrum rebuild from pure sines.
         </p>
@@ -523,31 +510,26 @@
 
     <!-- Effects -->
     <div
-      class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+      class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6"
     >
       <div class="flex flex-wrap items-end gap-6">
         <!-- Distortion on/off (bypass) -->
         <div>
-          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted font-technical">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
             </svg>
             Distortion
           </div>
           <div
-            class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
+            class="inline-flex rounded-lg border border-hairline bg-surface p-0.5"
             role="radiogroup"
             aria-label="Distortion"
           >
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={!distortionOn}
-              class:dark:bg-gray-900={!distortionOn}
-              class:text-gray-900={!distortionOn}
-              class:dark:text-gray-100={!distortionOn}
-              class:shadow-sm={!distortionOn}
-              class:text-gray-500={distortionOn}
-              class:dark:text-gray-400={distortionOn}
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 {!distortionOn
+                ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                : 'text-muted hover:border-accent/40'}"
               role="radio"
               aria-checked={!distortionOn}
               onclick={() => (distortionOn = false)}
@@ -555,14 +537,9 @@
               Off
             </button>
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={distortionOn}
-              class:dark:bg-gray-900={distortionOn}
-              class:text-gray-900={distortionOn}
-              class:dark:text-gray-100={distortionOn}
-              class:shadow-sm={distortionOn}
-              class:text-gray-500={!distortionOn}
-              class:dark:text-gray-400={!distortionOn}
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 {distortionOn
+                ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                : 'text-muted hover:border-accent/40'}"
               role="radio"
               aria-checked={distortionOn}
               onclick={() => (distortionOn = true)}
@@ -576,7 +553,7 @@
         <div class="min-w-[12rem] flex-1" class:opacity-50={!distortionOn}>
           <label
             for="drive-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Drive — {drive}
           </label>
@@ -588,43 +565,38 @@
             step="1"
             bind:value={drive}
             disabled={!distortionOn}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent disabled:cursor-not-allowed"
             aria-label="Distortion drive"
           />
         </div>
       </div>
-      <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+      <p class="mt-3 text-xs text-muted">
         Turn distortion on to watch the waveform clip and new harmonics appear in the spectrum.
       </p>
     </div>
 
     <!-- Low-pass filter -->
     <div
-      class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+      class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6"
     >
       <div class="flex flex-wrap items-end gap-6">
         <!-- Filter on/off (bypass) -->
         <div>
-          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted font-technical">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
             </svg>
             Low-pass filter
           </div>
           <div
-            class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
+            class="inline-flex rounded-lg border border-hairline bg-surface p-0.5"
             role="radiogroup"
             aria-label="Low-pass filter"
           >
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={!filterOn}
-              class:dark:bg-gray-900={!filterOn}
-              class:text-gray-900={!filterOn}
-              class:dark:text-gray-100={!filterOn}
-              class:shadow-sm={!filterOn}
-              class:text-gray-500={filterOn}
-              class:dark:text-gray-400={filterOn}
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 {!filterOn
+                ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                : 'text-muted hover:border-accent/40'}"
               role="radio"
               aria-checked={!filterOn}
               onclick={() => (filterOn = false)}
@@ -632,14 +604,9 @@
               Off
             </button>
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={filterOn}
-              class:dark:bg-gray-900={filterOn}
-              class:text-gray-900={filterOn}
-              class:dark:text-gray-100={filterOn}
-              class:shadow-sm={filterOn}
-              class:text-gray-500={!filterOn}
-              class:dark:text-gray-400={!filterOn}
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 {filterOn
+                ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                : 'text-muted hover:border-accent/40'}"
               role="radio"
               aria-checked={filterOn}
               onclick={() => (filterOn = true)}
@@ -653,7 +620,7 @@
         <div class="min-w-[12rem] flex-1" class:opacity-50={!filterOn}>
           <label
             for="cutoff-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Cutoff — {Math.round(cutoff)} Hz
           </label>
@@ -665,7 +632,7 @@
             step="1"
             bind:value={cutoff}
             disabled={!filterOn}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent disabled:cursor-not-allowed"
             aria-label="Filter cutoff"
           />
         </div>
@@ -674,7 +641,7 @@
         <div class="min-w-[8rem] flex-1" class:opacity-50={!filterOn}>
           <label
             for="resonance-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Resonance — {resonance.toFixed(1)}
           </label>
@@ -686,43 +653,38 @@
             step="0.1"
             bind:value={resonance}
             disabled={!filterOn}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent disabled:cursor-not-allowed"
             aria-label="Filter resonance"
           />
         </div>
       </div>
-      <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+      <p class="mt-3 text-xs text-muted">
         Lower the cutoff to watch the high harmonics fade out of the spectrum.
       </p>
     </div>
 
     <!-- Tremolo -->
     <div
-      class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+      class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6"
     >
       <div class="flex flex-wrap items-end gap-6">
         <!-- Tremolo on/off (bypass) -->
         <div>
-          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted font-technical">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M2 12q3-7 6 0t6 0 6 0" />
             </svg>
             Tremolo
           </div>
           <div
-            class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
+            class="inline-flex rounded-lg border border-hairline bg-surface p-0.5"
             role="radiogroup"
             aria-label="Tremolo"
           >
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={!tremoloOn}
-              class:dark:bg-gray-900={!tremoloOn}
-              class:text-gray-900={!tremoloOn}
-              class:dark:text-gray-100={!tremoloOn}
-              class:shadow-sm={!tremoloOn}
-              class:text-gray-500={tremoloOn}
-              class:dark:text-gray-400={tremoloOn}
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 {!tremoloOn
+                ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                : 'text-muted hover:border-accent/40'}"
               role="radio"
               aria-checked={!tremoloOn}
               onclick={() => (tremoloOn = false)}
@@ -730,14 +692,9 @@
               Off
             </button>
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={tremoloOn}
-              class:dark:bg-gray-900={tremoloOn}
-              class:text-gray-900={tremoloOn}
-              class:dark:text-gray-100={tremoloOn}
-              class:shadow-sm={tremoloOn}
-              class:text-gray-500={!tremoloOn}
-              class:dark:text-gray-400={!tremoloOn}
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 {tremoloOn
+                ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                : 'text-muted hover:border-accent/40'}"
               role="radio"
               aria-checked={tremoloOn}
               onclick={() => (tremoloOn = true)}
@@ -751,7 +708,7 @@
         <div class="min-w-[12rem] flex-1" class:opacity-50={!tremoloOn}>
           <label
             for="trem-rate-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Rate — {tremRate.toFixed(1)} Hz
           </label>
@@ -763,7 +720,7 @@
             step="0.1"
             bind:value={tremRate}
             disabled={!tremoloOn}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent disabled:cursor-not-allowed"
             aria-label="Tremolo rate"
           />
         </div>
@@ -772,7 +729,7 @@
         <div class="min-w-[8rem] flex-1" class:opacity-50={!tremoloOn}>
           <label
             for="trem-depth-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Depth — {Math.round(tremDepth * 100)}%
           </label>
@@ -784,43 +741,38 @@
             step="0.01"
             bind:value={tremDepth}
             disabled={!tremoloOn}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent disabled:cursor-not-allowed"
             aria-label="Tremolo depth"
           />
         </div>
       </div>
-      <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+      <p class="mt-3 text-xs text-muted">
         Turn tremolo on to watch the waveform pulse — its amplitude rises and falls at the LFO rate.
       </p>
     </div>
 
     <!-- Delay -->
     <div
-      class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+      class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6"
     >
       <div class="flex flex-wrap items-end gap-6">
         <!-- Delay on/off (bypass) -->
         <div>
-          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <div class="mb-1.5 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted font-technical">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M16.023 9.348h4.992v-4.992M2.985 19.644v-4.992h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
             Delay
           </div>
           <div
-            class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800"
+            class="inline-flex rounded-lg border border-hairline bg-surface p-0.5"
             role="radiogroup"
             aria-label="Delay"
           >
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={!delayOn}
-              class:dark:bg-gray-900={!delayOn}
-              class:text-gray-900={!delayOn}
-              class:dark:text-gray-100={!delayOn}
-              class:shadow-sm={!delayOn}
-              class:text-gray-500={delayOn}
-              class:dark:text-gray-400={delayOn}
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 {!delayOn
+                ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                : 'text-muted hover:border-accent/40'}"
               role="radio"
               aria-checked={!delayOn}
               onclick={() => (delayOn = false)}
@@ -828,14 +780,9 @@
               Off
             </button>
             <button
-              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={delayOn}
-              class:dark:bg-gray-900={delayOn}
-              class:text-gray-900={delayOn}
-              class:dark:text-gray-100={delayOn}
-              class:shadow-sm={delayOn}
-              class:text-gray-500={!delayOn}
-              class:dark:text-gray-400={!delayOn}
+              class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200 {delayOn
+                ? 'border border-accent/50 bg-accent/15 text-accent-soft'
+                : 'text-muted hover:border-accent/40'}"
               role="radio"
               aria-checked={delayOn}
               onclick={() => (delayOn = true)}
@@ -849,7 +796,7 @@
         <div class="min-w-[10rem] flex-1" class:opacity-50={!delayOn}>
           <label
             for="delay-time-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Time — {Math.round(delayTime * 1000)} ms
           </label>
@@ -861,7 +808,7 @@
             step="0.01"
             bind:value={delayTime}
             disabled={!delayOn}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent disabled:cursor-not-allowed"
             aria-label="Delay time"
           />
         </div>
@@ -870,7 +817,7 @@
         <div class="min-w-[8rem] flex-1" class:opacity-50={!delayOn}>
           <label
             for="delay-feedback-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Feedback — {Math.round(feedback * 100)}%
           </label>
@@ -882,7 +829,7 @@
             step="0.01"
             bind:value={feedback}
             disabled={!delayOn}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent disabled:cursor-not-allowed"
             aria-label="Delay feedback"
           />
         </div>
@@ -891,7 +838,7 @@
         <div class="min-w-[8rem] flex-1" class:opacity-50={!delayOn}>
           <label
             for="delay-mix-slider"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+            class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted font-technical"
           >
             Mix — {Math.round(mix * 100)}%
           </label>
@@ -903,12 +850,12 @@
             step="0.01"
             bind:value={mix}
             disabled={!delayOn}
-            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-blue-600 disabled:cursor-not-allowed dark:bg-gray-700"
+            class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-hairline accent-accent disabled:cursor-not-allowed"
             aria-label="Delay mix"
           />
         </div>
       </div>
-      <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+      <p class="mt-3 text-xs text-muted">
         Mixing the delayed signal back in creates comb filtering — watch the notches carve into the
         spectrum, sharpening as you raise the feedback.
       </p>
@@ -916,51 +863,51 @@
 
     <!-- Visualizations: clean (raw oscillator) vs processed (after effects) -->
     <div
-      class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-900 sm:p-6"
+      class="rounded-xl border border-hairline bg-surface-raised p-5 sm:p-6"
     >
-      <p class="mb-5 text-xs text-gray-500 dark:text-gray-400">
+      <p class="mb-5 text-xs text-muted">
         Left is the raw oscillator; right is the signal after the effect chain. Toggle an effect and
         watch only the right column change.
       </p>
       <div class="grid gap-6 md:grid-cols-2">
         <!-- Clean (input) -->
         <div class="space-y-5">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-muted font-technical">
             Clean — input
           </h2>
           <SignalScope
             analyser={cleanAnalyser}
             mode="scope"
             active={isPlaying}
-            color="#3B82F6"
+            colorVar="--accent-rgb"
             label="Oscilloscope"
           />
           <SignalScope
             analyser={cleanAnalyser}
             mode="spectrum"
             active={isPlaying}
-            color="#16A34A"
+            colorVar="--note-tone-rgb"
             label="Spectrum"
           />
         </div>
 
         <!-- Processed (output) -->
         <div class="space-y-5">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-muted font-technical">
             Processed — output
           </h2>
           <SignalScope
             {analyser}
             mode="scope"
             active={isPlaying}
-            color="#3B82F6"
+            colorVar="--accent-rgb"
             label="Oscilloscope"
           />
           <SignalScope
             {analyser}
             mode="spectrum"
             active={isPlaying}
-            color="#16A34A"
+            colorVar="--note-tone-rgb"
             label="Spectrum"
           />
         </div>

@@ -9,12 +9,25 @@
     mode: 'scope' | 'spectrum';
     /** Whether a tone is currently playing — drives the animation loop. */
     active: boolean;
-    /** Accent color for the trace/bars (works on light and dark backgrounds). */
-    color?: string;
+    /**
+     * CSS custom-property name (without `var()`) whose value is a space-separated
+     * RGB triplet — e.g. `'--accent-rgb'`. Resolved at draw time via
+     * `getComputedStyle` so the trace colour always follows the active token.
+     * Falls back to a literal triplet when running in jsdom (no CSS vars).
+     */
+    colorVar?: string;
     label: string;
   }
 
-  let { analyser, mode, active, color = '#3B82F6', label }: Props = $props();
+  let { analyser, mode, active, colorVar = '--accent-rgb', label }: Props = $props();
+
+  /** Resolve `colorVar` to an `rgb(…)` string at draw time. */
+  function resolveColor(): string {
+    const v =
+      (canvas ? getComputedStyle(canvas).getPropertyValue(colorVar).trim() : '') ||
+      '255 158 44';
+    return 'rgb(' + v + ')';
+  }
 
   let canvas: HTMLCanvasElement | undefined = $state();
 
@@ -41,7 +54,7 @@
   function drawScope(ctx: CanvasRenderingContext2D, data: Uint8Array) {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     ctx.lineWidth = 2;
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = resolveColor();
     ctx.beginPath();
     const slice = WIDTH / data.length;
     for (let i = 0; i < data.length; i++) {
@@ -59,9 +72,10 @@
     // Only the lower ~half of bins carries musically useful content; spread it.
     const bins = Math.floor(data.length * 0.5);
     const barW = WIDTH / bins;
+    // Resolve once per frame — the color is constant across all bars.
+    ctx.fillStyle = resolveColor();
     for (let i = 0; i < bins; i++) {
       const h = (data[i] / 255) * HEIGHT;
-      ctx.fillStyle = color;
       ctx.fillRect(i * barW, HEIGHT - h, Math.max(1, barW - 1), h);
     }
   }
