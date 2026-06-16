@@ -1,4 +1,5 @@
 import { mount } from 'svelte';
+import { inject } from '@vercel/analytics';
 import App from './App.svelte';
 // Studio skin typography — self-hosted, only the weights we use.
 import '@fontsource/ibm-plex-sans/400.css';
@@ -11,9 +12,16 @@ import './app.css';
 const target = document.getElementById('app')!;
 target.innerHTML = '';
 
+function shouldEnableAnalytics(): boolean {
+  return import.meta.env.PROD && import.meta.env.VITE_VERCEL_ENV === 'production';
+}
+
 try {
   mount(App, { target });
   console.log('[music-tools] App mounted');
+  if (shouldEnableAnalytics()) {
+    inject();
+  }
 } catch (err) {
   console.error('[music-tools] Failed to mount:', err);
   target.innerHTML = `<div style="padding:2rem;color:red;font-family:monospace">
