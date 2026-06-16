@@ -95,8 +95,7 @@
       y={L.TOP_PAD - 6}
       text-anchor="middle"
       font-size={L.LABEL_FS + 1}
-      fill="#6B7280"
-      class="fill-gray-500 dark:fill-gray-400"
+      class="fill-muted"
       font-weight="bold"
     >{shape.baseFret}fr</text>
     <!-- Thick line at left edge -->
@@ -105,8 +104,7 @@
       y1={stringY(0)}
       x2={L.LEFT_PAD}
       y2={stringY(5)}
-      stroke="#1F2937"
-      class="stroke-gray-800 dark:stroke-gray-400"
+      class="stroke-muted"
       stroke-width="4"
     />
   {:else}
@@ -116,8 +114,7 @@
       y1={stringY(0)}
       x2={L.LEFT_PAD}
       y2={stringY(5)}
-      stroke="#1F2937"
-      class="stroke-gray-800 dark:stroke-gray-400"
+      class="stroke-muted"
       stroke-width="4"
     />
   {/if}
@@ -125,7 +122,7 @@
   <!-- Marker fret backgrounds (before strings so lines show through) -->
   {#each FRET_MARKERS as mf (mf)}
     {#if mf >= rangeStart && mf < rangeStart + displaySpan}
-      <rect x={fretLineX(mf - rangeStart - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6"       class="fret-marker-bg fill-gray-100 dark:fill-gray-800" />
+      <rect x={fretLineX(mf - rangeStart - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} class="fret-marker-bg fill-hairline" />
     {/if}
   {/each}
 
@@ -136,8 +133,7 @@
       y1={stringY(i)}
       x2={fretLineX(displaySpan)}
       y2={stringY(i)}
-      stroke="#D1D5DB"
-      class="stroke-gray-300 dark:stroke-gray-700"
+      class="stroke-hairline"
       stroke-width="1"
     />
   {/each}
@@ -149,8 +145,7 @@
       y1={stringY(0)}
       x2={fretLineX(f)}
       y2={stringY(5)}
-      stroke="#9CA3AF"
-      class="stroke-gray-400 dark:stroke-gray-600"
+      class="stroke-hairline"
       stroke-width={f === 0 && !isBarre ? 4 : 1}
     />
   {/each}
@@ -160,11 +155,11 @@
     {#if mf >= rangeStart && mf < rangeStart + displaySpan}
       {@const mx = noteX(mf, rangeStart)}
       {@const my = stringY(2.5)}  <!-- centered vertically -->
-      <circle cx={mx} cy={my} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
+      <circle cx={mx} cy={my} r={L.MARKER_R} class="fill-hairline" />
       {#if mf === 12}
         <!-- Double dot at fret 12 -->
-        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
-        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
+        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} class="fill-hairline" />
+        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} class="fill-hairline" />
       {/if}
     {/if}
   {/each}
@@ -205,7 +200,7 @@
       y={by}
       width={L.FRET_SP / 2}
       height={bh}
-      fill="#3B82F6"
+      class="fill-note-root"
       opacity="0.75"
       rx="2"
       style={prefersReducedMotion() ? '' : `transition: x ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, y ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`}
@@ -226,13 +221,13 @@
         {@const label = getLabel(i, absoluteFret, interval, labelMode)}
 
         {#if cls === 'root'}
-          <circle cx={cx} cy={cy} r={L.ROOT_R} fill="#3B82F6" stroke="#2563EB" stroke-width="1"
+          <circle cx={cx} cy={cy} r={L.ROOT_R} class="fill-note-root"
             style={prefersReducedMotion() ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {:else if cls === 'tone'}
-          <circle cx={cx} cy={cy} r={L.TONE_R} fill="#22C55E" stroke="#16A34A" stroke-width="1"
+          <circle cx={cx} cy={cy} r={L.TONE_R} class="fill-note-tone"
             style={prefersReducedMotion() ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {:else}
-          <circle cx={cx} cy={cy} r={L.OTHER_R} fill="none" stroke="#9CA3AF" class="stroke-gray-400 dark:stroke-gray-600" stroke-width="1.5"
+          <circle cx={cx} cy={cy} r={L.OTHER_R} fill="none" class="stroke-hairline" stroke-width="1.5"
             style={prefersReducedMotion() ? '' : `transition: cx ${FL.ANIM_DURATION} ${FL.ANIM_EASING}, cy ${FL.ANIM_DURATION} ${FL.ANIM_EASING}`} />
         {/if}
 
@@ -246,8 +241,7 @@
               y="0"
               text-anchor="middle"
               font-size={L.LABEL_FS}
-              fill="#374151"
-              class="fill-gray-700 dark:fill-gray-200"
+              class="fill-ink"
               font-weight="bold"
             >{label}</text>
           </g>

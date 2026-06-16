@@ -280,7 +280,7 @@
   </desc>
 
   <!-- Neck background — extends left to cover open-string notes (x≈-7, r=11) and down for fret numbers (y≈vbH+6) -->
-  <rect x="-24" y="0" width={vbW + 24} height={vbH + 18} fill="#1F2937" rx="4" class="fretboard-bg fill-white dark:fill-gray-900" />
+  <rect x="-24" y="0" width={vbW + 24} height={vbH + 18} rx="4" class="fretboard-bg fill-surface-raised" />
 
   <!-- Gradient definitions for overlap styles -->
   {#if gradientDefs.length > 0}
@@ -303,8 +303,7 @@
       y={vbH / 2}
       text-anchor="middle"
       font-size="14"
-      fill="#6B7280"
-      class="fill-gray-500 dark:fill-gray-400"
+      class="fill-muted"
       font-weight="500"
     >
       No shapes selected
@@ -318,8 +317,7 @@
       y1={stringY(0)}
       x2={fretLineX(f)}
       y2={stringY(5)}
-      stroke="#9CA3AF"
-      class="stroke-gray-400 dark:stroke-gray-600"
+      class="stroke-hairline"
       stroke-width="1"
     />
   {/each}
@@ -327,7 +325,7 @@
   <!-- Marker fret backgrounds (before strings so lines show through) -->
   {#each FRET_MARKERS as mf (mf)}
     {#if mf >= minFret && mf < minFret + displaySpan}
-      <rect x={fretLineX(mf - minFret - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} fill="#F3F4F6" class="fret-marker-bg fill-gray-100 dark:fill-gray-800" />
+      <rect x={fretLineX(mf - minFret - 1)} y={stringY(5)} width={L.FRET_SP} height={stringY(0) - stringY(5)} class="fret-marker-bg fill-hairline" />
     {/if}
   {/each}
 
@@ -338,8 +336,7 @@
       y1={stringY(i)}
       x2={fretLineX(displaySpan)}
       y2={stringY(i)}
-      stroke="#D1D5DB"
-      class="stroke-gray-300 dark:stroke-gray-700"
+      class="stroke-hairline"
       stroke-width="1"
     />
   {/each}
@@ -349,10 +346,10 @@
     {#if mf >= minFret && mf < minFret + displaySpan}
       {@const mx = noteX(mf, minFret)}
       {@const my = stringY(2.5)}
-      <circle cx={mx} cy={my} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
+      <circle cx={mx} cy={my} r={L.MARKER_R} class="fill-hairline" />
       {#if mf === 12}
-        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
-        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} fill="#9CA3AF" class="fill-gray-400 dark:fill-gray-600" />
+        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} class="fill-hairline" />
+        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} class="fill-hairline" />
       {/if}
     {/if}
   {/each}
@@ -365,8 +362,7 @@
       y1={stringY(0)}
       x2={fretLineX(0)}
       y2={stringY(5)}
-      stroke="#1F2937"
-      class="stroke-gray-800 dark:stroke-gray-400"
+      class="stroke-muted"
       stroke-width="4"
     />
   {:else}
@@ -376,8 +372,7 @@
       y={L.TOP_PAD - 6}
       text-anchor="middle"
       font-size={L.LABEL_FS + 1}
-      fill="#9CA3AF"
-      class="fill-gray-500 dark:fill-gray-400"
+      class="fill-muted"
       font-weight="bold"
     >{minFret}fr</text>
     <!-- Thick line at left edge -->
@@ -386,8 +381,7 @@
       y1={stringY(0)}
       x2={fretLineX(0)}
       y2={stringY(5)}
-      stroke="#1F2937"
-      class="stroke-gray-800 dark:stroke-gray-400"
+      class="stroke-muted"
       stroke-width="4"
     />
   {/if}
@@ -441,7 +435,9 @@
             fill={indicator.color}
             opacity={FL.INDICATOR_OPACITY} />
       <text x="0" y="0" text-anchor="middle" alignment-baseline="central"
-            font-size="10" fill={indicator.type === 'open' ? '#22C55E' : '#DC2626'}
+            font-size="10"
+            class:fill-success={indicator.type === 'open'}
+            class:fill-error={indicator.type !== 'open'}
             font-weight="bold">
         {indicator.type === 'open' ? 'O' : '×'}
       </text>
@@ -529,7 +525,7 @@
           <polygon
             points={diamondPoints(0, 0, ringR)}
             fill="none"
-            stroke="#F59E0B"
+            class="stroke-accent"
             stroke-width="2"
             stroke-dasharray="3 2"
             opacity="0.6"
@@ -538,7 +534,7 @@
           <circle
             cx="0" cy="0" r={ringR}
             fill="none"
-            stroke="#F59E0B"
+            class="stroke-accent"
             stroke-width="2"
             stroke-dasharray="3 2"
             opacity="0.6"
@@ -549,7 +545,7 @@
           <polygon
             points={diamondPoints(0, 0, ringR)}
             fill="none"
-            stroke="#22C55E"
+            class="stroke-success"
             stroke-width="1.5"
             opacity="0.5"
           />
@@ -557,7 +553,7 @@
           <circle
             cx="0" cy="0" r={ringR}
             fill="none"
-            stroke="#22C55E"
+            class="stroke-success"
             stroke-width="1.5"
             opacity="0.5"
           />
@@ -600,8 +596,7 @@
           y="-11"
           text-anchor="start"
           font-size={L.LABEL_FS}
-          fill="#374151"
-          class="fill-gray-700 dark:fill-gray-200"
+          class="fill-ink"
           font-weight="bold"
         >{label}</text>
       {/if}
@@ -617,8 +612,7 @@
       y={ny}
       text-anchor="middle"
       font-size={FL.FRET_NUM_FS}
-      fill="#9CA3AF"
-      class="fill-gray-400 dark:fill-gray-500"
+      class="fill-muted"
     >{n}</text>
   {/each}
 </svg>

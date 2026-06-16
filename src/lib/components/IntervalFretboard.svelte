@@ -68,7 +68,7 @@
     width={vbW + 24}
     height={vbH + 18}
     rx="4"
-    class="fill-white dark:fill-gray-900"
+    class="fill-surface-raised"
   />
 
   <!-- Fret lines (vertical) -->
@@ -78,8 +78,7 @@
       y1={stringY(0)}
       x2={fretLineX(f)}
       y2={stringY(5)}
-      stroke="#9CA3AF"
-      class="stroke-gray-400 dark:stroke-gray-600"
+      class="stroke-hairline"
       stroke-width="1"
     />
   {/each}
@@ -92,7 +91,7 @@
         y={stringY(5)}
         width={L.FRET_SP}
         height={stringY(0) - stringY(5)}
-        class="fill-gray-100 dark:fill-gray-800"
+        class="fill-hairline"
       />
     {/if}
   {/each}
@@ -104,8 +103,7 @@
       y1={stringY(i)}
       x2={fretLineX(span)}
       y2={stringY(i)}
-      stroke="#D1D5DB"
-      class="stroke-gray-300 dark:stroke-gray-700"
+      class="stroke-hairline"
       stroke-width="1"
     />
   {/each}
@@ -115,10 +113,10 @@
     {#if mf >= rangeStart && mf < rangeStart + span}
       {@const mx = noteX(mf, rangeStart)}
       {@const my = stringY(2.5)}
-      <circle cx={mx} cy={my} r={L.MARKER_R} class="fill-gray-400 dark:fill-gray-600" />
+      <circle cx={mx} cy={my} r={L.MARKER_R} class="fill-hairline" />
       {#if mf === 12}
-        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} class="fill-gray-400 dark:fill-gray-600" />
-        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} class="fill-gray-400 dark:fill-gray-600" />
+        <circle cx={mx} cy={stringY(1.5)} r={L.MARKER_R} class="fill-hairline" />
+        <circle cx={mx} cy={stringY(3.5)} r={L.MARKER_R} class="fill-hairline" />
       {/if}
     {/if}
   {/each}
@@ -129,11 +127,11 @@
     y1={stringY(0)}
     x2={fretLineX(0)}
     y2={stringY(5)}
-    class="stroke-gray-800 dark:stroke-gray-400"
+    class="stroke-muted"
     stroke-width="4"
   />
 
-  <!-- Interval position marks (root = yellow, target = blue) -->
+  <!-- Interval position marks (root = accent/yellow, target = note-root/blue) -->
   {#each marks as mark (`${mark.stringIndex}-${mark.fret}`)}
     {@const cx = noteX(mark.fret, rangeStart)}
     {@const cy = stringY(mark.stringIndex)}
@@ -143,7 +141,7 @@
         cx={cx}
         cy={cy}
         r={L.ROOT_R}
-        fill="#FACC15"
+        class="fill-accent"
         data-role="root"
       />
       <text
@@ -160,7 +158,7 @@
         cx={cx}
         cy={cy}
         r={L.TONE_R}
-        fill="#2563EB"
+        class="fill-note-root"
         data-role="target"
       />
       <text
@@ -184,7 +182,7 @@
       y={ny}
       text-anchor="middle"
       font-size={FL.FRET_NUM_FS}
-      class="fill-gray-400 dark:fill-gray-500"
+      class="fill-muted"
     >{n}</text>
   {/each}
 </svg>
