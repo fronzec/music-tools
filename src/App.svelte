@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ViewName } from '$lib/types/chord';
+  import { viewToPath, pathToView } from '$lib/routing';
   import HomePage from '$lib/components/HomePage.svelte';
   import CagedTool from '$lib/components/CagedTool.svelte';
   import ProgressionBuilder from '$lib/components/ProgressionBuilder.svelte';
@@ -10,11 +11,23 @@
   import IntervalTrainer from '$lib/components/IntervalTrainer.svelte';
   import TabPlayer from '$lib/components/TabPlayer.svelte';
 
-  let currentView: ViewName = $state('home');
+  let currentView: ViewName = $state(pathToView(location.pathname));
 
   function navigate(view: ViewName) {
     currentView = view;
+    const path = viewToPath(view);
+    if (location.pathname !== path) {
+      history.pushState({}, '', path);
+    }
   }
+
+  $effect(() => {
+    const onPopState = () => {
+      currentView = pathToView(location.pathname);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  });
 </script>
 
 {#snippet errorFallback(err: Error)}
