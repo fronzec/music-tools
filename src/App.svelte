@@ -9,7 +9,6 @@
   import SignalLab from '$lib/components/SignalLab.svelte';
   import IntervalTrainer from '$lib/components/IntervalTrainer.svelte';
   import TabPlayer from '$lib/components/TabPlayer.svelte';
-  import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
   let currentView: ViewName = $state('home');
 
@@ -19,11 +18,12 @@
 </script>
 
 {#snippet errorFallback(err: Error)}
-  <div class="mx-auto max-w-lg p-8 text-center">
-    <h1 class="mb-4 text-2xl font-bold text-red-600 dark:text-red-400">Something went wrong</h1>
-    <pre class="mb-6 text-left text-sm text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-300 p-4 rounded overflow-auto">{err.message}</pre>
+  <div class="mx-auto max-w-lg p-8 text-center font-display">
+    <h1 class="mb-4 text-2xl font-bold text-error">Something went wrong</h1>
+    <pre
+      class="mb-6 overflow-auto rounded border border-hairline bg-surface-raised p-4 text-left text-sm text-muted">{err.message}</pre>
     <button
-      class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+      class="rounded-md border border-accent/50 bg-accent/10 px-4 py-2 font-technical text-xs font-medium uppercase tracking-[0.15em] text-accent-soft transition-colors hover:bg-accent/20"
       onclick={() => navigate('home')}
     >
       Back to Home
@@ -31,8 +31,7 @@
   </div>
 {/snippet}
 
-<main class="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-  <ThemeToggle />
+<main class="min-h-screen bg-surface font-display text-ink">
   {#if currentView === 'home'}
     <svelte:boundary failed={errorFallback}>
       <HomePage {navigate} />
