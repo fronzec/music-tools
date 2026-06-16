@@ -64,7 +64,7 @@
 <div class="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
   <!-- Back button -->
   <button
-    class="mb-6 text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+    class="mb-6 text-sm font-medium text-muted transition-colors duration-200 hover:text-accent-soft"
     aria-label="Back to Home"
     onclick={() => navigate('home')}
   >
@@ -72,7 +72,7 @@
   </button>
 
   <!-- Title -->
-  <h1 class="mb-6 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl" id="caged-heading">
+  <h1 class="mb-6 text-2xl font-bold tracking-tight text-ink sm:text-3xl" id="caged-heading">
     CAGED Chord Visualizer
   </h1>
 
@@ -80,23 +80,19 @@
   <div class="mb-8 space-y-4">
     <!-- Chord selector card (hidden in dual mode) -->
     {#if viewMode !== 'dual'}
-    <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Chord</div>
+    <div class="rounded-xl border border-hairline bg-surface-raised p-4">
+      <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Chord</div>
       <div class="flex flex-wrap gap-1.5" role="group" aria-label="Select chord root">
         {#each CHROMATIC as note (note)}
           <button
             aria-label="Select {note} chord"
             aria-pressed={selectedRoot === note}
-            class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200"
-            class:bg-blue-600={selectedRoot === note}
-            class:text-white={selectedRoot === note}
-            class:shadow-sm={selectedRoot === note}
-            class:bg-gray-100={selectedRoot !== note}
-            class:text-gray-700={selectedRoot !== note}
-            class:hover:bg-gray-200={selectedRoot !== note}
-            class:dark:bg-gray-800={selectedRoot !== note}
-            class:dark:text-gray-300={selectedRoot !== note}
-            class:dark:hover:bg-gray-700={selectedRoot !== note}
+            class={[
+              'rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 border',
+              selectedRoot === note
+                ? 'bg-accent/15 text-accent-soft border-accent/50'
+                : 'bg-surface text-muted border-transparent hover:border-accent/40',
+            ].join(' ')}
             onclick={() => (selectedRoot = note)}
           >
             {note}
@@ -109,35 +105,27 @@
     <!-- Quality + Labels + View + Legend: grid of cards -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Quality card -->
-      <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Type</div>
-        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800" role="radiogroup" aria-label="Quality">
+      <div class="rounded-xl border border-hairline bg-surface-raised p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Type</div>
+        <div class="inline-flex rounded-lg border border-hairline bg-surface p-0.5" role="radiogroup" aria-label="Quality">
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-            class:bg-white={selectedQuality === 'major'}
-            class:dark:bg-gray-900={selectedQuality === 'major'}
-            class:text-gray-900={selectedQuality === 'major'}
-            class:dark:text-gray-100={selectedQuality === 'major'}
+            class:bg-surface-raised={selectedQuality === 'major'}
+            class:text-ink={selectedQuality === 'major'}
             class:shadow-sm={selectedQuality === 'major'}
-            class:text-gray-500={selectedQuality !== 'major'}
-            class:dark:text-gray-400={selectedQuality !== 'major'}
-            class:hover:text-gray-700={selectedQuality !== 'major'}
-            class:dark:hover:text-gray-300={selectedQuality !== 'major'}
+            class:text-muted={selectedQuality !== 'major'}
+            class:hover:text-ink={selectedQuality !== 'major'}
             role="radio"
             aria-checked={selectedQuality === 'major'}
             onclick={() => (selectedQuality = 'major')}
           >Major</button>
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-            class:bg-white={selectedQuality === 'minor'}
-            class:dark:bg-gray-900={selectedQuality === 'minor'}
-            class:text-gray-900={selectedQuality === 'minor'}
-            class:dark:text-gray-100={selectedQuality === 'minor'}
+            class:bg-surface-raised={selectedQuality === 'minor'}
+            class:text-ink={selectedQuality === 'minor'}
             class:shadow-sm={selectedQuality === 'minor'}
-            class:text-gray-500={selectedQuality !== 'minor'}
-            class:dark:text-gray-400={selectedQuality !== 'minor'}
-            class:hover:text-gray-700={selectedQuality !== 'minor'}
-            class:dark:hover:text-gray-300={selectedQuality !== 'minor'}
+            class:text-muted={selectedQuality !== 'minor'}
+            class:hover:text-ink={selectedQuality !== 'minor'}
             role="radio"
             aria-checked={selectedQuality === 'minor'}
             onclick={() => (selectedQuality = 'minor')}
@@ -146,50 +134,38 @@
       </div>
 
       <!-- View mode card -->
-      <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">View</div>
-        <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800" role="radiogroup" aria-label="View mode">
+      <div class="rounded-xl border border-hairline bg-surface-raised p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">View</div>
+        <div class="inline-flex rounded-lg border border-hairline bg-surface p-0.5" role="radiogroup" aria-label="View mode">
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-            class:bg-white={viewMode === 'full'}
-            class:dark:bg-gray-900={viewMode === 'full'}
-            class:text-gray-900={viewMode === 'full'}
-            class:dark:text-gray-100={viewMode === 'full'}
+            class:bg-surface-raised={viewMode === 'full'}
+            class:text-ink={viewMode === 'full'}
             class:shadow-sm={viewMode === 'full'}
-            class:text-gray-500={viewMode !== 'full'}
-            class:dark:text-gray-400={viewMode !== 'full'}
-            class:hover:text-gray-700={viewMode !== 'full'}
-            class:dark:hover:text-gray-300={viewMode !== 'full'}
+            class:text-muted={viewMode !== 'full'}
+            class:hover:text-ink={viewMode !== 'full'}
             role="radio" aria-checked={viewMode === 'full'}
             aria-label="Full Neck view"
             onclick={() => (viewMode = 'full')}
           >Full Neck</button>
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-            class:bg-white={viewMode === 'grid'}
-            class:dark:bg-gray-900={viewMode === 'grid'}
-            class:text-gray-900={viewMode === 'grid'}
-            class:dark:text-gray-100={viewMode === 'grid'}
+            class:bg-surface-raised={viewMode === 'grid'}
+            class:text-ink={viewMode === 'grid'}
             class:shadow-sm={viewMode === 'grid'}
-            class:text-gray-500={viewMode !== 'grid'}
-            class:dark:text-gray-400={viewMode !== 'grid'}
-            class:hover:text-gray-700={viewMode !== 'grid'}
-            class:dark:hover:text-gray-300={viewMode !== 'grid'}
+            class:text-muted={viewMode !== 'grid'}
+            class:hover:text-ink={viewMode !== 'grid'}
             role="radio" aria-checked={viewMode === 'grid'}
             aria-label="Shape Grid view"
             onclick={() => (viewMode = 'grid')}
           >Shape Grid</button>
           <button
             class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-            class:bg-white={viewMode === 'dual'}
-            class:dark:bg-gray-900={viewMode === 'dual'}
-            class:text-gray-900={viewMode === 'dual'}
-            class:dark:text-gray-100={viewMode === 'dual'}
+            class:bg-surface-raised={viewMode === 'dual'}
+            class:text-ink={viewMode === 'dual'}
             class:shadow-sm={viewMode === 'dual'}
-            class:text-gray-500={viewMode !== 'dual'}
-            class:dark:text-gray-400={viewMode !== 'dual'}
-            class:hover:text-gray-700={viewMode !== 'dual'}
-            class:dark:hover:text-gray-300={viewMode !== 'dual'}
+            class:text-muted={viewMode !== 'dual'}
+            class:hover:text-ink={viewMode !== 'dual'}
             role="radio" aria-checked={viewMode === 'dual'}
             aria-label="Dual Compare view"
             onclick={() => (viewMode = 'dual')}
@@ -199,50 +175,38 @@
 
       <!-- Overlap Style card (hidden in grid mode — no overlaps to render) -->
       {#if viewMode !== 'grid'}
-        <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-          <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Overlap</div>
-          <div class="inline-flex rounded-lg border border-gray-300 bg-gray-50 p-0.5 dark:border-gray-600 dark:bg-gray-800" role="radiogroup" aria-label="Overlap style">
+        <div class="rounded-xl border border-hairline bg-surface-raised p-4">
+          <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Overlap</div>
+          <div class="inline-flex rounded-lg border border-hairline bg-surface p-0.5" role="radiogroup" aria-label="Overlap style">
             <button
               class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={overlapStyle === 'split'}
-              class:dark:bg-gray-900={overlapStyle === 'split'}
-              class:text-gray-900={overlapStyle === 'split'}
-              class:dark:text-gray-100={overlapStyle === 'split'}
+              class:bg-surface-raised={overlapStyle === 'split'}
+              class:text-ink={overlapStyle === 'split'}
               class:shadow-sm={overlapStyle === 'split'}
-              class:text-gray-500={overlapStyle !== 'split'}
-              class:dark:text-gray-400={overlapStyle !== 'split'}
-              class:hover:text-gray-700={overlapStyle !== 'split'}
-              class:dark:hover:text-gray-300={overlapStyle !== 'split'}
+              class:text-muted={overlapStyle !== 'split'}
+              class:hover:text-ink={overlapStyle !== 'split'}
               role="radio"
               aria-checked={overlapStyle === 'split'}
               onclick={() => (overlapStyle = 'split')}
             >Split</button>
             <button
               class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={overlapStyle === 'dots'}
-              class:dark:bg-gray-900={overlapStyle === 'dots'}
-              class:text-gray-900={overlapStyle === 'dots'}
-              class:dark:text-gray-100={overlapStyle === 'dots'}
+              class:bg-surface-raised={overlapStyle === 'dots'}
+              class:text-ink={overlapStyle === 'dots'}
               class:shadow-sm={overlapStyle === 'dots'}
-              class:text-gray-500={overlapStyle !== 'dots'}
-              class:dark:text-gray-400={overlapStyle !== 'dots'}
-              class:hover:text-gray-700={overlapStyle !== 'dots'}
-              class:dark:hover:text-gray-300={overlapStyle !== 'dots'}
+              class:text-muted={overlapStyle !== 'dots'}
+              class:hover:text-ink={overlapStyle !== 'dots'}
               role="radio"
               aria-checked={overlapStyle === 'dots'}
               onclick={() => (overlapStyle = 'dots')}
             >Dots</button>
             <button
               class="rounded-md px-3 py-1 text-sm font-medium transition-all duration-200"
-              class:bg-white={overlapStyle === 'gradient'}
-              class:dark:bg-gray-900={overlapStyle === 'gradient'}
-              class:text-gray-900={overlapStyle === 'gradient'}
-              class:dark:text-gray-100={overlapStyle === 'gradient'}
+              class:bg-surface-raised={overlapStyle === 'gradient'}
+              class:text-ink={overlapStyle === 'gradient'}
               class:shadow-sm={overlapStyle === 'gradient'}
-              class:text-gray-500={overlapStyle !== 'gradient'}
-              class:dark:text-gray-400={overlapStyle !== 'gradient'}
-              class:hover:text-gray-700={overlapStyle !== 'gradient'}
-              class:dark:hover:text-gray-300={overlapStyle !== 'gradient'}
+              class:text-muted={overlapStyle !== 'gradient'}
+              class:hover:text-ink={overlapStyle !== 'gradient'}
               role="radio"
               aria-checked={overlapStyle === 'gradient'}
               onclick={() => (overlapStyle = 'gradient')}
@@ -254,8 +218,8 @@
 
     <!-- Shape toggle bar (only in Full Neck mode) -->
     {#if viewMode === 'full'}
-      <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Shapes</div>
+      <div class="rounded-xl border border-hairline bg-surface-raised p-4">
+        <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Shapes</div>
         <div class="flex flex-wrap gap-2" role="group" aria-label="Toggle shapes">
           {#each CAGED_ORDER as shapeName (shapeName)}
             {@const color = SHAPE_COLORS[shapeName]}
@@ -263,7 +227,10 @@
             <button
               class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all duration-200"
               class:border={true}
-              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : `background-color: #E5E7EB; color: #9CA3AF; border-color: #D1D5DB;`}
+              class:bg-surface={!isActive}
+              class:text-muted={!isActive}
+              class:border-hairline={!isActive}
+              style={isActive ? `background-color: ${color}; color: white; border-color: ${color};` : undefined}
               aria-label="Toggle {shapeName} shape"
               aria-pressed={isActive}
               onclick={() => toggleShape(shapeName)}
@@ -272,7 +239,7 @@
                 class="inline-block h-3 w-3 rounded-full"
                 style="background-color: {color}"
                 class:ring-1={!isActive}
-                class:ring-white={!isActive}
+                class:ring-ink={!isActive}
               ></span>
               {shapeName}
             </button>

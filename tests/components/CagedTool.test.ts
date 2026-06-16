@@ -57,7 +57,7 @@ describe('CagedTool', () => {
     it('defaults to Full Neck view mode', () => {
       renderTool();
       const fullBtn = screen.getByText('Full Neck', { exact: true });
-      expect(fullBtn.classList.contains('bg-white')).toBe(true);
+      expect(fullBtn.classList.contains('bg-surface-raised')).toBe(true);
     });
 
     it('renders shape toggle buttons in Full Neck mode', () => {
@@ -141,7 +141,7 @@ describe('CagedTool', () => {
     it('highlights C as active by default', () => {
       renderTool();
       const cButton = getChordBtn('C');
-      expect(cButton.classList.contains('bg-blue-600')).toBe(true);
+      expect(cButton.classList.contains('bg-accent/15')).toBe(true);
     });
 
     it('changes selected root when clicking a chord button', async () => {
@@ -149,10 +149,10 @@ describe('CagedTool', () => {
       const gSharpButton = getChordBtn('G#');
       await gSharpButton.click();
 
-      expect(gSharpButton.classList.contains('bg-blue-600')).toBe(true);
+      expect(gSharpButton.classList.contains('bg-accent/15')).toBe(true);
 
       const cButton = getChordBtn('C');
-      expect(cButton.classList.contains('bg-blue-600')).toBe(false);
+      expect(cButton.classList.contains('bg-accent/15')).toBe(false);
     });
 
     it('updates shapes when root changes', async () => {
@@ -187,7 +187,7 @@ describe('CagedTool', () => {
       const minorBtn = screen.getByText('Minor', { exact: true });
       await minorBtn.click();
 
-      expect(minorBtn.classList.contains('bg-white')).toBe(true);
+      expect(minorBtn.classList.contains('bg-surface-raised')).toBe(true);
     });
 
     it('updates shapes when quality changes', async () => {
@@ -405,7 +405,7 @@ describe('CagedTool', () => {
       it('Dual Compare button is active in dual mode', async () => {
         await enterDualMode();
         const dualBtn = screen.getByLabelText('Dual Compare view');
-        expect(dualBtn.classList.contains('bg-white')).toBe(true);
+        expect(dualBtn.classList.contains('bg-surface-raised')).toBe(true);
       });
     });
 

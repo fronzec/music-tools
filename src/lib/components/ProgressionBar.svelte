@@ -32,8 +32,8 @@
   }
 </script>
 
-<div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
-  <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+<div class="rounded-xl border border-hairline bg-surface-raised p-4">
+  <div class="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
     Progression
   </div>
   <!-- Chord chips scroll horizontally; the Add picker sits OUTSIDE the scroll
@@ -42,19 +42,20 @@
     <div class="flex gap-2 overflow-x-auto pb-1">
       {#each progression as chord, index (chord.id)}
         <div
-          class="group relative flex shrink-0 items-center gap-1 rounded-lg p-1 transition-all duration-200"
-          class:bg-blue-600={index === activeIndex}
-          class:shadow-sm={index === activeIndex}
-          class:bg-gray-100={index !== activeIndex}
-          class:dark:bg-gray-800={index !== activeIndex}
+          class={[
+            'group relative flex shrink-0 items-center gap-1 rounded-lg p-1 transition-all duration-200',
+            index === activeIndex
+              ? 'bg-accent/15 border border-accent/50'
+              : 'bg-surface border border-transparent',
+          ].join(' ')}
         >
           <button
-            class="rounded-md px-2 py-0.5 text-sm font-semibold transition-colors duration-200"
-            class:text-white={index === activeIndex}
-            class:text-gray-700={index !== activeIndex}
-            class:hover:text-gray-900={index !== activeIndex}
-            class:dark:text-gray-300={index !== activeIndex}
-            class:dark:hover:text-gray-100={index !== activeIndex}
+            class={[
+              'rounded-md px-2 py-0.5 text-sm font-semibold transition-colors duration-200',
+              index === activeIndex
+                ? 'text-accent-soft'
+                : 'text-muted hover:text-ink',
+            ].join(' ')}
             aria-label="Select chord {chord.root} {chord.quality} at position {index + 1}"
             aria-pressed={index === activeIndex}
             onclick={() => onSelect(index)}
@@ -64,19 +65,17 @@
 
           <!-- Inline per-chord quality toggle (M = major, m = minor) -->
           <div
-            class="flex rounded-md bg-white/90 p-0.5 dark:bg-gray-900/90"
+            class="flex rounded-md bg-surface/90 p-0.5"
             role="radiogroup"
             aria-label="Quality for chord {index + 1}"
           >
             <button
-              class="rounded px-1.5 py-0.5 text-xs font-bold leading-none transition-colors duration-150"
-              class:bg-gray-900={chord.quality === 'major'}
-              class:text-white={chord.quality === 'major'}
-              class:dark:bg-gray-100={chord.quality === 'major'}
-              class:dark:text-gray-900={chord.quality === 'major'}
-              class:text-gray-400={chord.quality !== 'major'}
-              class:hover:text-gray-600={chord.quality !== 'major'}
-              class:dark:hover:text-gray-200={chord.quality !== 'major'}
+              class={[
+                'rounded px-1.5 py-0.5 text-xs font-bold leading-none transition-colors duration-150',
+                chord.quality === 'major'
+                  ? 'bg-accent/15 text-accent-soft border border-accent/50'
+                  : 'text-muted',
+              ].join(' ')}
               role="radio"
               aria-checked={chord.quality === 'major'}
               aria-label="Set chord {index + 1} to major"
@@ -85,14 +84,12 @@
               M
             </button>
             <button
-              class="rounded px-1.5 py-0.5 text-xs font-bold leading-none transition-colors duration-150"
-              class:bg-gray-900={chord.quality === 'minor'}
-              class:text-white={chord.quality === 'minor'}
-              class:dark:bg-gray-100={chord.quality === 'minor'}
-              class:dark:text-gray-900={chord.quality === 'minor'}
-              class:text-gray-400={chord.quality !== 'minor'}
-              class:hover:text-gray-600={chord.quality !== 'minor'}
-              class:dark:hover:text-gray-200={chord.quality !== 'minor'}
+              class={[
+                'rounded px-1.5 py-0.5 text-xs font-bold leading-none transition-colors duration-150',
+                chord.quality === 'minor'
+                  ? 'bg-accent/15 text-accent-soft border border-accent/50'
+                  : 'text-muted',
+              ].join(' ')}
               role="radio"
               aria-checked={chord.quality === 'minor'}
               aria-label="Set chord {index + 1} to minor"
@@ -103,7 +100,7 @@
           </div>
 
           <button
-            class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-400 text-[10px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-red-500"
+            class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-hairline text-[10px] text-muted opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-error/80"
             aria-label="Remove chord {chord.root} {chord.quality}"
             onclick={() => onRemove(index)}
           >
@@ -116,7 +113,7 @@
     {#if progression.length < MAX_CHORDS}
       <div class="relative shrink-0">
         <button
-          class="rounded-lg px-3 py-1.5 text-sm bg-gray-100 text-gray-500 hover:bg-gray-200 transition-all duration-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+          class="rounded-lg px-3 py-1.5 text-sm bg-surface text-muted hover:border-accent/40 border border-hairline transition-all duration-200"
           aria-label="Add chord"
           aria-expanded={showPicker}
           onclick={togglePicker}
@@ -125,8 +122,6 @@
         </button>
 
         {#if showPicker}
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <!-- svelte-ignore a11y_click_events_have_key_events -->
           <div
             class="fixed inset-0 z-10 cursor-default"
             onclick={() => (showPicker = false)}
@@ -134,14 +129,14 @@
             role="presentation"
           ></div>
           <div
-            class="absolute left-0 top-full z-20 mt-1 w-max rounded-xl border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900"
+            class="absolute left-0 top-full z-20 mt-1 w-max rounded-xl border border-hairline bg-surface-raised p-3 shadow-panel-raised"
             role="group"
             aria-label="Select chord root"
           >
             <div class="grid grid-cols-4 gap-1">
               {#each CHROMATIC as note (note)}
                 <button
-                  class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                  class="rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 bg-surface text-muted hover:bg-surface hover:border-accent/40 border border-hairline"
                   aria-label="Add {note} {quality} chord"
                   onclick={() => handleAdd(note)}
                 >

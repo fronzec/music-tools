@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,8 +15,14 @@
   </head>
   <body>
     <div id="app">
-      <div class="flex min-h-screen items-center justify-center bg-white" data-loading>
-        <p class="text-gray-400">Loading Music Tools…</p>
+      <div
+        class="flex min-h-screen items-center justify-center"
+        style="background-color: #0b0b0d"
+        data-loading
+      >
+        <p style="color: #8d8a84; font-family: 'IBM Plex Mono', ui-monospace, monospace">
+          Loading Music Tools…
+        </p>
       </div>
     </div>
     <script>
@@ -36,8 +42,11 @@
     </script>
     <script type="module" src="/src/main.ts"></script>
     <noscript>
-      <div class="flex min-h-screen items-center justify-center bg-white p-8">
-        <p class="text-center text-gray-600">
+      <div
+        class="flex min-h-screen items-center justify-center p-8"
+        style="background-color: #0b0b0d"
+      >
+        <p class="text-center" style="color: #8d8a84">
           Music Tools requires JavaScript to run. Please enable JavaScript in
           your browser settings.
         </p>

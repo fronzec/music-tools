@@ -418,20 +418,20 @@ describe('DualFretboard', () => {
       const greenRings = [
         ...circles.filter(
           (c) =>
-            c.getAttribute('stroke') === '#22C55E' && c.getAttribute('fill') === 'none',
+            c.classList.contains('stroke-success') && c.getAttribute('fill') === 'none',
         ),
         ...polygons.filter(
           (p) =>
-            p.getAttribute('stroke') === '#22C55E' && p.getAttribute('fill') === 'none',
+            p.classList.contains('stroke-success') && p.getAttribute('fill') === 'none',
         ),
       ];
 
       const amberRings = [
         ...circles.filter(
-          (c) => c.getAttribute('stroke') === '#F59E0B',
+          (c) => c.classList.contains('stroke-accent'),
         ),
         ...polygons.filter(
-          (p) => p.getAttribute('stroke') === '#F59E0B',
+          (p) => p.classList.contains('stroke-accent'),
         ),
       ];
 
@@ -456,22 +456,22 @@ describe('DualFretboard', () => {
       const amberRings = [
         ...circles.filter(
           (c) =>
-            c.getAttribute('stroke') === '#F59E0B' && c.getAttribute('stroke-dasharray') === '3 2',
+            c.classList.contains('stroke-accent') && c.getAttribute('stroke-dasharray') === '3 2',
         ),
         ...polygons.filter(
           (p) =>
-            p.getAttribute('stroke') === '#F59E0B',
+            p.classList.contains('stroke-accent'),
         ),
       ];
 
       const greenRings = [
         ...circles.filter(
           (c) =>
-            c.getAttribute('stroke') === '#22C55E' && c.getAttribute('fill') === 'none',
+            c.classList.contains('stroke-success') && c.getAttribute('fill') === 'none',
         ),
         ...polygons.filter(
           (p) =>
-            p.getAttribute('stroke') === '#22C55E' && p.getAttribute('fill') === 'none',
+            p.classList.contains('stroke-success') && p.getAttribute('fill') === 'none',
         ),
       ];
 
@@ -496,12 +496,12 @@ describe('DualFretboard', () => {
       const svg1 = svgs[0]!;
       const svg2 = svgs[1]!;
 
-      // Both should have green polygon rings (fill=none, stroke=#22C55E)
-      const svg1Green = svg1.querySelectorAll('polygon[fill="none"][stroke="#22C55E"]');
-      const svg2Green = svg2.querySelectorAll('polygon[fill="none"][stroke="#22C55E"]');
+      // "Same" positions are marked with green rings (stroke-success). The shared
+      // set is symmetric, so both fretboards render the same number of them.
+      const svg1Green = svg1.querySelectorAll('polygon.stroke-success[fill="none"]');
+      const svg2Green = svg2.querySelectorAll('polygon.stroke-success[fill="none"]');
 
-      expect(svg1Green.length).toBeGreaterThanOrEqual(0);
-      expect(svg2Green.length).toBeGreaterThanOrEqual(0);
+      expect(svg1Green.length).toBe(svg2Green.length);
     });
 
     it('no highlights when one side has all shapes off', () => {
@@ -519,10 +519,10 @@ describe('DualFretboard', () => {
       const polygons = [...container.querySelectorAll('polygon')];
 
       const greenRings = [...circles, ...polygons].filter(
-        (el) => el.getAttribute('stroke') === '#22C55E' && el.getAttribute('fill') === 'none',
+        (el) => el.classList.contains('stroke-success') && el.getAttribute('fill') === 'none',
       );
-      const amberRings = [...circles, ...polygons].filter(
-        (el) => el.getAttribute('stroke') === '#F59E0B',
+      const amberRings = [...circles, ...polygons].filter((el) =>
+        el.classList.contains('stroke-accent'),
       );
 
       // Bottom fretboard is empty → no shared positions → no highlights
@@ -544,7 +544,7 @@ describe('DualFretboard', () => {
       // Count initial green rings
       const initialCircles = [...container.querySelectorAll('circle')];
       const initialGreen = initialCircles.filter(
-        (c) => c.getAttribute('stroke') === '#22C55E' && c.getAttribute('fill') === 'none',
+        (c) => c.classList.contains('stroke-success') && c.getAttribute('fill') === 'none',
       ).length;
 
       // Toggle off C shape on top
@@ -554,7 +554,7 @@ describe('DualFretboard', () => {
       // Count green rings after toggle
       const afterCircles = [...container.querySelectorAll('circle')];
       const afterGreen = afterCircles.filter(
-        (c) => c.getAttribute('stroke') === '#22C55E' && c.getAttribute('fill') === 'none',
+        (c) => c.classList.contains('stroke-success') && c.getAttribute('fill') === 'none',
       ).length;
 
       // Should be same or fewer green rings (could go either way depending on overlap)

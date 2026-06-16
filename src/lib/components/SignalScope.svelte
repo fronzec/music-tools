@@ -9,12 +9,25 @@
     mode: 'scope' | 'spectrum';
     /** Whether a tone is currently playing — drives the animation loop. */
     active: boolean;
-    /** Accent color for the trace/bars (works on light and dark backgrounds). */
-    color?: string;
+    /**
+     * CSS custom-property name (without `var()`) whose value is a space-separated
+     * RGB triplet — e.g. `'--accent-rgb'`. Resolved at draw time via
+     * `getComputedStyle` so the trace colour always follows the active token.
+     * Falls back to a literal triplet when running in jsdom (no CSS vars).
+     */
+    colorVar?: string;
     label: string;
   }
 
-  let { analyser, mode, active, color = '#3B82F6', label }: Props = $props();
+  let { analyser, mode, active, colorVar = '--accent-rgb', label }: Props = $props();
+
+  /** Resolve `colorVar` to an `rgb(…)` string at draw time. */
+  function resolveColor(): string {
+    const v =
+      (canvas ? getComputedStyle(canvas).getPropertyValue(colorVar).trim() : '') ||
+      '255 158 44';
+    return 'rgb(' + v + ')';
+  }
 
   let canvas: HTMLCanvasElement | undefined = $state();
 
@@ -24,8 +37,12 @@
   function drawIdle(ctx: CanvasRenderingContext2D) {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     if (mode === 'scope') {
-      // Flat center line when idle.
-      ctx.strokeStyle = 'rgba(148,163,184,0.5)';
+      // Flat center line when idle — reads --muted-rgb token for rebrand safety.
+      // Falls back to a literal so jsdom (no CSS vars) still produces a valid color.
+      const muted =
+        (canvas ? getComputedStyle(canvas).getPropertyValue('--muted-rgb').trim() : '') ||
+        '141 138 132';
+      ctx.strokeStyle = `rgb(${muted} / 0.5)`;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, HEIGHT / 2);
@@ -37,7 +54,7 @@
   function drawScope(ctx: CanvasRenderingContext2D, data: Uint8Array) {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     ctx.lineWidth = 2;
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = resolveColor();
     ctx.beginPath();
     const slice = WIDTH / data.length;
     for (let i = 0; i < data.length; i++) {
@@ -55,9 +72,10 @@
     // Only the lower ~half of bins carries musically useful content; spread it.
     const bins = Math.floor(data.length * 0.5);
     const barW = WIDTH / bins;
+    // Resolve once per frame — the color is constant across all bars.
+    ctx.fillStyle = resolveColor();
     for (let i = 0; i < bins; i++) {
       const h = (data[i] / 255) * HEIGHT;
-      ctx.fillStyle = color;
       ctx.fillRect(i * barW, HEIGHT - h, Math.max(1, barW - 1), h);
     }
   }
@@ -92,7 +110,7 @@
 
 <figure class="m-0">
   <figcaption
-    class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+    class="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted"
   >
     {label}
   </figcaption>
@@ -100,7 +118,7 @@
     bind:this={canvas}
     width={WIDTH}
     height={HEIGHT}
-    class="h-auto w-full rounded-lg bg-gray-50 dark:bg-gray-950"
+    class="h-auto w-full rounded-lg bg-surface"
     aria-label="{label} visualization"
   ></canvas>
 </figure>
