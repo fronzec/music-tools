@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/svelte';
 import type { ViewName } from '$lib/types/chord';
 import { chordMidi } from '$lib/theory/chords';
 import { midiToFreq } from '$lib/theory/intervals';
+import { chordPositions } from '$lib/theory/chordFretboard';
 
 // ---------------------------------------------------------------------------
 // Fake player — injectable via the `player` prop seam
@@ -264,6 +265,44 @@ describe('ChordBuilder', () => {
       const backBtn = screen.getByRole('button', { name: /back to home/i });
       await backBtn.click();
       expect(navigate).toHaveBeenCalledWith('home');
+    });
+  });
+
+  describe('fretboard mirror (ChordFretboard)', () => {
+    it('renders a role="img" SVG fretboard on mount (C major default)', async () => {
+      const { container } = await renderTool();
+      // ChordFretboard renders an SVG with role="img"
+      const fretboardImg = container.querySelector('svg[role="img"]');
+      expect(fretboardImg).toBeTruthy();
+    });
+
+    it('[data-role="root"] count matches chordPositions(0, [0,4,7]) for C major default', async () => {
+      const { container } = await renderTool();
+      const expected = chordPositions(0, [0, 4, 7]).filter((p) => p.role === 'root').length;
+      const rootMarks = container.querySelectorAll('[data-role="root"]');
+      expect(rootMarks.length).toBe(expected);
+    });
+
+    it('toggling to min quality updates [data-role="tone"] count to C minor', async () => {
+      const { container } = await renderTool();
+      const minBtn = screen.getAllByText('min').find(
+        (el) => el.tagName === 'BUTTON' || el.closest('button'),
+      )!;
+      const minBtnEl = minBtn.tagName === 'BUTTON' ? minBtn : minBtn.closest('button')!;
+      await minBtnEl.click();
+      const expected = chordPositions(0, [0, 3, 7]).filter((p) => p.role === 'tone').length;
+      const toneMarks = container.querySelectorAll('[data-role="tone"]');
+      expect(toneMarks.length).toBe(expected);
+    });
+
+    it('degree label "♭3" appears in DOM after toggling to min quality', async () => {
+      const { container } = await renderTool();
+      const minBtn = screen.getAllByText('min').find(
+        (el) => el.tagName === 'BUTTON' || el.closest('button'),
+      )!;
+      const minBtnEl = minBtn.tagName === 'BUTTON' ? minBtn : minBtn.closest('button')!;
+      await minBtnEl.click();
+      expect(container.innerHTML).toContain('♭3');
     });
   });
 });
