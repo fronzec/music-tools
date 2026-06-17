@@ -187,3 +187,47 @@ describe('dispose', () => {
     expect(() => player.dispose()).not.toThrow();
   });
 });
+
+// ---------------------------------------------------------------------------
+// playChord — simultaneous strike
+// ---------------------------------------------------------------------------
+
+describe('playChord', () => {
+  it('createNotePlayer() return value exposes a playChord method', () => {
+    const player = createNotePlayer();
+    expect(typeof player.playChord).toBe('function');
+  });
+
+  it('does not throw when called with three frequencies', () => {
+    const player = createNotePlayer();
+    expect(() => player.playChord([261.63, 329.63, 392.0])).not.toThrow();
+  });
+
+  it('schedules all frequencies at the SAME start time (simultaneous)', () => {
+    const player = createNotePlayer();
+    player.playChord([261.63, 329.63, 392.0]);
+
+    expect(createdOscillators.length).toBe(3);
+    // All three oscillators must start at the same time (ctx.currentTime = 0)
+    const starts = createdOscillators.map((osc) => osc.start.mock.calls[0][0] as number);
+    expect(starts[0]).toBe(starts[1]);
+    expect(starts[1]).toBe(starts[2]);
+  });
+
+  it('creates one oscillator per frequency in playChord', () => {
+    const player = createNotePlayer();
+    player.playChord([440, 550, 660]);
+    expect(createdOscillators.length).toBe(3);
+  });
+
+  it('playSequence and dispose remain unchanged (no regressions)', () => {
+    const player = createNotePlayer();
+    expect(typeof player.playSequence).toBe('function');
+    expect(typeof player.dispose).toBe('function');
+    // playSequence still staggers — second note 0.7s after first
+    player.playSequence([440, 880]);
+    const firstStart = createdOscillators[0].start.mock.calls[0][0] as number;
+    const secondStart = createdOscillators[1].start.mock.calls[0][0] as number;
+    expect(secondStart - firstStart).toBeCloseTo(0.7, 5);
+  });
+});

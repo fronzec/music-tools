@@ -40,6 +40,9 @@ export interface NotePlayer {
   /** Play an ascending sequence of notes, one per frequency, fire-and-forget. */
   playSequence(freqs: number[]): void;
 
+  /** Play all provided frequencies simultaneously (block chord) at the current time. */
+  playChord(freqs: number[]): void;
+
   /** Release the underlying AudioContext. Safe to call before any playSequence. */
   dispose(): void;
 }
@@ -68,12 +71,20 @@ export function createNotePlayer(): NotePlayer {
     });
   }
 
+  function playChord(freqs: number[]): void {
+    if (!ctx) {
+      ctx = new AudioContext();
+    }
+    const t = ctx.currentTime;
+    freqs.forEach((freq) => scheduleNote(ctx!, freq, t));
+  }
+
   function dispose(): void {
     ctx?.close();
     ctx = null;
   }
 
-  return { playSequence, dispose };
+  return { playSequence, playChord, dispose };
 }
 
 // ---------------------------------------------------------------------------
