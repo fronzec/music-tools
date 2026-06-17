@@ -103,8 +103,8 @@ describe('routing', () => {
   });
 
   describe('VIEW_NAMES', () => {
-    it('contains exactly 9 entries', () => {
-      expect(VIEW_NAMES.length).toBe(9);
+    it('contains exactly 10 entries', () => {
+      expect(VIEW_NAMES.length).toBe(10);
     });
 
     it('contains the expected set of view names', () => {
@@ -118,9 +118,22 @@ describe('routing', () => {
         'signal-lab',
         'interval-trainer',
         'tab-player',
+        'chord-builder',
       ]);
       const actual = new Set(VIEW_NAMES);
       expect(actual).toEqual(expected);
+    });
+
+    it('maps chord-builder to /chord-builder', () => {
+      expect(viewToPath('chord-builder')).toBe('/chord-builder');
+    });
+
+    it('maps /chord-builder to chord-builder', () => {
+      expect(pathToView('/chord-builder')).toBe('chord-builder');
+    });
+
+    it('round-trips chord-builder', () => {
+      expect(pathToView(viewToPath('chord-builder'))).toBe('chord-builder');
     });
   });
 });
