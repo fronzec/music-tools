@@ -1,14 +1,12 @@
 <script lang="ts">
   import {
     TRIAD_OFFSETS,
-    TRIAD_FORMULA,
     TRIAD_INTERVAL_JUMPS,
     TRIAD_DEGREES,
     chordTones,
-    chordName,
   } from '$lib/theory/chords';
   import type { TriadQuality } from '$lib/theory/chords';
-  import { CHROMATIC } from '$lib/types/chord';
+  import { semitoneToNoteName } from '$lib/theory/notes';
 
   interface Props {
     rootPc: number;
@@ -19,29 +17,47 @@
   let { rootPc, quality, reducedMotion = false }: Props = $props();
 
   // ---------------------------------------------------------------------------
-  // Derived values — all display state computed from props
+  // Derived values — all display state computed from props.
+  // The chord name + formula live in the parent's info card (single source),
+  // so this component is purely the visual ruler.
   // ---------------------------------------------------------------------------
 
   const offsets = $derived(TRIAD_OFFSETS[quality]);
-  const formula = $derived(TRIAD_FORMULA[quality]);
   const jumps = $derived(TRIAD_INTERVAL_JUMPS[quality]);
   const degrees = $derived(TRIAD_DEGREES[quality]);
   const notes = $derived(chordTones(rootPc, offsets));
-  const name = $derived(chordName(CHROMATIC[rootPc], quality));
 
-  // Fixed 12 semitone slots (0..11) — evaluated once
+  // Fixed 12 semitone slots (0..11).
   const SLOTS = Array.from({ length: 12 }, (_, i) => i);
+  // Note name for EVERY chromatic slot relative to the root (wraps mod-12),
+  // so non-chord tones are shown faintly alongside the chord tones.
+  const slotNotes = $derived(SLOTS.map((s) => semitoneToNoteName(rootPc + s)));
 </script>
 
 <div class="flex flex-col gap-3">
-  <!-- Chord name and formula -->
-  <div class="flex items-baseline justify-between gap-2">
-    <span class="font-display text-lg font-semibold text-ink">{name}</span>
-    <span class="font-technical text-sm text-muted">{formula}</span>
-  </div>
+  <!-- Chromatic ruler track. The top padding reserves clearance for the
+       absolutely-positioned chord-tone markers, so they never overlap the
+       quality toggle or any surrounding content. -->
+  <div class="relative pt-10">
+    <!-- Chord tone markers (sit in the reserved top padding) -->
+    {#each offsets as offset, i (i)}
+      <span
+        data-marker
+        data-marker-index={i}
+        class={[
+          'pointer-events-none absolute top-1 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full text-xs font-bold text-ink shadow',
+          i === 0 ? 'bg-note-root' : 'bg-note-tone',
+          !reducedMotion ? 'transition-[left] duration-300 ease-out' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        style="left: calc({(offset / 12) * 100}% + {(1 / 12) * 50}%)"
+        aria-label="{notes[i]} ({degrees[i]})"
+      >
+        {degrees[i]}
+      </span>
+    {/each}
 
-  <!-- Chromatic ruler track -->
-  <div class="relative">
     <!-- 12 semitone slot cells -->
     <div class="flex">
       {#each SLOTS as s (s)}
@@ -62,37 +78,20 @@
         </div>
       {/each}
     </div>
-
-    <!-- Absolutely-positioned chord tone markers -->
-    {#each offsets as offset, i (i)}
-      <span
-        data-marker
-        data-marker-index={i}
-        class={[
-          'pointer-events-none absolute bottom-full mb-1 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full text-xs font-bold text-ink shadow',
-          i === 0 ? 'bg-note-root' : 'bg-note-tone',
-          !reducedMotion ? 'transition-[left] duration-300 ease-out' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        style="left: calc({(offset / 12) * 100}% + {(1 / 12) * 50}%)"
-        aria-label="{notes[i]} ({degrees[i]})"
-      >
-        {degrees[i]}
-      </span>
-    {/each}
   </div>
 
-  <!-- Note names at chord-tone positions -->
-  <div class="relative flex">
+  <!-- Note name under every slot: chord tones emphasized, the rest small + faint. -->
+  <div class="flex">
     {#each SLOTS as s (s)}
-      {@const offsetIdx = (offsets as readonly number[]).indexOf(s)}
-      <div class="flex-1 text-center">
-        {#if offsetIdx !== -1}
-          <span class="font-technical text-xs font-semibold text-ink">
-            {notes[offsetIdx]}
-          </span>
-        {/if}
+      {@const isChordTone = (offsets as readonly number[]).includes(s)}
+      <div class="flex-1 text-center" data-note-slot={s}>
+        <span
+          class={isChordTone
+            ? 'font-technical text-xs font-semibold text-ink'
+            : 'font-technical text-[10px] text-muted/50'}
+        >
+          {slotNotes[s]}
+        </span>
       </div>
     {/each}
   </div>

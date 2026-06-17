@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/svelte';
 import ChromaticRuler from '$lib/components/ChromaticRuler.svelte';
 import type { TriadQuality } from '$lib/theory/chords';
-import { TRIAD_OFFSETS, TRIAD_FORMULA, TRIAD_INTERVAL_JUMPS } from '$lib/theory/chords';
+import { TRIAD_INTERVAL_JUMPS } from '$lib/theory/chords';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -137,22 +137,6 @@ describe('ChromaticRuler interval jump annotations', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Formula display
-// ---------------------------------------------------------------------------
-
-describe('ChromaticRuler formula display', () => {
-  it('min: shows formula "1 - ♭3 - 5"', () => {
-    const { container } = renderRuler(0, 'min');
-    expect(container.innerHTML).toContain(TRIAD_FORMULA['min']);
-  });
-
-  it('aug: shows formula "1 - 3 - ♯5"', () => {
-    const { container } = renderRuler(0, 'aug');
-    expect(container.innerHTML).toContain(TRIAD_FORMULA['aug']);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // Note name labels
 // ---------------------------------------------------------------------------
 
@@ -179,18 +163,34 @@ describe('ChromaticRuler note name labels', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Chord name display
+// All 12 chromatic note names (chord tones emphasized, others faint)
 // ---------------------------------------------------------------------------
 
-describe('ChromaticRuler chord name display', () => {
-  it('rootPc=5 (F), quality=maj → shows "F major"', () => {
-    const { container } = renderRuler(5, 'maj');
-    expect(container.innerHTML).toContain('F major');
+describe('ChromaticRuler shows all 12 chromatic note names', () => {
+  it('renders a note label under every one of the 12 slots', () => {
+    const { container } = renderRuler(0, 'maj');
+    const noteSlots = container.querySelectorAll('[data-note-slot]');
+    expect(noteSlots.length).toBe(12);
   });
 
-  it('rootPc=0 (C), quality=dim → shows "C diminished"', () => {
-    const { container } = renderRuler(0, 'dim');
-    expect(container.innerHTML).toContain('C diminished');
+  it('C major: chord-tone notes (0,4,7) are emphasized; non-chord tones are muted', () => {
+    const { container } = renderRuler(0, 'maj');
+    const span = (n: number) =>
+      container.querySelector(`[data-note-slot="${n}"] span`)!;
+    // Chord tones use the emphasized ink class.
+    for (const tone of [0, 4, 7]) {
+      expect(span(tone).className).toMatch(/text-ink/);
+    }
+    // A non-chord tone (slot 1 = C#) is muted, not ink.
+    expect(span(1).className).toMatch(/text-muted/);
+    expect(span(1).className).not.toMatch(/text-ink/);
+  });
+
+  it('B major (rootPc=11): wraps mod-12 so the third (D#) renders', () => {
+    const { container } = renderRuler(11, 'maj');
+    // B major = B, D#, F#; offset 4 from B wraps to D#.
+    const thirdSlot = container.querySelector('[data-note-slot="4"] span')!;
+    expect(thirdSlot.textContent?.trim()).toBe('D#');
   });
 });
 
@@ -225,15 +225,16 @@ describe('ChromaticRuler reducedMotion', () => {
 // ---------------------------------------------------------------------------
 
 describe('ChromaticRuler is purely prop-driven', () => {
-  it('re-rendering with rootPc=7 updates note names and chord name to G major', () => {
+  it('re-rendering with a new root updates the chord-tone marker labels', () => {
     const { container, rerender } = renderRuler(0, 'maj');
-    expect(container.innerHTML).toContain('C major');
+    const labels = () =>
+      Array.from(container.querySelectorAll('[data-marker]')).map((m) =>
+        m.getAttribute('aria-label'),
+      );
+    expect(labels()).toEqual(['C (1)', 'E (3)', 'G (5)']);
 
     rerender({ rootPc: 7, quality: 'maj', reducedMotion: false });
-    expect(container.innerHTML).toContain('G major');
-    expect(container.innerHTML).toContain('G');
-    expect(container.innerHTML).toContain('B');
-    expect(container.innerHTML).toContain('D');
+    expect(labels()).toEqual(['G (1)', 'B (3)', 'D (5)']);
   });
 });
 
