@@ -18,7 +18,7 @@
     player?: NotePlayer;
   }
 
-  let { navigate, player: injectedPlayer }: Props = $props();
+  let { navigate, player }: Props = $props();
 
   // ---------------------------------------------------------------------------
   // State — root and quality
@@ -35,10 +35,13 @@
   const rootPc = $derived(CHROMATIC.indexOf(root));
 
   // ---------------------------------------------------------------------------
-  // Audio player — injectable or real
+  // Audio player — injectable or real; resolved once at construction
+  // The `untrack` is not needed here because player is used only in callbacks
+  // (play fn, $effect teardown), not in reactive $derived context.
+  // We capture it as a stable variable so it doesn't re-run on prop changes.
   // ---------------------------------------------------------------------------
 
-  const _player = injectedPlayer ?? createNotePlayer();
+  const _player: NotePlayer = player ?? createNotePlayer();
 
   // ---------------------------------------------------------------------------
   // Reduced motion — read once on mount, jsdom-safe
