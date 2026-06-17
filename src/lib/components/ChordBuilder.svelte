@@ -67,14 +67,15 @@
     { id: 'aug', label: 'aug' },
   ];
 
-  // Fixed reference MIDI for playback — C4 = 60 (mirrors IntervalTrainer)
-  const ROOT_MIDI = 60;
-
   // ---------------------------------------------------------------------------
   // Play function — arpeggio then block chord
   // ---------------------------------------------------------------------------
 
   function play() {
+    // Cancel any pending block strike from a previous click, so a rapid
+    // double-tap can't fire two overlapping chords (the first timer would
+    // otherwise survive and play after the new arpeggio).
+    if (blockTimer !== null) clearTimeout(blockTimer);
     const midis = chordMidi(rootPc, triad.offsets as readonly number[]);
     const freqs = midis.map(midiToFreq);
     // 1) Arpeggio: ascending sequence (native playSequence behavior)

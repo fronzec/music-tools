@@ -116,9 +116,16 @@ describe('ChordBuilder', () => {
 
     it('exactly one quality button has aria-pressed=true initially', async () => {
       const { container } = await renderTool();
-      const pressed = container.querySelectorAll('[aria-pressed="true"]');
-      // At minimum the active quality toggle is pressed
-      expect(pressed.length).toBeGreaterThanOrEqual(1);
+      // Scope to the quality toggles (maj/min/dim/aug) so the assertion is not
+      // affected by any other aria-pressed controls; exactly one must be active.
+      const qualityButtons = Array.from(
+        container.querySelectorAll('button[aria-pressed]'),
+      ).filter((b) => ['maj', 'min', 'dim', 'aug'].includes(b.textContent?.trim() ?? ''));
+      const pressed = qualityButtons.filter(
+        (b) => b.getAttribute('aria-pressed') === 'true',
+      );
+      expect(qualityButtons.length).toBe(4);
+      expect(pressed.length).toBe(1);
     });
 
     it('clicking dim toggle shows C diminished chord name', async () => {
@@ -216,8 +223,20 @@ describe('ChordBuilder', () => {
       expect(fakePlayer.playChord).toHaveBeenCalledTimes(1);
     });
 
+    it('clicking play twice cancels the first pending block chord (no double-strike)', async () => {
+      const { fakePlayer } = await renderTool();
+      const playBtn = screen.getByRole('button', { name: /play chord/i });
+      // Two rapid clicks before the first block strike fires.
+      await playBtn.click();
+      await playBtn.click();
+      vi.advanceTimersByTime(3000);
+      // The first pending block timer is cancelled by the second click, so the
+      // block chord sounds exactly once (not twice).
+      expect(fakePlayer.playChord).toHaveBeenCalledTimes(1);
+    });
+
     it('play with F# minor sends correct frequencies', async () => {
-      const { container, fakePlayer } = await renderTool();
+      const { fakePlayer } = await renderTool();
 
       // Select F# root
       const fSharpBtn = screen.getByRole('button', { name: /Select F# root/i });

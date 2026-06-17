@@ -69,7 +69,7 @@
         data-marker
         data-marker-index={i}
         class={[
-          'pointer-events-none absolute bottom-full mb-1 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full text-xs font-bold text-white shadow',
+          'pointer-events-none absolute bottom-full mb-1 flex h-8 w-8 -translate-x-1/2 items-center justify-center rounded-full text-xs font-bold text-ink shadow',
           i === 0 ? 'bg-note-root' : 'bg-note-tone',
           !reducedMotion ? 'transition-[left] duration-300 ease-out' : '',
         ]
