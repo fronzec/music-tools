@@ -149,6 +149,14 @@ describe('ChordFretboard', () => {
       expect(outerHTML).not.toContain('rgb(');
       expect(outerHTML).not.toContain('hsl(');
     }
+    // The whole SVG (including the degree-label <text> elements, which are NOT
+    // [data-role] and were previously not covered) must avoid hardcoded colors —
+    // labels use the fill-ink token class, never fill="white".
+    const html = container.innerHTML;
+    expect(html).not.toMatch(/#[0-9a-fA-F]{3,6}/);
+    expect(html).not.toContain('rgb(');
+    expect(html).not.toContain('hsl(');
+    expect(html).not.toContain('fill="white"');
   });
 
   it('degree labels for C major include "1", "3", "5" across dots', async () => {

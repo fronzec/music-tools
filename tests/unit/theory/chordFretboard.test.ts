@@ -31,6 +31,28 @@ describe('chordFretboard — chordPositions', () => {
   });
 
   // -------------------------------------------------------------------------
+  // Concrete anchors — hardcoded cells that catch an off-by-one or a wrong
+  // pitch-class formula (NOT derived from chordPositions itself).
+  // STANDARD_TUNING = [4,9,2,7,11,4] (E A D G B E by string index).
+  // -------------------------------------------------------------------------
+
+  it('C major: contains specific known cells (open E=3rd, low-E fret 8=root, D-string fret 14=3rd)', () => {
+    const result = chordPositions(0, [0, 4, 7]);
+    const has = (stringIndex: number, fret: number, role: 'root' | 'tone') =>
+      result.some(
+        (p) => p.stringIndex === stringIndex && p.fret === fret && p.role === role,
+      );
+    // String 0 open (E, pc 4) → major 3rd of C → tone.
+    expect(has(0, 0, 'tone')).toBe(true);
+    // String 0 fret 8 → pc (4+8)%12 = 0 (C) → root.
+    expect(has(0, 8, 'root')).toBe(true);
+    // String 2 (D, pc 2) fret 14 → pc (2+14)%12 = 4 (E) → 3rd (proves fret 14 is INCLUSIVE).
+    expect(has(2, 14, 'tone')).toBe(true);
+    // Sanity: no impossible pitch class for C major appears.
+    expect(result.some((p) => p.pitchClass === 1)).toBe(false);
+  });
+
+  // -------------------------------------------------------------------------
   // C major — count and pitch class set
   // -------------------------------------------------------------------------
 

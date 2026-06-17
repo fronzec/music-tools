@@ -56,7 +56,7 @@
   <desc>
     Fretboard diagram showing all positions of {chordName ?? rootName ?? 'chord'} tones
     across a 6-string standard-tuned guitar neck, frets 0 to {span}.
-    Root notes shown in blue, other chord tones in green.
+    The root note and the other chord tones are shown in distinct colours.
   </desc>
 
   <!-- Neck background -->
@@ -129,7 +129,7 @@
     stroke-width="4"
   />
 
-  <!-- Chord tone marks: root = fill-note-root (blue), tone = fill-note-tone (green) -->
+  <!-- Chord tone marks: root = fill-note-root token, other tones = fill-note-tone token (matches the ruler) -->
   {#each marks as mark (`${mark.stringIndex}-${mark.fret}`)}
     {@const cx = noteX(mark.fret, rangeStart)}
     {@const cy = stringY(mark.stringIndex)}
@@ -141,7 +141,7 @@
         y={cy + 4}
         text-anchor="middle"
         font-size={L.LABEL_FS}
-        fill="white"
+        class="fill-ink"
         font-weight="bold"
         style="pointer-events:none"
       >{label}</text>
@@ -152,7 +152,7 @@
         y={cy + 3}
         text-anchor="middle"
         font-size={L.LABEL_FS - 1}
-        fill="white"
+        class="fill-ink"
         font-weight="bold"
         style="pointer-events:none"
       >{label}</text>
