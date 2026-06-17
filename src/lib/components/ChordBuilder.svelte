@@ -12,6 +12,7 @@
   import { createNotePlayer, type NotePlayer } from '$lib/audio/playNote';
   import RootSelector from '$lib/components/RootSelector.svelte';
   import ChromaticRuler from '$lib/components/ChromaticRuler.svelte';
+  import ChordFretboard from '$lib/components/ChordFretboard.svelte';
 
   interface Props {
     navigate: (view: ViewName) => void;
@@ -170,6 +171,17 @@
         {#if i < triad.notes.length - 1}<span class="text-muted"> –</span>{/if}
       {/each}
     </div>
+  </section>
+
+  <!-- Fretboard mirror — full neck, all chord-tone positions (additive) -->
+  <section class="mb-6">
+    <ChordFretboard
+      rootPc={rootPc}
+      offsets={triad.offsets}
+      degrees={triad.degrees}
+      rootName={root}
+      chordName={triad.name}
+    />
   </section>
 
   <!-- Play button -->
