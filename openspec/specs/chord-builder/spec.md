@@ -312,3 +312,39 @@ The following capabilities MUST NOT be present: fretboard mirror (showing chord 
 (Previously: Chord Builder did not exist.)
 
 The app gains a graphical chord-construction tool called Chord Builder, accessible from the home page and at `/chord-builder`. Users learn how triads are constructed by seeing chord tones light up at their exact semitone offsets on a chromatic ruler, with animated transitions when changing qualities.
+
+### Requirement: Chord Fretboard Mirror Below Ruler (Phase 2 Delta)
+
+(Previously: Chord Builder rendered a chromatic ruler only, without a neck diagram.)
+
+`ChordBuilder.svelte` MUST render a `<ChordFretboard>` component below the chromatic ruler and info card. The fretboard mirror lights every position of the current chord's tones across the guitar neck, with degree labels and role-based colors matching the ruler. The component binds to the existing root and quality state via derived `rootPc` and `triad.offsets` / `triad.degrees` — no new state is introduced.
+
+The fretboard mirrors the proven Interval Trainer Explore-mode visual for pedagogical consistency: it closes the loop between "what the chord is" (ruler) and "where it is on the instrument" (neck).
+
+#### Scenario: Fretboard renders below ruler
+
+- GIVEN the Chord Builder is navigated to
+- WHEN the view renders with root `'C'` and quality `'maj'`
+- THEN the DOM contains a fretboard component (role="img" SVG) below the ruler
+- AND the fretboard lights every C-major position across all 6 strings
+
+#### Scenario: Fretboard updates when root changes
+
+- GIVEN the Chord Builder is rendered with root `'C'` and quality `'maj'`
+- WHEN the user selects `'G'` via RootSelector
+- THEN the fretboard re-lights to show G major positions (pitchClass 7)
+- AND no new state owner is introduced
+
+#### Scenario: Fretboard updates when quality changes
+
+- GIVEN the Chord Builder is rendered with root `'C'` and quality `'maj'`
+- WHEN the user selects quality `'min'`
+- THEN the fretboard's degree labels update to show `'1'`, `'♭3'`, `'5'`
+- AND the fretboard's tone dots move to C minor positions
+
+#### Scenario: Fretboard has rule-colored dots matching ruler
+
+- GIVEN the fretboard is rendered
+- WHEN chord-tone dots are inspected
+- THEN root dots carry `fill-note-root` (blue, matching the ruler's root color)
+- AND non-root dots carry `fill-note-tone` (green, matching the ruler's chord-tone color)
