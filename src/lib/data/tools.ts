@@ -77,10 +77,17 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
         icon: '🎶',
       },
       {
+        status: 'active',
+        view: 'chord-builder',
+        title: 'Chord Builder',
+        description: 'See how a root plus stacked thirds becomes a named chord',
+        icon: '🎹',
+      },
+      {
         status: 'coming-soon',
         title: 'Chord Library',
         description: 'Browse chord voicings and variations',
-        icon: '🎹',
+        icon: '📚',
       },
     ],
   },

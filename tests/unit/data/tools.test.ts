@@ -12,6 +12,7 @@ const VALID_VIEWS: ReadonlySet<ViewName> = new Set<ViewName>([
   'signal-lab',
   'interval-trainer',
   'tab-player',
+  'chord-builder',
 ]);
 
 describe('tools registry', () => {
@@ -44,9 +45,9 @@ describe('tools registry', () => {
     }
   });
 
-  it('has exactly 8 active tools', () => {
+  it('has exactly 9 active tools', () => {
     const active = ALL_TOOLS.filter((t) => t.status === 'active');
-    expect(active.length).toBe(8);
+    expect(active.length).toBe(9);
   });
 
   it('has at least one coming-soon tool', () => {
@@ -73,6 +74,7 @@ describe('tools registry', () => {
       'Scales Explorer': 'Explore scales across the fretboard',
       'Note Trainer': 'Learn every note on the fretboard with visual patterns and quizzes',
       'Tab Player': 'Play through curated guitar tabs with fretboard visualization',
+      'Chord Builder': 'See how a root plus stacked thirds becomes a named chord',
       'Chord Library': 'Browse chord voicings and variations',
       'Tone Generator': 'Reference tones for tuning by ear',
       'Interval Trainer': 'Train your ear to recognize musical intervals by sound',
@@ -87,7 +89,7 @@ describe('tools registry', () => {
     expect(ALL_TOOLS.length).toBe(Object.keys(EXPECTED).length);
   });
 
-  it('covers all 8 navigable views exactly once', () => {
+  it('covers all 9 navigable views exactly once', () => {
     const views = new Set(
       ALL_TOOLS.flatMap((t) => (t.status === 'active' ? [t.view] : [])),
     );
