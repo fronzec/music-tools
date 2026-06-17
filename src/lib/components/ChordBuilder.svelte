@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import type { ViewName, NoteName } from '$lib/types/chord';
   import { CHROMATIC } from '$lib/types/chord';
   import { midiToFreq } from '$lib/theory/intervals';
@@ -35,13 +36,13 @@
   const rootPc = $derived(CHROMATIC.indexOf(root));
 
   // ---------------------------------------------------------------------------
-  // Audio player — injectable or real; resolved once at construction
-  // The `untrack` is not needed here because player is used only in callbacks
-  // (play fn, $effect teardown), not in reactive $derived context.
-  // We capture it as a stable variable so it doesn't re-run on prop changes.
+  // Audio player — injectable or real; resolved once at construction.
+  // untrack() prevents the Svelte 5 "state_referenced_locally" warning:
+  // the prop is intentionally captured once (same pattern as IntervalTrainer's
+  // `rng` — we want the injected player to persist across quality/root changes).
   // ---------------------------------------------------------------------------
 
-  const _player: NotePlayer = player ?? createNotePlayer();
+  const _player: NotePlayer = untrack(() => player) ?? createNotePlayer();
 
   // ---------------------------------------------------------------------------
   // Reduced motion — read once on mount, jsdom-safe
