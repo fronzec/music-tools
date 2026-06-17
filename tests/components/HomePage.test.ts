@@ -25,9 +25,9 @@ describe('HomePage', () => {
   });
 
   describe('tool cards', () => {
-    it('renders exactly 8 active tools (8 "Open" badges)', () => {
+    it('renders exactly 9 active tools (9 "Open" badges)', () => {
       renderPage();
-      expect(screen.getAllByText('Open').length).toBe(8);
+      expect(screen.getAllByText('Open').length).toBe(9);
     });
 
     it('renders at least one "Coming soon" placeholder', () => {
@@ -45,6 +45,7 @@ describe('HomePage', () => {
       { name: 'Signal Lab', view: 'signal-lab' },
       { name: 'Interval Trainer', view: 'interval-trainer' },
       { name: 'Tab Player', view: 'tab-player' },
+      { name: 'Chord Builder', view: 'chord-builder' },
     ];
 
     for (const { name, view } of ACTIVE) {

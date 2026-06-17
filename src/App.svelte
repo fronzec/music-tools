@@ -10,6 +10,7 @@
   import SignalLab from '$lib/components/SignalLab.svelte';
   import IntervalTrainer from '$lib/components/IntervalTrainer.svelte';
   import TabPlayer from '$lib/components/TabPlayer.svelte';
+  import ChordBuilder from '$lib/components/ChordBuilder.svelte';
 
   let currentView: ViewName = $state(pathToView(location.pathname));
 
@@ -80,6 +81,10 @@
   {:else if currentView === 'tab-player'}
     <svelte:boundary failed={errorFallback}>
       <TabPlayer {navigate} />
+    </svelte:boundary>
+  {:else if currentView === 'chord-builder'}
+    <svelte:boundary failed={errorFallback}>
+      <ChordBuilder {navigate} />
     </svelte:boundary>
   {/if}
 </main>

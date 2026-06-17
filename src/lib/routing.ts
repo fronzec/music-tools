@@ -14,6 +14,7 @@ export const VIEW_NAMES = [
   'signal-lab',
   'interval-trainer',
   'tab-player',
+  'chord-builder',
 ] as const;
 
 // --- Compile-time sync guard (no runtime cost) ---
