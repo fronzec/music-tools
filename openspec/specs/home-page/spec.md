@@ -24,9 +24,9 @@ The system MUST render a grid of tool cards on the home page.
 
 ### Requirement: Tool Card Content
 
-Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active CAGED Visualizer card as the first card. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card. The system MUST include an active Tone Generator card after the Note Trainer card. The system MUST include an active Interval Trainer card after the Tone Generator card. The system MUST include an active Tab Player card after the Interval Trainer card and before the placeholder cards.
+Each card MUST display an icon/emoji, a title, a short description, and be clickable. The system MUST include an active CAGED Visualizer card as the first card. The system MUST include an active Progression Builder card between the CAGED Visualizer card and the placeholder cards. The system MUST include an active Note Trainer card after the Progression Builder card. The system MUST include an active Tone Generator card after the Note Trainer card. The system MUST include an active Interval Trainer card after the Tone Generator card. The system MUST include an active Tab Player card after the Interval Trainer card. The system MUST include an active Chord Builder card in the **Fretboard & Theory** category alongside CAGED Visualizer and other fretboard tools.
 
-(Previously: Did not include Tab Player card.)
+(Previously: Did not include Tab Player card or Chord Builder card in Fretboard & Theory.)
 
 #### Scenario: Card content is complete
 
@@ -115,6 +115,19 @@ Each card MUST display an icon/emoji, a title, a short description, and be click
 - WHEN the user clicks the Tab Player card
 - THEN `navigate('tab-player')` is called
 
+#### Scenario: Chord Builder card exists in Fretboard & Theory
+
+- GIVEN the home page renders
+- WHEN the Fretboard & Theory category is inspected
+- THEN a Chord Builder card is present
+- AND it uses the same active-card styling as other active cards in the category
+
+#### Scenario: Chord Builder card navigates
+
+- GIVEN the user is on the home page
+- WHEN the user clicks the Chord Builder card
+- THEN `navigate('chord-builder')` is called
+
 #### Scenario: Placeholder cards remain inactive
 
 - GIVEN the home page renders
@@ -187,6 +200,18 @@ The Tab Player card MUST display an appropriate icon, the title "Tab Player", an
 - WHEN the Tab Player card is inspected
 - THEN it shows an icon, the title "Tab Player", and the correct description
 - AND it includes an "Open" button styled like other active cards
+
+### Requirement: Chord Builder Card Content
+
+The Chord Builder card MUST display an appropriate icon, the title "Chord Builder", and a short description conveying the construction of chords through intervals (e.g., "See how a root plus stacked thirds becomes a named chord"). The card MUST be placed in the **Fretboard & Theory** category alongside other fretboard tools.
+
+#### Scenario: Chord Builder card content
+
+- GIVEN the home page renders
+- WHEN the Chord Builder card is inspected
+- THEN it shows an icon, the title "Chord Builder", and the correct description
+- AND it includes an "Open" button styled like other active cards
+- AND it is in the Fretboard & Theory category
 
 ### Requirement: muted.io Aesthetic
 

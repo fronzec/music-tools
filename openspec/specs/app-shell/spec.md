@@ -8,9 +8,9 @@ Define the application shell including view routing and the ViewName type union 
 
 ### Requirement: View Name Union
 
-The system MUST extend the `ViewName` type to include `'progression'` as a valid view name. The system MUST extend the `ViewName` type to include `'note-trainer'` as a valid view name. The system MUST extend the `ViewName` type to include `'tone-generator'` as a valid view name. The system MUST extend the `ViewName` type to include `'interval-trainer'` as a valid view name. The system MUST extend the `ViewName` type to include `'tab-player'` as a valid view name.
+The system MUST extend the `ViewName` type to include `'progression'` as a valid view name. The system MUST extend the `ViewName` type to include `'note-trainer'` as a valid view name. The system MUST extend the `ViewName` type to include `'tone-generator'` as a valid view name. The system MUST extend the `ViewName` type to include `'interval-trainer'` as a valid view name. The system MUST extend the `ViewName` type to include `'tab-player'` as a valid view name. The system MUST extend the `ViewName` type to include `'chord-builder'` as a valid view name.
 
-(Previously: Did not include `'tone-generator'`, `'note-trainer'`, `'interval-trainer'`, `'tab-player'`.)
+(Previously: Did not include `'tone-generator'`, `'note-trainer'`, `'interval-trainer'`, `'tab-player'`, `'chord-builder'`.)
 
 #### Scenario: Type includes note-trainer
 
@@ -44,9 +44,9 @@ The system MUST extend the `ViewName` type to include `'progression'` as a valid
 
 ### Requirement: View Routing
 
-The system MUST render the `ProgressionBuilder` component when `currentView` is `'progression'`. The system MUST render the `NoteTrainer` component when `currentView` is `'note-trainer'`. The system MUST render the `ToneGenerator` component when `currentView` is `'tone-generator'`. The system MUST render the `IntervalTrainer` component when `currentView` is `'interval-trainer'`. The system MUST render the `TabPlayer` component when `currentView` is `'tab-player'`. The system MUST wrap each component in `<svelte:boundary>` with the same `errorFallback` pattern used for other views.
+The system MUST render the `ProgressionBuilder` component when `currentView` is `'progression'`. The system MUST render the `NoteTrainer` component when `currentView` is `'note-trainer'`. The system MUST render the `ToneGenerator` component when `currentView` is `'tone-generator'`. The system MUST render the `IntervalTrainer` component when `currentView` is `'interval-trainer'`. The system MUST render the `TabPlayer` component when `currentView` is `'tab-player'`. The system MUST render the `ChordBuilder` component when `currentView` is `'chord-builder'`. The system MUST wrap each component in `<svelte:boundary>` with the same `errorFallback` pattern used for other views.
 
-(Previously: Did not route `'tone-generator'`, `'note-trainer'`, `'interval-trainer'`, `'tab-player'`.)
+(Previously: Did not route `'tone-generator'`, `'note-trainer'`, `'interval-trainer'`, `'tab-player'`, `'chord-builder'`.)
 
 #### Scenario: Route to Note Trainer
 
@@ -126,6 +126,27 @@ The system MUST render the `ProgressionBuilder` component when `currentView` is 
 #### Scenario: Back to home from Tab Player
 
 - GIVEN the user is on the Tab Player view
+- WHEN the back-to-home control is activated
+- THEN `navigate('home')` is called
+- AND `currentView` resets to `'home'`
+
+#### Scenario: Route to Chord Builder
+
+- GIVEN `currentView` is `'chord-builder'`
+- WHEN `App.svelte` renders
+- THEN `ChordBuilder` is mounted inside a `<svelte:boundary>`
+- AND the error fallback snippet handles crashes
+
+#### Scenario: Navigation from home page to Chord Builder
+
+- GIVEN the user is on the home page
+- WHEN the user clicks the Chord Builder card
+- THEN `navigate('chord-builder')` is called
+- AND `currentView` becomes `'chord-builder'`
+
+#### Scenario: Back to home from Chord Builder
+
+- GIVEN the user is on the Chord Builder view
 - WHEN the back-to-home control is activated
 - THEN `navigate('home')` is called
 - AND `currentView` resets to `'home'`

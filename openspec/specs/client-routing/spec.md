@@ -16,9 +16,9 @@ rules:
 - `/<view-name>` → the matching `ViewName` (e.g. `/caged` → `'caged'`)
 - Any pathname that does not match a known `ViewName` segment → `'home'` (fallback)
 
-The function MUST cover all 9 views in the `ViewName` union:
+The function MUST cover all 10 views in the `ViewName` union:
 `home`, `caged`, `progression`, `note-trainer`, `tone-generator`, `pentatonic`,
-`signal-lab`, `interval-trainer`, `tab-player`.
+`signal-lab`, `interval-trainer`, `tab-player`, `chord-builder`.
 
 #### Scenario: Root path resolves to home
 
@@ -73,6 +73,12 @@ The function MUST cover all 9 views in the `ViewName` union:
 - GIVEN `pathname` is `'/tab-player'`
 - WHEN `pathToView(pathname)` is called
 - THEN it returns `'tab-player'`
+
+#### Scenario: Known view path resolves correctly — chord-builder
+
+- GIVEN `pathname` is `'/chord-builder'`
+- WHEN `pathToView(pathname)` is called
+- THEN it returns `'chord-builder'`
 
 #### Scenario: Unknown path falls back to home
 
@@ -130,6 +136,12 @@ rules:
 - GIVEN `view` is `'tab-player'`
 - WHEN `viewToPath(view)` is called
 - THEN it returns `'/tab-player'`
+
+#### Scenario: Non-home view maps to slash-prefixed segment — chord-builder
+
+- GIVEN `view` is `'chord-builder'`
+- WHEN `viewToPath(view)` is called
+- THEN it returns `'/chord-builder'`
 
 ### Requirement: Round-Trip Correctness
 
