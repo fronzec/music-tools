@@ -35,6 +35,13 @@
       (t.quality === 'min' ? 'm' : t.quality === 'dim' ? '°' : '')
     );
   }
+
+  // ---------------------------------------------------------------------------
+  // Stacked-thirds diagram — rows in display order: fifth (top) → root (bottom)
+  // degree indices: 0=root, 1=third, 2=fifth; displayed 2,1,0
+  // ---------------------------------------------------------------------------
+
+  const STACK_ORDER = [2, 1, 0] as const;
 </script>
 
 <!-- Back navigation -->
@@ -66,16 +73,35 @@
     />
   </section>
 
-  <!-- 7-chord grid -->
-  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+  <!-- 7-chord grid — max 2 columns so each fretboard renders larger -->
+  <div class="grid gap-4 lg:grid-cols-2">
     {#each triads as t (t.degree)}
+      {@const degrees = TRIAD_DEGREES[t.quality]}
       <article class="rounded-lg border border-hairline bg-surface-raised p-4">
         <header class="mb-2 flex items-baseline justify-between">
-          <span class="font-display text-lg font-bold text-ink">{chordDisplayName(t)}</span>
+          <span data-chord-name class="font-display text-lg font-bold text-ink">{chordDisplayName(t)}</span>
           <span class="font-technical text-sm text-muted">{t.roman}</span>
         </header>
-        <div class="mb-1 font-technical text-xs text-muted">{t.quality}</div>
-        <div class="mb-3 font-technical text-sm text-muted">{t.notes.join(' – ')}</div>
+        <div class="mb-2 font-technical text-xs text-muted">{t.quality}</div>
+
+        <!-- Stacked-thirds construction diagram: 5th (top) → 3rd → root (bottom) -->
+        <div data-construction-stack class="mb-3 space-y-0.5">
+          {#each STACK_ORDER as idx}
+            {@const degree = degrees[idx]}
+            {@const note = t.notes[idx]}
+            {@const isAltered = degree.includes('♭')}
+            <div
+              data-stack-row
+              data-altered={isAltered ? 'true' : 'false'}
+              class="flex items-center gap-2 font-technical text-xs {isAltered ? 'font-semibold text-accent-soft' : 'text-muted'}"
+            >
+              <span class="w-5 text-right">{degree}</span>
+              <span class="text-hairline">|</span>
+              <span>{note}</span>
+            </div>
+          {/each}
+        </div>
+
         <ChordFretboard
           rootPc={t.rootPc}
           offsets={TRIAD_OFFSETS[t.quality]}

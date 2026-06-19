@@ -142,4 +142,99 @@ describe('DiatonicHarmonizer', () => {
       expect(container.innerHTML).not.toMatch(/hsl\(/);
     });
   });
+
+  describe('stacked-thirds construction diagram', () => {
+    // ---------------------------------------------------------------------------
+    // Helper: find the article card for a given chord display name.
+    // ---------------------------------------------------------------------------
+    function findCardByChordName(container: HTMLElement, name: string): HTMLElement | null {
+      const articles = container.querySelectorAll('article');
+      for (const article of articles) {
+        const header = article.querySelector('[data-chord-name]');
+        if (header && header.textContent?.trim() === name) return article as HTMLElement;
+      }
+      return null;
+    }
+
+    it('Dm card shows a ♭3 degree label in the construction stack', async () => {
+      const { container } = await renderTool();
+      const dm = findCardByChordName(container, 'Dm');
+      expect(dm).not.toBeNull();
+      expect(dm!.querySelector('[data-construction-stack]')).not.toBeNull();
+      expect(dm!.innerHTML).toContain('♭3');
+    });
+
+    it('Dm card ♭3 row is marked as altered (data-altered="true")', async () => {
+      const { container } = await renderTool();
+      const dm = findCardByChordName(container, 'Dm');
+      expect(dm).not.toBeNull();
+      const alteredRows = dm!.querySelectorAll('[data-altered="true"]');
+      // Dm has one altered degree: ♭3
+      expect(alteredRows.length).toBe(1);
+      expect(alteredRows[0].textContent).toContain('♭3');
+    });
+
+    it('B° card shows both ♭3 and ♭5 degree labels in the construction stack', async () => {
+      const { container } = await renderTool();
+      const bdim = findCardByChordName(container, 'B°');
+      expect(bdim).not.toBeNull();
+      expect(bdim!.innerHTML).toContain('♭3');
+      expect(bdim!.innerHTML).toContain('♭5');
+    });
+
+    it('B° card has exactly 2 altered rows (♭3 and ♭5)', async () => {
+      const { container } = await renderTool();
+      const bdim = findCardByChordName(container, 'B°');
+      expect(bdim).not.toBeNull();
+      const alteredRows = bdim!.querySelectorAll('[data-altered="true"]');
+      expect(alteredRows.length).toBe(2);
+    });
+
+    it('C card (I) has NO altered rows (no flat degrees)', async () => {
+      const { container } = await renderTool();
+      const cMaj = findCardByChordName(container, 'C');
+      expect(cMaj).not.toBeNull();
+      const alteredRows = cMaj!.querySelectorAll('[data-altered="true"]');
+      expect(alteredRows.length).toBe(0);
+    });
+
+    it('Dm construction stack shows notes D, F, A in stacked order (5th top, root bottom)', async () => {
+      const { container } = await renderTool();
+      const dm = findCardByChordName(container, 'Dm');
+      expect(dm).not.toBeNull();
+      const stack = dm!.querySelector('[data-construction-stack]');
+      expect(stack).not.toBeNull();
+      // Top row is fifth (A), middle is third (F), bottom is root (D)
+      const rows = stack!.querySelectorAll('[data-stack-row]');
+      expect(rows.length).toBe(3);
+      expect(rows[0].textContent).toContain('A'); // fifth
+      expect(rows[1].textContent).toContain('F'); // third
+      expect(rows[2].textContent).toContain('D'); // root
+    });
+
+    it('altered rows use the accent-soft highlight token class', async () => {
+      const { container } = await renderTool();
+      const dm = findCardByChordName(container, 'Dm');
+      expect(dm).not.toBeNull();
+      const alteredRows = dm!.querySelectorAll('[data-altered="true"]');
+      expect(alteredRows.length).toBeGreaterThan(0);
+      // Each altered row must carry the accent-soft text token
+      alteredRows.forEach((row) => {
+        expect(row.className).toMatch(/text-accent/);
+      });
+    });
+  });
+
+  describe('grid layout', () => {
+    it('chord grid does not use xl:grid-cols-3 class (max 2 columns)', async () => {
+      const { container } = await renderTool();
+      // The grid wrapper must not contain the 3-column breakpoint class
+      expect(container.innerHTML).not.toContain('xl:grid-cols-3');
+    });
+
+    it('chord grid contains lg:grid-cols-2 class for 2-column max layout', async () => {
+      const { container } = await renderTool();
+      expect(container.innerHTML).toContain('lg:grid-cols-2');
+    });
+  });
 });
