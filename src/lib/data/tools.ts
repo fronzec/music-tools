@@ -84,6 +84,13 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
         icon: '🎹',
       },
       {
+        status: 'active',
+        view: 'diatonic-harmonizer',
+        title: 'Diatonic Harmonizer',
+        description: "See a major key's 7 diatonic triads and the chords that belong to it",
+        icon: '🔑',
+      },
+      {
         status: 'coming-soon',
         title: 'Chord Library',
         description: 'Browse chord voicings and variations',
