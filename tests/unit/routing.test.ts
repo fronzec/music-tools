@@ -103,8 +103,8 @@ describe('routing', () => {
   });
 
   describe('VIEW_NAMES', () => {
-    it('contains exactly 10 entries', () => {
-      expect(VIEW_NAMES.length).toBe(10);
+    it('contains exactly 11 entries', () => {
+      expect(VIEW_NAMES.length).toBe(11);
     });
 
     it('contains the expected set of view names', () => {
@@ -119,6 +119,7 @@ describe('routing', () => {
         'interval-trainer',
         'tab-player',
         'chord-builder',
+        'diatonic-harmonizer',
       ]);
       const actual = new Set(VIEW_NAMES);
       expect(actual).toEqual(expected);
