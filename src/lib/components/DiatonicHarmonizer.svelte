@@ -2,7 +2,7 @@
   import type { ViewName, NoteName } from '$lib/types/chord';
   import { CHROMATIC } from '$lib/types/chord';
   import { TRIAD_OFFSETS, TRIAD_DEGREES } from '$lib/theory/chords';
-  import { diatonicTriads } from '$lib/theory/diatonics';
+  import { diatonicTriads, tonesLabel } from '$lib/theory/diatonics';
   import type { DiatonicTriad } from '$lib/theory/diatonics';
   import RootSelector from '$lib/components/RootSelector.svelte';
   import ChordFretboard from '$lib/components/ChordFretboard.svelte';
@@ -86,6 +86,9 @@
   <div class="grid gap-4 lg:grid-cols-2">
     {#each triads as t (t.degree)}
       {@const degrees = TRIAD_DEGREES[t.quality]}
+      {@const offsets = TRIAD_OFFSETS[t.quality]}
+      {@const g1 = offsets[1] - offsets[0]}
+      {@const g2 = offsets[2] - offsets[1]}
       <article class="rounded-lg border border-hairline bg-surface-raised p-4">
         <header class="mb-2 flex items-baseline justify-between">
           <span data-chord-name class="font-display text-lg font-bold text-ink">{chordDisplayName(t)}</span>
@@ -94,8 +97,10 @@
         <div class="mb-2 font-technical text-xs text-muted">{t.quality}</div>
 
         <!-- Stacked-thirds construction diagram: 5th (top) → 3rd → root (bottom) -->
+        <!-- Gaps: g1 = root→third (offsets[1]-offsets[0]), g2 = third→fifth (offsets[2]-offsets[1]) -->
+        <!-- Display order (STACK_ORDER=[2,1,0]): fifth, then gap(g2), then third, then gap(g1), then root -->
         <div data-construction-stack class="mb-3 space-y-0.5">
-          {#each STACK_ORDER as idx}
+          {#each STACK_ORDER as idx, pos}
             {@const degree = degrees[idx]}
             {@const note = t.notes[idx]}
             {@const isAltered = degree.includes('♭')}
@@ -108,6 +113,25 @@
               <span class="text-hairline">|</span>
               <span>{note}</span>
             </div>
+            {#if pos === 0}
+              <!-- Gap between fifth (top) and third: g2 (third→fifth semitones) -->
+              <div
+                data-gap
+                data-gap-small={g2 === 3 ? 'true' : 'false'}
+                class="pl-7 font-technical text-[10px] leading-none {g2 === 3 ? 'text-accent-soft' : 'text-muted/60'}"
+              >
+                {tonesLabel(g2)} tones
+              </div>
+            {:else if pos === 1}
+              <!-- Gap between third and root: g1 (root→third semitones) -->
+              <div
+                data-gap
+                data-gap-small={g1 === 3 ? 'true' : 'false'}
+                class="pl-7 font-technical text-[10px] leading-none {g1 === 3 ? 'text-accent-soft' : 'text-muted/60'}"
+              >
+                {tonesLabel(g1)} tones
+              </div>
+            {/if}
           {/each}
         </div>
 

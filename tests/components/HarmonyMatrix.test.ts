@@ -180,3 +180,123 @@ describe('HarmonyMatrix — no hardcoded colors', () => {
     expect(container.innerHTML).not.toMatch(/rgb\(/);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Quality-aware degree labels (data-cell-degree) — Change 3
+// ---------------------------------------------------------------------------
+
+describe('HarmonyMatrix — quality-aware cell degree labels (C major)', () => {
+  // Row ii = Dm (min): third="♭3", fifth="5"
+  it('row ii (Dm) third cell has data-cell-degree="♭3"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(7, 14); // row index 1
+    const thirdCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'third');
+    expect(thirdCell).toBeTruthy();
+    expect(thirdCell!.getAttribute('data-cell-degree')).toBe('♭3');
+  });
+
+  it('row ii (Dm) fifth cell has data-cell-degree="5"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(7, 14);
+    const fifthCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'fifth');
+    expect(fifthCell).toBeTruthy();
+    expect(fifthCell!.getAttribute('data-cell-degree')).toBe('5');
+  });
+
+  // Row I = C (maj): third="3", fifth="5"
+  it('row I (C) third cell has data-cell-degree="3"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(0, 7); // row index 0
+    const thirdCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'third');
+    expect(thirdCell).toBeTruthy();
+    expect(thirdCell!.getAttribute('data-cell-degree')).toBe('3');
+  });
+
+  it('row I (C) fifth cell has data-cell-degree="5"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(0, 7);
+    const fifthCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'fifth');
+    expect(fifthCell).toBeTruthy();
+    expect(fifthCell!.getAttribute('data-cell-degree')).toBe('5');
+  });
+
+  // Row vii° = B° (dim): third="♭3", fifth="♭5"
+  it('row vii° (B°) third cell has data-cell-degree="♭3"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(42, 49); // row index 6
+    const thirdCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'third');
+    expect(thirdCell).toBeTruthy();
+    expect(thirdCell!.getAttribute('data-cell-degree')).toBe('♭3');
+  });
+
+  it('row vii° (B°) fifth cell has data-cell-degree="♭5"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(42, 49);
+    const fifthCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'fifth');
+    expect(fifthCell).toBeTruthy();
+    expect(fifthCell!.getAttribute('data-cell-degree')).toBe('♭5');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Per-cell distance captions (data-cell-tones) — Change 3
+// ---------------------------------------------------------------------------
+
+describe('HarmonyMatrix — per-cell tones captions (C major)', () => {
+  // Row ii = Dm (min): gaps 3,4 → "1½","2"
+  it('row ii (Dm) third cell has data-cell-tones="1½"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(7, 14);
+    const thirdCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'third');
+    expect(thirdCell!.getAttribute('data-cell-tones')).toBe('1½');
+  });
+
+  it('row ii (Dm) fifth cell has data-cell-tones="2"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(7, 14);
+    const fifthCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'fifth');
+    expect(fifthCell!.getAttribute('data-cell-tones')).toBe('2');
+  });
+
+  // Row I = C (maj): gaps 4,3 → "2","1½"
+  it('row I (C) third cell has data-cell-tones="2"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(0, 7);
+    const thirdCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'third');
+    expect(thirdCell!.getAttribute('data-cell-tones')).toBe('2');
+  });
+
+  it('row I (C) fifth cell has data-cell-tones="1½"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(0, 7);
+    const fifthCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'fifth');
+    expect(fifthCell!.getAttribute('data-cell-tones')).toBe('1½');
+  });
+
+  // Row vii° = B° (dim): gaps 3,3 → "1½","1½"
+  it('row vii° (B°) third cell has data-cell-tones="1½"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(42, 49);
+    const thirdCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'third');
+    expect(thirdCell!.getAttribute('data-cell-tones')).toBe('1½');
+  });
+
+  it('row vii° (B°) fifth cell has data-cell-tones="1½"', () => {
+    const { container } = renderMatrix('C');
+    const allCells = container.querySelectorAll('[data-cell-role]');
+    const rowCells = Array.from(allCells).slice(42, 49);
+    const fifthCell = rowCells.find((c) => c.getAttribute('data-cell-role') === 'fifth');
+    expect(fifthCell!.getAttribute('data-cell-tones')).toBe('1½');
+  });
+});

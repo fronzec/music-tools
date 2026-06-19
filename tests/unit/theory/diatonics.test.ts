@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MAJOR_SCALE_INTERVALS, type DiatonicTriad, diatonicTriads, majorScaleNotes } from '$lib/theory/diatonics';
+import { MAJOR_SCALE_INTERVALS, type DiatonicTriad, diatonicTriads, majorScaleNotes, tonesLabel } from '$lib/theory/diatonics';
 import { CHROMATIC } from '$lib/types/chord';
 
 describe('MAJOR_SCALE_INTERVALS', () => {
@@ -248,5 +248,39 @@ describe('majorScaleNotes — all 12 roots', () => {
       const unique = new Set(notes);
       expect(unique.size, `duplicates found for root ${root}`).toBe(7);
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// tonesLabel — converts semitone count to whole-tone label string
+// ---------------------------------------------------------------------------
+
+describe('tonesLabel', () => {
+  it('3 semitones → "1½" (minor third / 1½ tones)', () => {
+    expect(tonesLabel(3)).toBe('1½');
+  });
+
+  it('4 semitones → "2" (major third / 2 tones)', () => {
+    expect(tonesLabel(4)).toBe('2');
+  });
+
+  it('2 semitones → "1" (whole tone)', () => {
+    expect(tonesLabel(2)).toBe('1');
+  });
+
+  it('1 semitone → "½" (half tone)', () => {
+    expect(tonesLabel(1)).toBe('½');
+  });
+
+  it('0 semitones → "0"', () => {
+    expect(tonesLabel(0)).toBe('0');
+  });
+
+  it('5 semitones → "2½"', () => {
+    expect(tonesLabel(5)).toBe('2½');
+  });
+
+  it('6 semitones → "3"', () => {
+    expect(tonesLabel(6)).toBe('3');
   });
 });

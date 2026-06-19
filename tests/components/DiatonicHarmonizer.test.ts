@@ -238,4 +238,72 @@ describe('DiatonicHarmonizer', () => {
       expect(container.innerHTML).toContain('lg:grid-cols-2');
     });
   });
+
+  describe('interval distance gaps — Change 2', () => {
+    function findCardByChordName(container: HTMLElement, name: string): HTMLElement | null {
+      const articles = container.querySelectorAll('article');
+      for (const article of articles) {
+        const header = article.querySelector('[data-chord-name]');
+        if (header && header.textContent?.trim() === name) return article as HTMLElement;
+      }
+      return null;
+    }
+
+    // Dm (min): gaps 3,4 → root→third is "1½" (small), third→fifth is "2" (not small)
+    it('Dm card has a gap element between root and third with data-gap-small="true"', async () => {
+      const { container } = await renderTool();
+      const dm = findCardByChordName(container, 'Dm');
+      expect(dm).not.toBeNull();
+      // gap between root(bottom) and third(middle) is the 1½-tones minor third
+      const gapEl = dm!.querySelector('[data-gap][data-gap-small="true"]');
+      expect(gapEl).not.toBeNull();
+    });
+
+    it('Dm card root→third gap element shows "1½" label', async () => {
+      const { container } = await renderTool();
+      const dm = findCardByChordName(container, 'Dm');
+      expect(dm).not.toBeNull();
+      const smallGaps = dm!.querySelectorAll('[data-gap][data-gap-small="true"]');
+      // At least one small gap element contains "1½"
+      const texts = Array.from(smallGaps).map((el) => el.textContent ?? '');
+      expect(texts.some((t) => t.includes('1½'))).toBe(true);
+    });
+
+    it('Dm card third→fifth gap element is NOT small (data-gap-small="false")', async () => {
+      const { container } = await renderTool();
+      const dm = findCardByChordName(container, 'Dm');
+      expect(dm).not.toBeNull();
+      const notSmall = dm!.querySelectorAll('[data-gap][data-gap-small="false"]');
+      expect(notSmall.length).toBeGreaterThan(0);
+    });
+
+    // C (maj): gaps 4,3 → root→third is "2" (not small), third→fifth is "1½" (small)
+    it('C card root→third gap is "2" and NOT small (data-gap-small="false")', async () => {
+      const { container } = await renderTool();
+      const cMaj = findCardByChordName(container, 'C');
+      expect(cMaj).not.toBeNull();
+      // The first gap (bottom-to-middle, between root and third) should be "2"
+      const allGaps = cMaj!.querySelectorAll('[data-gap]');
+      expect(allGaps.length).toBe(2); // exactly 2 gaps per card
+      // root→third gap is allGaps[1] (rendered between rows idx2→idx1 in display order fifth,third,root)
+      // Actually the gaps are rendered between: (fifth,third) and (third,root) in display order
+      // So allGaps[0] = gap between fifth and third (g2 = third→fifth = 3 semitones = "1½")
+      // allGaps[1] = gap between third and root (g1 = root→third = 4 semitones = "2")
+      // We check that there's exactly one NOT small gap with "2" text
+      const notSmallGaps = Array.from(allGaps).filter(
+        (el) => el.getAttribute('data-gap-small') === 'false',
+      );
+      expect(notSmallGaps.length).toBe(1);
+      expect(notSmallGaps[0].textContent).toContain('2');
+    });
+
+    it('each card has exactly 2 gap elements', async () => {
+      const { container } = await renderTool();
+      const articles = container.querySelectorAll('article');
+      articles.forEach((article) => {
+        const gaps = article.querySelectorAll('[data-gap]');
+        expect(gaps.length).toBe(2);
+      });
+    });
+  });
 });

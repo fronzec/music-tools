@@ -89,6 +89,26 @@ function classifyQuality(g1: number, g2: number): TriadQuality {
 // Main export
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Tone-distance label helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Converts a semitone count into a whole-tone label string.
+ * Used to display the interval gap between stacked chord tones.
+ *
+ * Examples: 0→"0", 1→"½", 2→"1", 3→"1½", 4→"2", 5→"2½", 6→"3"
+ *
+ * General rule: wholePart = Math.floor(n/2); halfPart = n%2 ? "½" : ""; join them.
+ * If result is empty string, return "0".
+ */
+export function tonesLabel(semitones: number): string {
+  const whole = Math.floor(semitones / 2);
+  const half = semitones % 2 ? '½' : '';
+  const result = whole > 0 ? `${whole}${half}` : half;
+  return result || '0';
+}
+
 /**
  * Returns the 7 note names of the major scale starting at `root`, in degree
  * order (root → 2nd → 3rd → 4th → 5th → 6th → 7th). Uses the project-wide

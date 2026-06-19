@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { NoteName } from '$lib/types/chord';
-  import { majorScaleNotes, diatonicTriads } from '$lib/theory/diatonics';
+  import { majorScaleNotes, diatonicTriads, tonesLabel } from '$lib/theory/diatonics';
   import type { DiatonicTriad } from '$lib/theory/diatonics';
+  import { TRIAD_OFFSETS, TRIAD_DEGREES } from '$lib/theory/chords';
 
   interface Props {
     root: NoteName;
@@ -72,6 +73,10 @@
     <!-- Body: one row per triad, degree I through vii° -->
     <tbody>
       {#each triads as triad, i (triad.degree)}
+        {@const triadOffsets = TRIAD_OFFSETS[triad.quality]}
+        {@const triadDegrees = TRIAD_DEGREES[triad.quality]}
+        {@const g1 = triadOffsets[1] - triadOffsets[0]}
+        {@const g2 = triadOffsets[2] - triadOffsets[1]}
         <tr class="border-t border-hairline/40">
           <!-- Roman numeral label -->
           <td class="py-1 pr-2 text-right font-semibold text-muted">
@@ -82,6 +87,8 @@
             {@const role = cellRole(i, j)}
             <td
               data-cell-role={role}
+              data-cell-degree={role === 'third' ? triadDegrees[1] : role === 'fifth' ? triadDegrees[2] : undefined}
+              data-cell-tones={role === 'third' ? tonesLabel(g1) : role === 'fifth' ? tonesLabel(g2) : undefined}
               class="py-1 text-center"
             >
               {#if role === 'root'}
@@ -91,17 +98,27 @@
                   {ROLE_MARKER.root}
                 </span>
               {:else if role === 'third'}
-                <span
-                  class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone text-[10px] font-bold text-surface"
-                >
-                  {ROLE_MARKER.third}
-                </span>
+                <div class="flex flex-col items-center gap-0.5">
+                  <span
+                    class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone text-[10px] font-bold text-surface"
+                  >
+                    {triadDegrees[1]}
+                  </span>
+                  <span class="text-[9px] leading-none {g1 === 3 ? 'text-accent-soft' : 'text-muted/60'}">
+                    {tonesLabel(g1)}T
+                  </span>
+                </div>
               {:else if role === 'fifth'}
-                <span
-                  class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone/70 text-[10px] font-bold text-surface"
-                >
-                  {ROLE_MARKER.fifth}
-                </span>
+                <div class="flex flex-col items-center gap-0.5">
+                  <span
+                    class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone/70 text-[10px] font-bold text-surface"
+                  >
+                    {triadDegrees[2]}
+                  </span>
+                  <span class="text-[9px] leading-none {g2 === 3 ? 'text-accent-soft' : 'text-muted/60'}">
+                    {tonesLabel(g2)}T
+                  </span>
+                </div>
               {:else}
                 <span class="inline-flex h-6 w-6 items-center justify-center text-hairline">·</span>
               {/if}
