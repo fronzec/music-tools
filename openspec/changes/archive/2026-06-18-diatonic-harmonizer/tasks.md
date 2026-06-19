@@ -136,10 +136,11 @@ The `VIEW_NAMES` exhaustiveness guard in `routing.ts` fails `tsc` if the `ViewNa
       view: 'diatonic-harmonizer',
       title: 'Diatonic Harmonizer',
       description: "See a major key's 7 diatonic triads and the chords that belong to it",
-      icon: '🎼',
+      icon: '🔑',
     }
     ```
   - `status` MUST be `'active'`; `view` MUST be `'diatonic-harmonizer'`
+  - NOTE: icon `'🔑'` was used in implementation (tasks originally listed `'🎼'` but that was already claimed by Scales Explorer)
   - Commit together with 2.3 (after component exists): `feat(routing): wire DiatonicHarmonizer into app shell and tools registry`
 
 ---

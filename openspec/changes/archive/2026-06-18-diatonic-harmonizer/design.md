@@ -324,7 +324,7 @@ never sees a half-wired state:
      view: 'diatonic-harmonizer',
      title: 'Diatonic Harmonizer',
      description: "See a major key's 7 diatonic triads and the chords that belong to it",
-     icon: '🎼', // final icon choice is an apply-time detail
+     icon: '🔑', // implementation used 🔑 (🎼 was already claimed by Scales Explorer)
    }
    ```
 
