@@ -77,17 +77,18 @@ describe('DiatonicHarmonizer', () => {
   describe('C major Roman labels', () => {
     it('shows "I" Roman label', async () => {
       await renderTool();
-      expect(screen.getByText('I')).toBeTruthy();
+      // Roman labels appear in both the matrix and the card grid
+      expect(screen.getAllByText('I').length).toBeGreaterThanOrEqual(1);
     });
 
     it('shows "ii" Roman label', async () => {
       await renderTool();
-      expect(screen.getByText('ii')).toBeTruthy();
+      expect(screen.getAllByText('ii').length).toBeGreaterThanOrEqual(1);
     });
 
     it('shows "vii°" Roman label', async () => {
       await renderTool();
-      expect(screen.getByText('vii°')).toBeTruthy();
+      expect(screen.getAllByText('vii°').length).toBeGreaterThanOrEqual(1);
     });
   });
 

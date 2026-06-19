@@ -6,6 +6,7 @@
   import type { DiatonicTriad } from '$lib/theory/diatonics';
   import RootSelector from '$lib/components/RootSelector.svelte';
   import ChordFretboard from '$lib/components/ChordFretboard.svelte';
+  import HarmonyMatrix from '$lib/components/HarmonyMatrix.svelte';
 
   interface Props {
     navigate: (view: ViewName) => void;
@@ -71,6 +72,14 @@
       onSelect={(n) => (root = n)}
       label="Select major key root"
     />
+  </section>
+
+  <!-- Scale harmonization matrix -->
+  <section class="mb-6">
+    <h2 class="mb-3 font-display text-base font-semibold text-ink">
+      How each chord stacks in the scale
+    </h2>
+    <HarmonyMatrix {root} />
   </section>
 
   <!-- 7-chord grid — max 2 columns so each fretboard renders larger -->

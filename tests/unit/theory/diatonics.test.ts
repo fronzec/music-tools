@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MAJOR_SCALE_INTERVALS, type DiatonicTriad, diatonicTriads } from '$lib/theory/diatonics';
+import { MAJOR_SCALE_INTERVALS, type DiatonicTriad, diatonicTriads, majorScaleNotes } from '$lib/theory/diatonics';
 import { CHROMATIC } from '$lib/types/chord';
 
 describe('MAJOR_SCALE_INTERVALS', () => {
@@ -186,5 +186,67 @@ describe('diatonicTriads — determinism', () => {
 describe('diatonicTriads — no throw for valid roots', () => {
   it('all 12 CHROMATIC roots iterate without throwing', () => {
     expect(() => CHROMATIC.forEach((root) => diatonicTriads(root))).not.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// majorScaleNotes
+// ---------------------------------------------------------------------------
+
+describe('majorScaleNotes — C major', () => {
+  it('returns exactly 7 notes', () => {
+    expect(majorScaleNotes('C')).toHaveLength(7);
+  });
+
+  it('first element equals the root', () => {
+    expect(majorScaleNotes('C')[0]).toBe('C');
+  });
+
+  it('returns [C,D,E,F,G,A,B]', () => {
+    expect(majorScaleNotes('C')).toEqual(['C', 'D', 'E', 'F', 'G', 'A', 'B']);
+  });
+});
+
+describe('majorScaleNotes — G major', () => {
+  it('returns exactly 7 notes', () => {
+    expect(majorScaleNotes('G')).toHaveLength(7);
+  });
+
+  it('first element equals the root', () => {
+    expect(majorScaleNotes('G')[0]).toBe('G');
+  });
+
+  it('returns [G,A,B,C,D,E,F#]', () => {
+    expect(majorScaleNotes('G')).toEqual(['G', 'A', 'B', 'C', 'D', 'E', 'F#']);
+  });
+});
+
+describe('majorScaleNotes — all 12 roots', () => {
+  it('always returns length 7', () => {
+    CHROMATIC.forEach((root) => {
+      expect(majorScaleNotes(root), `length 7 failed for ${root}`).toHaveLength(7);
+    });
+  });
+
+  it('first element always equals the root', () => {
+    CHROMATIC.forEach((root) => {
+      expect(majorScaleNotes(root)[0], `root mismatch for ${root}`).toBe(root);
+    });
+  });
+
+  it('all notes are valid NoteName values', () => {
+    CHROMATIC.forEach((root) => {
+      majorScaleNotes(root).forEach((note) => {
+        expect(CHROMATIC).toContain(note);
+      });
+    });
+  });
+
+  it('no duplicate notes within a scale', () => {
+    CHROMATIC.forEach((root) => {
+      const notes = majorScaleNotes(root);
+      const unique = new Set(notes);
+      expect(unique.size, `duplicates found for root ${root}`).toBe(7);
+    });
   });
 });

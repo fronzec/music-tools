@@ -90,6 +90,18 @@ function classifyQuality(g1: number, g2: number): TriadQuality {
 // ---------------------------------------------------------------------------
 
 /**
+ * Returns the 7 note names of the major scale starting at `root`, in degree
+ * order (root → 2nd → 3rd → 4th → 5th → 6th → 7th). Uses the project-wide
+ * CHROMATIC sharp spelling — e.g. F major yields F,G,A,A#,C,D,E.
+ *
+ * Pure, total for all 12 roots, no side effects.
+ */
+export function majorScaleNotes(root: NoteName): NoteName[] {
+  const rootPc = CHROMATIC.indexOf(root);
+  return MAJOR_SCALE_INTERVALS.map((interval) => CHROMATIC[(rootPc + interval) % 12]);
+}
+
+/**
  * Returns the 7 diatonic triads of the given major key in degree order
  * (I through vii°). Quality is DERIVED from the semitone gaps between stacked
  * scale thirds — the maj,min,min,maj,maj,min,dim pattern EMERGES; it is never
