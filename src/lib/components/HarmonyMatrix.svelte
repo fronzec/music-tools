@@ -62,7 +62,8 @@
       <tr>
         <th
           data-axis-label="degree"
-          class="w-8 pb-0.5 pr-2 text-right text-[10px] font-semibold uppercase tracking-wide text-muted/60"
+          rowspan="2"
+          class="w-8 text-center align-middle text-[10px] font-semibold uppercase tracking-wide text-muted/60"
         >
           Degree
         </th>
@@ -75,15 +76,14 @@
         </th>
         <th
           data-axis-label="chord"
-          class="w-12 pb-0.5 pl-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted/60"
+          rowspan="2"
+          class="w-12 text-center align-middle text-[10px] font-semibold uppercase tracking-wide text-muted/60"
         >
           Chord
         </th>
       </tr>
-      <!-- Note letter header row -->
+      <!-- Note letter header row (Degree & Chord span both rows via rowspan) -->
       <tr>
-        <!-- Empty cell for the Roman numeral column -->
-        <th class="w-8 pb-1 text-right text-muted"></th>
         {#each scale as note (note)}
           <th
             data-matrix-header-note
@@ -92,8 +92,6 @@
             {note}
           </th>
         {/each}
-        <!-- Empty cell for the chord-name column -->
-        <th class="w-12 pb-1 text-left text-muted"></th>
       </tr>
     </thead>
     <!-- Body: one row per triad, degree I through vii° -->
