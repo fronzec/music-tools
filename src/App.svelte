@@ -11,6 +11,7 @@
   import IntervalTrainer from '$lib/components/IntervalTrainer.svelte';
   import TabPlayer from '$lib/components/TabPlayer.svelte';
   import ChordBuilder from '$lib/components/ChordBuilder.svelte';
+  import DiatonicHarmonizer from '$lib/components/DiatonicHarmonizer.svelte';
 
   let currentView: ViewName = $state(pathToView(location.pathname));
 
@@ -85,6 +86,10 @@
   {:else if currentView === 'chord-builder'}
     <svelte:boundary failed={errorFallback}>
       <ChordBuilder {navigate} />
+    </svelte:boundary>
+  {:else if currentView === 'diatonic-harmonizer'}
+    <svelte:boundary failed={errorFallback}>
+      <DiatonicHarmonizer {navigate} />
     </svelte:boundary>
   {/if}
 </main>

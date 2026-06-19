@@ -25,9 +25,9 @@ describe('HomePage', () => {
   });
 
   describe('tool cards', () => {
-    it('renders exactly 9 active tools (9 "Open" badges)', () => {
+    it('renders exactly 10 active tools (10 "Open" badges)', () => {
       renderPage();
-      expect(screen.getAllByText('Open').length).toBe(9);
+      expect(screen.getAllByText('Open').length).toBe(10);
     });
 
     it('renders at least one "Coming soon" placeholder', () => {
@@ -46,6 +46,7 @@ describe('HomePage', () => {
       { name: 'Interval Trainer', view: 'interval-trainer' },
       { name: 'Tab Player', view: 'tab-player' },
       { name: 'Chord Builder', view: 'chord-builder' },
+      { name: 'Diatonic Harmonizer', view: 'diatonic-harmonizer' },
     ];
 
     for (const { name, view } of ACTIVE) {

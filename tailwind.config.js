@@ -24,6 +24,7 @@ export default {
         success: 'rgb(var(--success-rgb) / <alpha-value>)',
         error: 'rgb(var(--error-rgb) / <alpha-value>)',
         'note-root': 'rgb(var(--note-root-rgb) / <alpha-value>)',
+        'note-third': 'rgb(var(--note-third-rgb) / <alpha-value>)',
         'note-tone': 'rgb(var(--note-tone-rgb) / <alpha-value>)',
       },
       fontFamily: {
