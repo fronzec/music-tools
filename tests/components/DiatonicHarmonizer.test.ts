@@ -226,6 +226,79 @@ describe('DiatonicHarmonizer', () => {
     });
   });
 
+  describe('legend strip — visual refinement pass', () => {
+    it('renders a data-legend element', async () => {
+      const { container } = await renderTool();
+      expect(container.querySelector('[data-legend]')).not.toBeNull();
+    });
+
+    it('legend contains "Root" text', async () => {
+      const { container } = await renderTool();
+      const legend = container.querySelector('[data-legend]');
+      expect(legend).not.toBeNull();
+      expect(legend!.textContent).toContain('Root');
+    });
+
+    it('legend contains "Third" text', async () => {
+      const { container } = await renderTool();
+      const legend = container.querySelector('[data-legend]');
+      expect(legend!.textContent).toContain('Third');
+    });
+
+    it('legend contains "Fifth" text', async () => {
+      const { container } = await renderTool();
+      const legend = container.querySelector('[data-legend]');
+      expect(legend!.textContent).toContain('Fifth');
+    });
+
+    it('legend contains "major 3rd" jump explanation', async () => {
+      const { container } = await renderTool();
+      const legend = container.querySelector('[data-legend]');
+      expect(legend!.textContent).toContain('major 3rd');
+    });
+
+    it('legend contains "minor 3rd" jump explanation', async () => {
+      const { container } = await renderTool();
+      const legend = container.querySelector('[data-legend]');
+      expect(legend!.textContent).toContain('minor 3rd');
+    });
+
+    it('legend Root chip uses note-root token class', async () => {
+      const { container } = await renderTool();
+      const legend = container.querySelector('[data-legend]');
+      expect(legend!.innerHTML).toMatch(/note-root/);
+    });
+
+    it('legend Third chip uses note-third token class', async () => {
+      const { container } = await renderTool();
+      const legend = container.querySelector('[data-legend]');
+      expect(legend!.innerHTML).toMatch(/note-third/);
+    });
+
+    it('legend Fifth chip uses note-tone token class', async () => {
+      const { container } = await renderTool();
+      const legend = container.querySelector('[data-legend]');
+      expect(legend!.innerHTML).toMatch(/note-tone/);
+    });
+  });
+
+  describe('copy polish — visual refinement pass', () => {
+    it('renders the updated subtitle about diatonic triads', async () => {
+      const { container } = await renderTool();
+      expect(container.textContent).toContain('See the 7 diatonic triads of any major key and how each one stacks from the scale');
+    });
+
+    it('renders the "Select a key" label above RootSelector', async () => {
+      const { container } = await renderTool();
+      expect(container.textContent?.toUpperCase()).toContain('SELECT A KEY');
+    });
+
+    it('renders the matrix subtitle about stacking two thirds', async () => {
+      const { container } = await renderTool();
+      expect(container.textContent).toContain('Each row is a chord built by stacking two thirds');
+    });
+  });
+
   describe('grid layout', () => {
     it('chord grid does not use xl:grid-cols-3 class (max 2 columns)', async () => {
       const { container } = await renderTool();

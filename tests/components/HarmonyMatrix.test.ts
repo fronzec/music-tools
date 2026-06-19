@@ -343,3 +343,78 @@ describe('HarmonyMatrix — per-cell tones captions (C major)', () => {
     expect(fifthCell!.getAttribute('data-cell-tones')).toBe('1½');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Role-based colors — visual refinement pass
+// Third cells must use note-third token; fifth cells must use note-tone token.
+// ---------------------------------------------------------------------------
+
+describe('HarmonyMatrix — role-based marker colors', () => {
+  it('third cells carry the note-third CSS token class', () => {
+    const { container } = renderMatrix('C');
+    const thirdCells = container.querySelectorAll('[data-cell-role="third"]');
+    expect(thirdCells.length).toBeGreaterThan(0);
+    thirdCells.forEach((cell) => {
+      const span = cell.querySelector('span, [class]');
+      // The colored dot span inside the third cell must reference note-third
+      expect(cell.innerHTML).toMatch(/note-third/);
+    });
+  });
+
+  it('fifth cells carry the note-tone CSS token class', () => {
+    const { container } = renderMatrix('C');
+    const fifthCells = container.querySelectorAll('[data-cell-role="fifth"]');
+    expect(fifthCells.length).toBeGreaterThan(0);
+    fifthCells.forEach((cell) => {
+      expect(cell.innerHTML).toMatch(/note-tone/);
+    });
+  });
+
+  it('root cells carry the note-root CSS token class', () => {
+    const { container } = renderMatrix('C');
+    const rootCells = container.querySelectorAll('[data-cell-role="root"]');
+    expect(rootCells.length).toBeGreaterThan(0);
+    rootCells.forEach((cell) => {
+      expect(cell.innerHTML).toMatch(/note-root/);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Quality sub-label in Degree column — data-degree-quality attribute
+// ---------------------------------------------------------------------------
+
+describe('HarmonyMatrix — degree quality sub-label', () => {
+  it('row I (C) has data-degree-quality="maj"', () => {
+    const { container } = renderMatrix('C');
+    const rows = container.querySelectorAll('[data-degree-quality]');
+    const rowI = Array.from(rows)[0];
+    expect(rowI).toBeTruthy();
+    expect(rowI.getAttribute('data-degree-quality')).toBe('maj');
+    expect(rowI.textContent?.trim()).toBe('maj');
+  });
+
+  it('row ii (Dm) has data-degree-quality="min"', () => {
+    const { container } = renderMatrix('C');
+    const rows = container.querySelectorAll('[data-degree-quality]');
+    const rowII = Array.from(rows)[1];
+    expect(rowII).toBeTruthy();
+    expect(rowII.getAttribute('data-degree-quality')).toBe('min');
+    expect(rowII.textContent?.trim()).toBe('min');
+  });
+
+  it('row vii° (B°) has data-degree-quality="dim"', () => {
+    const { container } = renderMatrix('C');
+    const rows = container.querySelectorAll('[data-degree-quality]');
+    const rowVII = Array.from(rows)[6];
+    expect(rowVII).toBeTruthy();
+    expect(rowVII.getAttribute('data-degree-quality')).toBe('dim');
+    expect(rowVII.textContent?.trim()).toBe('dim');
+  });
+
+  it('renders exactly 7 degree-quality sub-labels', () => {
+    const { container } = renderMatrix('C');
+    const rows = container.querySelectorAll('[data-degree-quality]');
+    expect(rows.length).toBe(7);
+  });
+});

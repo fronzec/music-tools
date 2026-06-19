@@ -30,7 +30,8 @@
   --error-rgb: 239 68 68; /* incorrect / error / destructive feedback */
 
   --note-root-rgb: 59 130 246;   /* blue — root note dot */
-  --note-tone-rgb: 34 197 94;    /* green — chord-tone dot */
+  --note-third-rgb: 244 124 99;  /* coral/salmon — third note dot */
+  --note-tone-rgb: 34 197 94;    /* green — chord-tone dot (fifth) */
 
   --font-display: 'IBM Plex Sans', system-ui, sans-serif;
   --font-technical: 'IBM Plex Mono', ui-monospace, monospace;
@@ -66,6 +67,21 @@ body {
     pointer-events: none;
     opacity: 0.04;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Subtle glow utilities for harmony matrix marker dots.
+   * Each reads entirely from its own role token — no hardcoded color values.
+   * Mirrors the LED glow pattern used by .indicator-led above. */
+  .dot-glow-root {
+    box-shadow: 0 0 8px rgb(var(--note-root-rgb) / 0.5);
+  }
+
+  .dot-glow-third {
+    box-shadow: 0 0 8px rgb(var(--note-third-rgb) / 0.5);
+  }
+
+  .dot-glow-fifth {
+    box-shadow: 0 0 8px rgb(var(--note-tone-rgb) / 0.5);
   }
 
   /* A lit accent indicator LED (reads entirely from the accent token). */

@@ -104,9 +104,15 @@
         {@const g1 = triadOffsets[1] - triadOffsets[0]}
         {@const g2 = triadOffsets[2] - triadOffsets[1]}
         <tr class="border-t border-hairline/40">
-          <!-- Roman numeral label -->
-          <td class="border-r border-hairline/40 py-1 pr-2 text-right font-semibold text-muted">
-            {triad.roman}
+          <!-- Roman numeral label with quality sub-label -->
+          <td class="border-r border-hairline/40 py-1 pr-2 text-right">
+            <div class="flex flex-col items-end gap-0.5">
+              <span class="font-semibold text-muted">{triad.roman}</span>
+              <span
+                data-degree-quality={triad.quality}
+                class="text-[9px] leading-none text-muted/50"
+              >{triad.quality}</span>
+            </div>
           </td>
           <!-- 7 matrix cells -->
           {#each { length: 7 } as _, j (j)}
@@ -119,14 +125,14 @@
             >
               {#if role === 'root'}
                 <span
-                  class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-root text-[10px] font-bold text-surface"
+                  class="dot-glow-root inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-root text-[10px] font-bold text-surface"
                 >
                   {ROLE_MARKER.root}
                 </span>
               {:else if role === 'third'}
                 <div class="flex flex-col items-center gap-0.5">
                   <span
-                    class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone text-[10px] font-bold text-surface"
+                    class="dot-glow-third inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-third text-[10px] font-bold text-surface"
                   >
                     {triadDegrees[1]}
                   </span>
@@ -137,7 +143,7 @@
               {:else if role === 'fifth'}
                 <div class="flex flex-col items-center gap-0.5">
                   <span
-                    class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone/70 text-[10px] font-bold text-surface"
+                    class="dot-glow-fifth inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone text-[10px] font-bold text-surface"
                   >
                     {triadDegrees[2]}
                   </span>

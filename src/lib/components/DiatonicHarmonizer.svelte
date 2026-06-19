@@ -60,12 +60,15 @@
   <header class="mb-6">
     <h1 class="font-display text-2xl font-bold text-ink">Diatonic Harmonizer</h1>
     <p class="mt-1 text-sm text-muted">
-      See the 7 diatonic triads of any major key and their positions on the fretboard.
+      See the 7 diatonic triads of any major key and how each one stacks from the scale.
     </p>
   </header>
 
   <!-- Root selection -->
-  <section class="mb-6">
+  <section class="mb-4">
+    <p class="mb-2 font-technical text-[10px] font-semibold uppercase tracking-wide text-muted/60">
+      Select a key
+    </p>
     <RootSelector
       notes={CHROMATIC}
       selected={root}
@@ -74,11 +77,44 @@
     />
   </section>
 
+  <!-- Legend strip -->
+  <div
+    data-legend
+    class="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-hairline/40 bg-surface-raised px-4 py-3 font-technical text-xs text-muted"
+  >
+    <!-- Role chips -->
+    <span class="flex items-center gap-1.5">
+      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-root text-[9px] font-bold text-surface">R</span>
+      <span>Root</span>
+    </span>
+    <span class="flex items-center gap-1.5">
+      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-third text-[9px] font-bold text-surface">3</span>
+      <span>Third</span>
+    </span>
+    <span class="flex items-center gap-1.5">
+      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-tone text-[9px] font-bold text-surface">5</span>
+      <span>Fifth</span>
+    </span>
+    <!-- Jump explanations -->
+    <span class="text-muted/60">·</span>
+    <span class="flex items-center gap-1">
+      <span class="font-semibold text-ink/70">2T</span>
+      <span class="text-muted/60">= whole-step jump (major 3rd)</span>
+    </span>
+    <span class="flex items-center gap-1">
+      <span class="font-semibold text-ink/70">1½T</span>
+      <span class="text-muted/60">= minor 3rd jump</span>
+    </span>
+  </div>
+
   <!-- Scale harmonization matrix -->
   <section class="mb-6">
-    <h2 class="mb-3 font-display text-base font-semibold text-ink">
+    <h2 class="mb-1 font-display text-base font-semibold text-ink">
       How each chord stacks in the scale
     </h2>
+    <p class="mb-3 text-xs text-muted">
+      Each row is a chord built by stacking two thirds. Read left-to-right: the coloured tones are the notes you play.
+    </p>
     <HarmonyMatrix {root} />
   </section>
 
