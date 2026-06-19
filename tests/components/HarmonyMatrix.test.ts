@@ -245,6 +245,49 @@ describe('HarmonyMatrix — quality-aware cell degree labels (C major)', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Axis labels and grouping — scale-type caption, axis column headers
+// ---------------------------------------------------------------------------
+
+describe('HarmonyMatrix — scale-type caption', () => {
+  it('renders a data-scale-type element with text "C Major scale" for root C', () => {
+    const { container } = renderMatrix('C');
+    const el = container.querySelector('[data-scale-type]');
+    expect(el).not.toBeNull();
+    expect(el!.textContent?.trim()).toBe('C Major scale');
+  });
+
+  it('renders a data-scale-type element with text "G Major scale" for root G', () => {
+    const { container } = renderMatrix('G');
+    const el = container.querySelector('[data-scale-type]');
+    expect(el).not.toBeNull();
+    expect(el!.textContent?.trim()).toBe('G Major scale');
+  });
+});
+
+describe('HarmonyMatrix — axis labels', () => {
+  it('renders a data-axis-label="scale-notes" element with text "Scale notes"', () => {
+    const { container } = renderMatrix('C');
+    const el = container.querySelector('[data-axis-label="scale-notes"]');
+    expect(el).not.toBeNull();
+    expect(el!.textContent?.trim()).toBe('Scale notes');
+  });
+
+  it('renders a data-axis-label="degree" element with text "Degree"', () => {
+    const { container } = renderMatrix('C');
+    const el = container.querySelector('[data-axis-label="degree"]');
+    expect(el).not.toBeNull();
+    expect(el!.textContent?.trim()).toBe('Degree');
+  });
+
+  it('renders a data-axis-label="chord" element with text "Chord"', () => {
+    const { container } = renderMatrix('C');
+    const el = container.querySelector('[data-axis-label="chord"]');
+    expect(el).not.toBeNull();
+    expect(el!.textContent?.trim()).toBe('Chord');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Per-cell distance captions (data-cell-tones) — Change 3
 // ---------------------------------------------------------------------------
 

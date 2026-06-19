@@ -52,16 +52,42 @@
   Each row lights up alternating columns showing the stacked-thirds structure.
 -->
 <div data-matrix class="overflow-x-auto">
-  <table class="w-full min-w-[28rem] border-collapse font-technical text-xs">
-    <!-- Header row: scale note names -->
+  <!-- Scale-type caption -->
+  <p data-scale-type class="mb-2 text-xs text-muted">{root} Major scale</p>
+
+  <table class="w-full min-w-[28rem] border-collapse rounded-lg border border-hairline/40 font-technical text-xs">
+    <!-- Header rows: axis labels then scale note names -->
     <thead>
+      <!-- Axis label row: "Degree" | "Scale notes" span | "Chord" -->
+      <tr>
+        <th
+          data-axis-label="degree"
+          class="w-8 pb-0.5 pr-2 text-right text-[10px] font-semibold uppercase tracking-wide text-muted/60"
+        >
+          Degree
+        </th>
+        <th
+          data-axis-label="scale-notes"
+          colspan="7"
+          class="border-x border-hairline/40 pb-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-muted/60"
+        >
+          Scale notes
+        </th>
+        <th
+          data-axis-label="chord"
+          class="w-12 pb-0.5 pl-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted/60"
+        >
+          Chord
+        </th>
+      </tr>
+      <!-- Note letter header row -->
       <tr>
         <!-- Empty cell for the Roman numeral column -->
         <th class="w-8 pb-1 text-right text-muted"></th>
         {#each scale as note (note)}
           <th
             data-matrix-header-note
-            class="pb-1 text-center font-semibold text-muted"
+            class="border-x border-hairline/40 pb-1 text-center font-semibold text-muted first:border-l last:border-r"
           >
             {note}
           </th>
@@ -79,7 +105,7 @@
         {@const g2 = triadOffsets[2] - triadOffsets[1]}
         <tr class="border-t border-hairline/40">
           <!-- Roman numeral label -->
-          <td class="py-1 pr-2 text-right font-semibold text-muted">
+          <td class="border-r border-hairline/40 py-1 pr-2 text-right font-semibold text-muted">
             {triad.roman}
           </td>
           <!-- 7 matrix cells -->
@@ -127,7 +153,7 @@
           <!-- Chord name label -->
           <td
             data-matrix-row-chord
-            class="py-1 pl-2 font-semibold text-ink"
+            class="border-l border-hairline/40 py-1 pl-2 font-semibold text-ink"
           >
             {chordDisplayName(triad)}
           </td>
