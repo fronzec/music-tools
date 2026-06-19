@@ -44,7 +44,8 @@ export type ViewName =
   | 'signal-lab'
   | 'interval-trainer'
   | 'tab-player'
-  | 'chord-builder';
+  | 'chord-builder'
+  | 'diatonic-harmonizer';
 
 export const CAGED_ORDER: CagedShape[] = ['C', 'A', 'G', 'E', 'D'];
 
