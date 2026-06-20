@@ -98,12 +98,12 @@
     <!-- Jump explanations -->
     <span class="text-muted/60">·</span>
     <span class="flex items-center gap-1">
-      <span class="font-semibold text-ink/70">2T</span>
-      <span class="text-muted/60">= whole-step jump (major 3rd)</span>
+      <span class="font-bold text-ink">2T</span>
+      <span class="text-muted">= whole-step jump (major 3rd)</span>
     </span>
     <span class="flex items-center gap-1">
-      <span class="font-semibold text-ink/70">1½T</span>
-      <span class="text-muted/60">= minor 3rd jump</span>
+      <span class="font-bold text-ink">1½T</span>
+      <span class="text-muted">= minor 3rd jump</span>
     </span>
   </div>
 
@@ -154,7 +154,7 @@
               <div
                 data-gap
                 data-gap-small={g2 === 3 ? 'true' : 'false'}
-                class="pl-7 font-technical text-[10px] leading-none {g2 === 3 ? 'text-accent-soft' : 'text-muted/60'}"
+                class="pl-7 font-technical text-xs font-semibold leading-none {g2 === 3 ? 'text-accent-soft' : 'text-muted'}"
               >
                 {tonesLabel(g2)} tones
               </div>
@@ -163,7 +163,7 @@
               <div
                 data-gap
                 data-gap-small={g1 === 3 ? 'true' : 'false'}
-                class="pl-7 font-technical text-[10px] leading-none {g1 === 3 ? 'text-accent-soft' : 'text-muted/60'}"
+                class="pl-7 font-technical text-xs font-semibold leading-none {g1 === 3 ? 'text-accent-soft' : 'text-muted'}"
               >
                 {tonesLabel(g1)} tones
               </div>

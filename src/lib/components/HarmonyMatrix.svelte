@@ -108,7 +108,7 @@
               <span class="font-semibold text-muted">{triad.roman}</span>
               <span
                 data-degree-quality={triad.quality}
-                class="text-[10px] leading-none text-muted/60"
+                class="text-xs leading-none text-muted"
               >{triad.quality}</span>
             </div>
           </td>
@@ -134,7 +134,7 @@
                   >
                     {triadDegrees[1]}
                   </span>
-                  <span class="text-[10px] leading-none {g1 === 3 ? 'text-accent-soft' : 'text-muted/60'}">
+                  <span class="text-xs font-semibold leading-none {g1 === 3 ? 'text-accent-soft' : 'text-muted'}">
                     {tonesLabel(g1)}T
                   </span>
                 </div>
@@ -145,7 +145,7 @@
                   >
                     {triadDegrees[2]}
                   </span>
-                  <span class="text-[10px] leading-none {g2 === 3 ? 'text-accent-soft' : 'text-muted/60'}">
+                  <span class="text-xs font-semibold leading-none {g2 === 3 ? 'text-accent-soft' : 'text-muted'}">
                     {tonesLabel(g2)}T
                   </span>
                 </div>
