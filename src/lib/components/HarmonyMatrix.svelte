@@ -87,7 +87,7 @@
         {#each scale as note (note)}
           <th
             data-matrix-header-note
-            class="border-x border-hairline/40 pb-1 text-center font-semibold text-muted first:border-l last:border-r"
+            class="border-x border-hairline/40 pb-1 text-center text-sm font-bold text-ink first:border-l last:border-r"
           >
             {note}
           </th>
@@ -108,7 +108,7 @@
               <span class="font-semibold text-muted">{triad.roman}</span>
               <span
                 data-degree-quality={triad.quality}
-                class="text-[9px] leading-none text-muted/50"
+                class="text-xs leading-none text-muted"
               >{triad.quality}</span>
             </div>
           </td>
@@ -123,29 +123,29 @@
             >
               {#if role === 'root'}
                 <span
-                  class="dot-glow-root inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-root text-[10px] font-bold text-surface"
+                  class="dot-glow-root inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-root text-xs font-bold text-surface"
                 >
                   {ROLE_MARKER.root}
                 </span>
               {:else if role === 'third'}
                 <div class="flex flex-col items-center gap-0.5">
                   <span
-                    class="dot-glow-third inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-third text-[10px] font-bold text-surface"
+                    class="dot-glow-third inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-third text-xs font-bold text-surface"
                   >
                     {triadDegrees[1]}
                   </span>
-                  <span class="text-[9px] leading-none {g1 === 3 ? 'text-accent-soft' : 'text-muted/60'}">
+                  <span class="text-xs font-semibold leading-none {g1 === 3 ? 'text-accent-soft' : 'text-muted'}">
                     {tonesLabel(g1)}T
                   </span>
                 </div>
               {:else if role === 'fifth'}
                 <div class="flex flex-col items-center gap-0.5">
                   <span
-                    class="dot-glow-fifth inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone text-[10px] font-bold text-surface"
+                    class="dot-glow-fifth inline-flex h-6 w-6 items-center justify-center rounded-full bg-note-tone text-xs font-bold text-surface"
                   >
                     {triadDegrees[2]}
                   </span>
-                  <span class="text-[9px] leading-none {g2 === 3 ? 'text-accent-soft' : 'text-muted/60'}">
+                  <span class="text-xs font-semibold leading-none {g2 === 3 ? 'text-accent-soft' : 'text-muted'}">
                     {tonesLabel(g2)}T
                   </span>
                 </div>
