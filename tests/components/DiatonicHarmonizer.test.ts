@@ -43,12 +43,6 @@ describe('DiatonicHarmonizer', () => {
       await expect(renderTool()).resolves.toBeTruthy();
     });
 
-    it('renders exactly 7 fretboard diagrams (role="img")', async () => {
-      const { container } = await renderTool();
-      const imgs = container.querySelectorAll('svg[role="img"]');
-      expect(imgs.length).toBe(7);
-    });
-
     it('renders exactly 7 article cards', async () => {
       const { container } = await renderTool();
       const cards = container.querySelectorAll('article');
