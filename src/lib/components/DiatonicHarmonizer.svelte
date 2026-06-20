@@ -5,7 +5,6 @@
   import { diatonicTriads, tonesLabel } from '$lib/theory/diatonics';
   import type { DiatonicTriad } from '$lib/theory/diatonics';
   import RootSelector from '$lib/components/RootSelector.svelte';
-  import ChordFretboard from '$lib/components/ChordFretboard.svelte';
   import HarmonyMatrix from '$lib/components/HarmonyMatrix.svelte';
 
   interface Props {
@@ -118,7 +117,7 @@
     <HarmonyMatrix {root} />
   </section>
 
-  <!-- 7-chord grid — max 2 columns so each fretboard renders larger -->
+  <!-- 7-chord grid — chord cards with stacked-thirds construction (fretboards removed; new shape diagrams pending) -->
   <div class="grid gap-4 lg:grid-cols-2">
     {#each triads as t (t.degree)}
       {@const degrees = TRIAD_DEGREES[t.quality]}
@@ -170,14 +169,6 @@
             {/if}
           {/each}
         </div>
-
-        <ChordFretboard
-          rootPc={t.rootPc}
-          offsets={TRIAD_OFFSETS[t.quality]}
-          degrees={TRIAD_DEGREES[t.quality]}
-          rootName={t.rootName}
-          chordName={chordDisplayName(t)}
-        />
       </article>
     {/each}
   </div>
