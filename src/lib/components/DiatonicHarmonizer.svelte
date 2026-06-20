@@ -84,15 +84,15 @@
   >
     <!-- Role chips -->
     <span class="flex items-center gap-1.5">
-      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-root text-[9px] font-bold text-surface">R</span>
+      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-root text-[10px] font-bold text-surface">R</span>
       <span>Root</span>
     </span>
     <span class="flex items-center gap-1.5">
-      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-third text-[9px] font-bold text-surface">3</span>
+      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-third text-[10px] font-bold text-surface">3</span>
       <span>Third</span>
     </span>
     <span class="flex items-center gap-1.5">
-      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-tone text-[9px] font-bold text-surface">5</span>
+      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-note-tone text-[10px] font-bold text-surface">5</span>
       <span>Fifth</span>
     </span>
     <!-- Jump explanations -->
@@ -143,11 +143,11 @@
             <div
               data-stack-row
               data-altered={isAltered ? 'true' : 'false'}
-              class="flex items-center gap-2 font-technical text-xs {isAltered ? 'font-semibold text-accent-soft' : 'text-muted'}"
+              class="flex items-center gap-2 font-technical text-sm {isAltered ? 'font-semibold text-accent-soft' : 'text-muted'}"
             >
               <span class="w-5 text-right">{degree}</span>
               <span class="text-hairline">|</span>
-              <span>{note}</span>
+              <span class="font-semibold {isAltered ? '' : 'text-ink'}">{note}</span>
             </div>
             {#if pos === 0}
               <!-- Gap between fifth (top) and third: g2 (third→fifth semitones) -->
