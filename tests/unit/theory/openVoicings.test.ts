@@ -74,7 +74,7 @@ describe('getOpenVoicing — throw path', () => {
 // Design-review finding #1: NoteNames → PCs BEFORE comparison
 // ---------------------------------------------------------------------------
 
-const AUTHORED_KEYS: NoteName[] = ['C']; // PR1 starts with C only; expand each batch PR
+const AUTHORED_KEYS: NoteName[] = ['C', 'G', 'D', 'A', 'E', 'F']; // PR1 starts with C only; expand each batch PR
 
 describe('openVoicings correctness invariants (authored keys only)', () => {
   for (const key of AUTHORED_KEYS) {
