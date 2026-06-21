@@ -733,7 +733,7 @@ const AS_MAJOR: readonly OpenVoicing[] = [
 // D# major scale PCs: D#=3, F=5, G=7, G#=8, A#=10, C=0, D=2
 //
 //   I   D# maj rootPc=3:  [x,6,8,8,8,6]  barre@6(str1-5) → A+6=D#, D+8=A#, G+8=D#, B+8=G, e+6=A# ✓
-//   ii  F min  rootPc=5:  [x,8,10,10,9,8] barre@8(str1-5) → A+8=F, D+10=C, G+10=F, B+9=G#, e+8=C ✓
+//   ii  F min  rootPc=5:  [1,3,3,1,1,1]  barre@1(str0-5) → E+1=F, A+3=C, D+3=F, G+1=G#, B+1=C, e+1=F ✓
 //   iii G min  rootPc=7:  [3,5,5,3,3,3]  barre@3(str0-5) → E+3=G, A+5=D, D+5=G, G+3=A#, B+3=D, e+3=G ✓
 //   IV  G# maj rootPc=8:  [4,6,6,5,4,4]  barre@4(str0-5) → E+4=G#, A+6=D#, D+6=G#, G+5=C, B+4=D#, e+4=G# ✓
 //   V   A# maj rootPc=10: [x,1,3,3,3,1]  barre@1(str1-5) → A+1=A#, D+3=F, G+3=A#, B+3=D, e+1=F ✓
@@ -754,17 +754,18 @@ const DS_MAJOR: readonly OpenVoicing[] = [
     fingers: [null, 1, 3, 4, 2, 1],
     barre: { fret: 6, fromString: 1, toString: 5 },
   },
-  // ii — F minor (Am-shape barre at fret 8)
-  // A+8=F(5,root), D+10=C(0), G+10=F(5), B+9=G#(8), e+8=C(0) ✓
+  // ii — F minor (E-shape barre at fret 1 — lower and more common than Am-shape@8)
+  // E+1=F(5,root), A+3=C(0), D+3=F(5), G+1=G#(8), B+1=C(0), e+1=F(5) ✓
+  // No open strings (all frets ≥1) — satisfies sharp-key constraint.
   {
     roman: 'ii',
     name: 'F minor',
     quality: 'min',
     rootPc: 5,
-    baseFret: 8,
-    frets:   [null, 8, 10, 10, 9, 8],
-    fingers: [null, 1, 3, 4, 2, 1],
-    barre: { fret: 8, fromString: 1, toString: 5 },
+    baseFret: 1,
+    frets:   [1, 3, 3, 1, 1, 1],
+    fingers: [1, 3, 4, 1, 1, 1],
+    barre: { fret: 1, fromString: 0, toString: 5 },
   },
   // iii — G minor (Em-shape barre at fret 3)
   // E+3=G(7,root), A+5=D(2), D+5=G(7), G+3=A#(10), B+3=D(2), e+3=G(7) ✓
@@ -834,11 +835,11 @@ const DS_MAJOR: readonly OpenVoicing[] = [
 // G# major scale PCs: G#=8, A#=10, C=0, C#=1, D#=3, F=5, G=7
 //
 //   I   G# maj rootPc=8:  [4,6,6,5,4,4]  barre@4(str0-5) → E+4=G#, A+6=D#, D+6=G#, G+5=C, B+4=D#, e+4=G# ✓
-//   ii  A# min rootPc=10: [6,8,8,6,6,6]  barre@6(str0-5) → E+6=A#, A+8=F, D+8=A#, G+6=C#, B+6=F, e+6=A# ✓
+//   ii  A# min rootPc=10: [x,1,3,3,2,1]  barre@1(str1-5) → A+1=A#, D+3=F, G+3=A#, B+2=C#, e+1=F ✓
 //   iii C min  rootPc=0:  [x,3,5,5,4,3]  barre@3(str1-5) → A+3=C, D+5=G, G+5=C, B+4=D#, e+3=G ✓
 //   IV  C# maj rootPc=1:  [x,4,6,6,6,4]  barre@4(str1-5) → A+4=C#, D+6=G#, G+6=C#, B+6=F, e+4=G# ✓
 //   V   D# maj rootPc=3:  [x,6,8,8,8,6]  barre@6(str1-5) → A+6=D#, D+8=A#, G+8=D#, B+8=G, e+6=A# ✓
-//   vi  F min  rootPc=5:  [x,8,10,10,9,8] barre@8(str1-5) → A+8=F, D+10=C, G+10=F, B+9=G#, e+8=C ✓
+//   vi  F min  rootPc=5:  [1,3,3,1,1,1]  barre@1(str0-5) → E+1=F, A+3=C, D+3=F, G+1=G#, B+1=C, e+1=F ✓
 //   vii°G dim  rootPc=7:  [3,1,x,3,2,x]  → E+3=G(root), A+1=A#, G+3=A#, B+2=C# — {G=7,A#=10,C#=1} ✓
 // ---------------------------------------------------------------------------
 
@@ -855,17 +856,18 @@ const GS_MAJOR: readonly OpenVoicing[] = [
     fingers: [1, 3, 4, 2, 1, 1],
     barre: { fret: 4, fromString: 0, toString: 5 },
   },
-  // ii — A# minor (Em-shape barre at fret 6)
-  // E+6=A#(10,root), A+8=F(5), D+8=A#(10), G+6=C#(1), B+6=F(5), e+6=A#(10) ✓
+  // ii — A# minor (Am-shape barre at fret 1 — lower and more common than Em-shape@6)
+  // A+1=A#(10,root), D+3=F(5), G+3=A#(10), B+2=C#(1), e+1=F(5) ✓
+  // No open strings (all frets ≥1) — satisfies sharp-key constraint.
   {
     roman: 'ii',
     name: 'A# minor',
     quality: 'min',
     rootPc: 10,
-    baseFret: 6,
-    frets:   [6, 8, 8, 6, 6, 6],
-    fingers: [1, 3, 4, 1, 1, 1],
-    barre: { fret: 6, fromString: 0, toString: 5 },
+    baseFret: 1,
+    frets:   [null, 1, 3, 3, 2, 1],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 1, fromString: 1, toString: 5 },
   },
   // iii — C minor (Am-shape barre at fret 3)
   // A+3=C(0,root), D+5=G(7), G+5=C(0), B+4=D#(3), e+3=G(7) ✓
@@ -903,17 +905,18 @@ const GS_MAJOR: readonly OpenVoicing[] = [
     fingers: [null, 1, 3, 4, 2, 1],
     barre: { fret: 6, fromString: 1, toString: 5 },
   },
-  // vi — F minor (Am-shape barre at fret 8)
-  // A+8=F(5,root), D+10=C(0), G+10=F(5), B+9=G#(8), e+8=C(0) ✓
+  // vi — F minor (E-shape barre at fret 1 — lower and more common than Am-shape@8)
+  // E+1=F(5,root), A+3=C(0), D+3=F(5), G+1=G#(8), B+1=C(0), e+1=F(5) ✓
+  // No open strings (all frets ≥1) — satisfies sharp-key constraint.
   {
     roman: 'vi',
     name: 'F minor',
     quality: 'min',
     rootPc: 5,
-    baseFret: 8,
-    frets:   [null, 8, 10, 10, 9, 8],
-    fingers: [null, 1, 3, 4, 2, 1],
-    barre: { fret: 8, fromString: 1, toString: 5 },
+    baseFret: 1,
+    frets:   [1, 3, 3, 1, 1, 1],
+    fingers: [1, 3, 4, 1, 1, 1],
+    barre: { fret: 1, fromString: 0, toString: 5 },
   },
   // vii° — G diminished (partial 4-string shape)
   // E+3=G(7,root), A+1=A#(10), G+3=A#(10), B+2=C#(1) — {G=7,A#=10,C#=1} ✓
@@ -1037,10 +1040,10 @@ const B_MAJOR: readonly OpenVoicing[] = [
 //   I   C# maj rootPc=1:  [x,4,6,6,6,4]  barre@4(str1-5) → A+4=C#, D+6=G#, G+6=C#, B+6=F, e+4=G# ✓
 //   ii  D# min rootPc=3:  [x,6,8,8,7,6]  barre@6(str1-5) → A+6=D#, D+8=A#, G+8=D#, B+7=F#, e+6=A# ✓
 //   iii F min  rootPc=5:  [x,8,10,10,9,8] barre@8(str1-5) → A+8=F, D+10=C, G+10=F, B+9=G#, e+8=C ✓
-//   IV  F# maj rootPc=6:  [x,9,11,11,11,9] barre@9(str1-5) → A+9=F#, D+11=C#, G+11=F#, B+11=A#, e+9=C# ✓
+//   IV  F# maj rootPc=6:  [2,4,4,3,2,2]  barre@2(str0-5) → E+2=F#, A+4=C#, D+4=F#, G+3=A#, B+2=C#, e+2=F# ✓
 //   V   G# maj rootPc=8:  [4,6,6,5,4,4]  barre@4(str0-5) → E+4=G#, A+6=D#, D+6=G#, G+5=C, B+4=D#, e+4=G# ✓
 //   vi  A# min rootPc=10: [6,8,8,6,6,6]  barre@6(str0-5) → E+6=A#, A+8=F, D+8=A#, G+6=C#, B+6=F, e+6=A# ✓
-//   vii°C dim  rootPc=0:  [x,3,10,11,x,x] → A+3=C(root), D+10=C, G+11=F# — {C=0,D#=3,F#=6} ✓
+//   vii°C dim  rootPc=0:  [x,x,x,5,4,2]  → G+5=C(root), B+4=D#, e+2=F# — {C=0,D#=3,F#=6} ✓
 // ---------------------------------------------------------------------------
 
 const CS_MAJOR: readonly OpenVoicing[] = [
@@ -1068,7 +1071,7 @@ const CS_MAJOR: readonly OpenVoicing[] = [
     fingers: [null, 1, 3, 4, 2, 1],
     barre: { fret: 6, fromString: 1, toString: 5 },
   },
-  // iii — F minor (Am-shape barre at fret 8)
+  // iii — F minor (Am-shape barre at fret 8 — no lower movable option without open strings)
   // A+8=F(5,root), D+10=C(0), G+10=F(5), B+9=G#(8), e+8=C(0) ✓
   {
     roman: 'iii',
@@ -1080,17 +1083,18 @@ const CS_MAJOR: readonly OpenVoicing[] = [
     fingers: [null, 1, 3, 4, 2, 1],
     barre: { fret: 8, fromString: 1, toString: 5 },
   },
-  // IV — F# major (A-shape barre at fret 9)
-  // A+9=F#(6,root), D+11=C#(1), G+11=F#(6), B+11=A#(10), e+9=C#(1) ✓
+  // IV — F# major (E-shape barre at fret 2 — replaces A-shape@9; same shape as F# key degree I)
+  // E+2=F#(6,root), A+4=C#(1), D+4=F#(6), G+3=A#(10), B+2=C#(1), e+2=F#(6) ✓
+  // No open strings (all frets ≥2) — satisfies sharp-key constraint.
   {
     roman: 'IV',
     name: 'F# major',
     quality: 'maj',
     rootPc: 6,
-    baseFret: 9,
-    frets:   [null, 9, 11, 11, 11, 9],
-    fingers: [null, 1, 3, 4, 2, 1],
-    barre: { fret: 9, fromString: 1, toString: 5 },
+    baseFret: 2,
+    frets:   [2, 4, 4, 3, 2, 2],
+    fingers: [1, 3, 4, 2, 1, 1],
+    barre: { fret: 2, fromString: 0, toString: 5 },
   },
   // V — G# major (E-shape barre at fret 4)
   // E+4=G#(8,root), A+6=D#(3), D+6=G#(8), G+5=C(0), B+4=D#(3), e+4=G#(8) ✓
@@ -1116,17 +1120,18 @@ const CS_MAJOR: readonly OpenVoicing[] = [
     fingers: [1, 3, 4, 1, 1, 1],
     barre: { fret: 6, fromString: 0, toString: 5 },
   },
-  // vii° — C diminished (partial 3-string shape)
-  // A+9=F#(6), D+10=C(0,root), G+8=D#(3) — {C=0,D#=3,F#=6} ✓
-  // No open strings. Compact shape at fret 8–10.
+  // vii° — C diminished (compact 3-string shape on upper strings, low position)
+  // G+5=C(0,root), B+4=D#(3), e+2=F#(6) — {C=0,D#=3,F#=6} ✓
+  // No open strings (frets 2,4,5 ≥1) — satisfies sharp-key constraint.
+  // Replaces the high-neck scattered shape [x,9,10,8,x,x] baseFret=8.
   {
     roman: 'vii°',
     name: 'C diminished',
     quality: 'dim',
     rootPc: 0,
-    baseFret: 8,
-    frets:   [null, 9, 10, 8, null, null],
-    fingers: [null, 2, 3, 1, null, null],
+    baseFret: 2,
+    frets:   [null, null, null, 5, 4, 2],
+    fingers: [null, null, null, 3, 2, 1],
   },
 ];
 
@@ -1142,7 +1147,7 @@ const CS_MAJOR: readonly OpenVoicing[] = [
 //   IV  B maj  rootPc=11: [x,2,4,4,4,2]  barre@2(str1-5) → A+2=B, D+4=F#, G+4=B, B+4=D#, e+2=F# ✓
 //   V   C# maj rootPc=1:  [x,4,6,6,6,4]  barre@4(str1-5) → A+4=C#, D+6=G#, G+6=C#, B+6=F, e+4=G# ✓
 //   vi  D# min rootPc=3:  [x,6,8,8,7,6]  barre@6(str1-5) → A+6=D#, D+8=A#, G+8=D#, B+7=F#, e+6=A# ✓
-//   vii°F dim  rootPc=5:  [1,x,3,1,x,7]  → E+1=F(root), D+3=F, G+1=G#, e+7=B — {F=5,G#=8,B=11} ✓
+//   vii°F dim  rootPc=5:  [x,8,6,4,x,x]  → A+8=F(root), D+6=G#, G+4=B — {F=5,G#=8,B=11} ✓
 // ---------------------------------------------------------------------------
 
 const FS_MAJOR: readonly OpenVoicing[] = [
@@ -1218,17 +1223,17 @@ const FS_MAJOR: readonly OpenVoicing[] = [
     fingers: [null, 1, 3, 4, 2, 1],
     barre: { fret: 6, fromString: 1, toString: 5 },
   },
-  // vii° — F diminished (partial 3-string shape)
-  // A+8=F(5,root), D+6=G#(8), e+7=B(11) — {F=5,G#=8,B=11} ✓
-  // No open strings. Compact shape at fret 6–8.
+  // vii° — F diminished (compact adjacent 3-string shape on strings 1-3)
+  // A+8=F(5,root), D+6=G#(8), G+4=B(11) — {F=5,G#=8,B=11} ✓
+  // No open strings. Replaces diagonal skip-string shape [x,8,6,x,x,7].
   {
     roman: 'vii°',
     name: 'F diminished',
     quality: 'dim',
     rootPc: 5,
-    baseFret: 6,
-    frets:   [null, 8, 6, null, null, 7],
-    fingers: [null, 3, 1, null, null, 2],
+    baseFret: 4,
+    frets:   [null, 8, 6, 4, null, null],
+    fingers: [null, 3, 2, 1, null, null],
   },
 ];
 
