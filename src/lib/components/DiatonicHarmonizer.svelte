@@ -4,8 +4,12 @@
   import { TRIAD_OFFSETS, TRIAD_DEGREES } from '$lib/theory/chords';
   import { diatonicTriads, tonesLabel } from '$lib/theory/diatonics';
   import type { DiatonicTriad } from '$lib/theory/diatonics';
+  import type { Degree } from '$lib/theory/diatonics';
   import RootSelector from '$lib/components/RootSelector.svelte';
   import HarmonyMatrix from '$lib/components/HarmonyMatrix.svelte';
+  import { getOpenVoicing } from '$lib/theory/openVoicings';
+  import type { OpenVoicing } from '$lib/theory/openVoicings';
+  import ChordShapeDiagram from '$lib/components/ChordShapeDiagram.svelte';
 
   interface Props {
     navigate: (view: ViewName) => void;
@@ -42,6 +46,20 @@
   // ---------------------------------------------------------------------------
 
   const STACK_ORDER = [2, 1, 0] as const;
+
+  // ---------------------------------------------------------------------------
+  // Safe voicing lookup — returns null if the key is not yet authored.
+  // This allows the Harmonizer to render for ALL 12 keys; keys without authored
+  // voicings simply omit the ChordShapeDiagram without throwing.
+  // ---------------------------------------------------------------------------
+
+  function tryGetVoicing(keyRoot: NoteName, degree: Degree): OpenVoicing | null {
+    try {
+      return getOpenVoicing(keyRoot, degree);
+    } catch {
+      return null;
+    }
+  }
 </script>
 
 <!-- Back navigation -->
@@ -169,6 +187,10 @@
             {/if}
           {/each}
         </div>
+        <!-- ChordShapeDiagram: silently omit when key not yet authored -->
+        {#if tryGetVoicing(root, t.degree) !== null}
+          <ChordShapeDiagram voicing={tryGetVoicing(root, t.degree)!} rootPc={t.rootPc} chordName={t.name} />
+        {/if}
       </article>
     {/each}
   </div>
