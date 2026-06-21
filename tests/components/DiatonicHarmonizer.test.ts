@@ -306,6 +306,30 @@ describe('DiatonicHarmonizer', () => {
     });
   });
 
+  describe('ChordShapeDiagram wiring', () => {
+    it('renders exactly 7 ChordShapeDiagram instances (role="img") on mount', async () => {
+      const { container } = await renderTool();
+      // ChordShapeDiagram renders an SVG with role="img"; existing DiatonicHarmonizer has no role="img" elements
+      const imgEls = container.querySelectorAll('[role="img"]');
+      expect(imgEls.length).toBe(7);
+    });
+
+    it('each of the 7 diagrams has a data-base-fret attribute', async () => {
+      const { container } = await renderTool();
+      const baseFretEls = container.querySelectorAll('[data-base-fret]');
+      expect(baseFretEls.length).toBe(7);
+    });
+
+    it('re-selecting C key keeps all 7 diagrams (reactivity with authored key)', async () => {
+      const { container } = await renderTool();
+      // Click C to re-select the same key — diagrams should stay at 7
+      const cBtn = screen.getByRole('button', { name: 'C' });
+      await fireEvent.click(cBtn);
+      const baseFretEls = container.querySelectorAll('[data-base-fret]');
+      expect(baseFretEls.length).toBe(7);
+    });
+  });
+
   describe('interval distance gaps — Change 2', () => {
     function findCardByChordName(container: HTMLElement, name: string): HTMLElement | null {
       const articles = container.querySelectorAll('article');
