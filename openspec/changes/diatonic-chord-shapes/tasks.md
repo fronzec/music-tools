@@ -43,7 +43,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 1.1 — Write failing tests for `shapeLayout.ts` (RED)
+### TASK 1.1 — [x] Write failing tests for `shapeLayout.ts` (RED)
 
 - **File:** `tests/unit/theory/shapeLayout.test.ts` (NEW)
 - **Satisfies:** Spec §Shape Geometry Module — scenarios: slNoteX maps absolute fret to window-relative X, open strings are handled
@@ -61,7 +61,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 1.2 — Implement `shapeLayout.ts` (GREEN)
+### TASK 1.2 — [x] Implement `shapeLayout.ts` (GREEN)
 
 - **File:** `src/lib/theory/shapeLayout.ts` (NEW)
 - **Satisfies:** Spec §Shape Geometry Module
@@ -78,7 +78,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 1.3 — Write failing tests for `voicingRole` and `openVoicings.ts` skeleton (RED)
+### TASK 1.3 — [x] Write failing tests for `voicingRole` and `openVoicings.ts` skeleton (RED)
 
 - **File:** `tests/unit/theory/openVoicings.test.ts` (NEW)
 - **Satisfies:** Spec §Voicing Data Contract (scenarios: lookup, missing entry throws, sharp-key baseFret), Spec §Voicing Correctness Invariants (all 84 pass scenario), design ADR-2 (voicingRole table test)
@@ -193,7 +193,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 1.4 — Implement `openVoicings.ts` skeleton + C major voicings (GREEN)
+### TASK 1.4 — [x] Implement `openVoicings.ts` skeleton + C major voicings (GREEN)
 
 - **File:** `src/lib/theory/openVoicings.ts` (NEW)
 - **Satisfies:** Spec §Voicing Data Contract, Spec §Voicing Correctness Invariants (C major subset), design ADR-1 and ADR-2
@@ -215,7 +215,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 1.5 — Write failing component tests for `ChordShapeDiagram.svelte` (RED)
+### TASK 1.5 — [x] Write failing component tests for `ChordShapeDiagram.svelte` (RED)
 
 - **File:** `tests/components/ChordShapeDiagram.test.ts` (NEW)
 - **Satisfies:** Spec §Compact Shape Diagram Rendering (all scenarios), design ADR-4 (data-* hooks)
@@ -274,7 +274,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 1.6 — Implement `ChordShapeDiagram.svelte` (GREEN)
+### TASK 1.6 — [x] Implement `ChordShapeDiagram.svelte` (GREEN)
 
 - **File:** `src/lib/components/ChordShapeDiagram.svelte` (NEW)
 - **Satisfies:** Spec §Compact Shape Diagram Rendering (all scenarios), design ADR-4
@@ -301,7 +301,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 1.7 — Wire `ChordShapeDiagram` into `DiatonicHarmonizer.svelte` (additive edit)
+### TASK 1.7 — [x] Wire `ChordShapeDiagram` into `DiatonicHarmonizer.svelte` (additive edit)
 
 - **File:** `src/lib/components/DiatonicHarmonizer.svelte` (EDIT — only file modified in this PR)
 - **Satisfies:** Spec §DiatonicHarmonizer Wiring (all scenarios)
@@ -326,7 +326,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 1.8 — Full regression run and PR1 green gate
+### TASK 1.8 — [x] Full regression run and PR1 green gate
 
 - **Command:** `npx vitest run`
 - **Satisfies:** Spec §DiatonicHarmonizer Wiring scenario "ChordFretboard and ChordBuilder tests still pass", design ADR-7

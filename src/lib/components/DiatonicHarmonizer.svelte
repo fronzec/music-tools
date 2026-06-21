@@ -142,6 +142,7 @@
       {@const offsets = TRIAD_OFFSETS[t.quality]}
       {@const g1 = offsets[1] - offsets[0]}
       {@const g2 = offsets[2] - offsets[1]}
+      {@const voicing = tryGetVoicing(root, t.degree)}
       <article class="rounded-lg border border-hairline bg-surface-raised p-4">
         <header class="mb-2 flex items-baseline justify-between">
           <span data-chord-name class="font-display text-lg font-bold text-ink">{chordDisplayName(t)}</span>
@@ -188,8 +189,8 @@
           {/each}
         </div>
         <!-- ChordShapeDiagram: silently omit when key not yet authored -->
-        {#if tryGetVoicing(root, t.degree) !== null}
-          <ChordShapeDiagram voicing={tryGetVoicing(root, t.degree)!} rootPc={t.rootPc} chordName={t.name} />
+        {#if voicing}
+          <ChordShapeDiagram {voicing} rootPc={t.rootPc} chordName={t.name} />
         {/if}
       </article>
     {/each}
