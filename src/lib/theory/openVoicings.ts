@@ -626,6 +626,409 @@ const D_MAJOR: readonly OpenVoicing[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// A# major diatonic voicings (degree I–vii°)
+//
+// STANDARD_TUNING = [4,9,2,7,11,4]
+// A# major scale PCs: A#=10, C=0, D=2, D#=3, F=5, G=7, A=9
+//
+//   I   A# maj rootPc=10: [x,1,3,3,3,1]  barre@1(str1-5) → A+1=A#, D+3=F, G+3=A#, B+3=D, e+1=F ✓
+//   ii  C min  rootPc=0:  [x,3,5,5,4,3]  barre@3(str1-5) → A+3=C, D+5=G, G+5=C, B+4=D#, e+3=G ✓
+//   iii D min  rootPc=2:  [x,5,7,7,6,5]  barre@5(str1-5) → A+5=D, D+7=A, G+7=D, B+6=F, e+5=A ✓
+//   IV  D# maj rootPc=3:  [x,6,8,8,8,6]  barre@6(str1-5) → A+6=D#, D+8=A#, G+8=D#, B+8=G, e+6=A# ✓
+//   V   F maj  rootPc=5:  [1,3,3,2,1,1]  barre@1(str0-5) → E+1=F, A+3=C, D+3=F, G+2=A, B+1=C, e+1=F ✓
+//   vi  G min  rootPc=7:  [3,5,5,3,3,3]  barre@3(str0-5) → E+3=G, A+5=D, D+5=G, G+3=A#, B+3=D, e+3=G ✓
+//   vii°A dim  rootPc=9:  [x,x,1,2,1,x]  → D+1=D#, G+2=A(root), B+1=C — {A=9,C=0,D#=3} ✓
+// ---------------------------------------------------------------------------
+
+const AS_MAJOR: readonly OpenVoicing[] = [
+  // I — A# major (A-shape barre at fret 1)
+  // A+1=A#(10,root), D+3=F(5), G+3=A#(10), B+3=D(2), e+1=F(5) ✓
+  {
+    roman: 'I',
+    name: 'A# major',
+    quality: 'maj',
+    rootPc: 10,
+    baseFret: 1,
+    frets:   [null, 1, 3, 3, 3, 1],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 1, fromString: 1, toString: 5 },
+  },
+  // ii — C minor (Am-shape barre at fret 3)
+  // A+3=C(0,root), D+5=G(7), G+5=C(0), B+4=D#(3), e+3=G(7) ✓
+  {
+    roman: 'ii',
+    name: 'C minor',
+    quality: 'min',
+    rootPc: 0,
+    baseFret: 3,
+    frets:   [null, 3, 5, 5, 4, 3],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 3, fromString: 1, toString: 5 },
+  },
+  // iii — D minor (Am-shape barre at fret 5)
+  // A+5=D(2,root), D+7=A(9), G+7=D(2), B+6=F(5), e+5=A(9) ✓
+  {
+    roman: 'iii',
+    name: 'D minor',
+    quality: 'min',
+    rootPc: 2,
+    baseFret: 5,
+    frets:   [null, 5, 7, 7, 6, 5],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 5, fromString: 1, toString: 5 },
+  },
+  // IV — D# major (A-shape barre at fret 6)
+  // A+6=D#(3,root), D+8=A#(10), G+8=D#(3), B+8=G(7), e+6=A#(10) ✓
+  {
+    roman: 'IV',
+    name: 'D# major',
+    quality: 'maj',
+    rootPc: 3,
+    baseFret: 6,
+    frets:   [null, 6, 8, 8, 8, 6],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 6, fromString: 1, toString: 5 },
+  },
+  // V — F major (E-shape barre at fret 1)
+  // E+1=F(5,root), A+3=C(0), D+3=F(5), G+2=A(9), B+1=C(0), e+1=F(5) ✓
+  {
+    roman: 'V',
+    name: 'F major',
+    quality: 'maj',
+    rootPc: 5,
+    baseFret: 1,
+    frets:   [1, 3, 3, 2, 1, 1],
+    fingers: [1, 4, 3, 2, 1, 1],
+    barre: { fret: 1, fromString: 0, toString: 5 },
+  },
+  // vi — G minor (Em-shape barre at fret 3)
+  // E+3=G(7,root), A+5=D(2), D+5=G(7), G+3=A#(10), B+3=D(2), e+3=G(7) ✓
+  {
+    roman: 'vi',
+    name: 'G minor',
+    quality: 'min',
+    rootPc: 7,
+    baseFret: 3,
+    frets:   [3, 5, 5, 3, 3, 3],
+    fingers: [1, 3, 4, 1, 1, 1],
+    barre: { fret: 3, fromString: 0, toString: 5 },
+  },
+  // vii° — A diminished (partial 3-string shape)
+  // D+1=D#(3), G+2=A(9,root), B+1=C(0) — {A=9,C=0,D#=3} ✓
+  {
+    roman: 'vii°',
+    name: 'A diminished',
+    quality: 'dim',
+    rootPc: 9,
+    baseFret: 1,
+    frets:   [null, null, 1, 2, 1, null],
+    fingers: [null, null, 1, 3, 2, null],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// D# major diatonic voicings (degree I–vii°)
+//
+// STANDARD_TUNING = [4,9,2,7,11,4]
+// D# major scale PCs: D#=3, F=5, G=7, G#=8, A#=10, C=0, D=2
+//
+//   I   D# maj rootPc=3:  [x,6,8,8,8,6]  barre@6(str1-5) → A+6=D#, D+8=A#, G+8=D#, B+8=G, e+6=A# ✓
+//   ii  F min  rootPc=5:  [x,8,10,10,9,8] barre@8(str1-5) → A+8=F, D+10=C, G+10=F, B+9=G#, e+8=C ✓
+//   iii G min  rootPc=7:  [3,5,5,3,3,3]  barre@3(str0-5) → E+3=G, A+5=D, D+5=G, G+3=A#, B+3=D, e+3=G ✓
+//   IV  G# maj rootPc=8:  [4,6,6,5,4,4]  barre@4(str0-5) → E+4=G#, A+6=D#, D+6=G#, G+5=C, B+4=D#, e+4=G# ✓
+//   V   A# maj rootPc=10: [x,1,3,3,3,1]  barre@1(str1-5) → A+1=A#, D+3=F, G+3=A#, B+3=D, e+1=F ✓
+//   vi  C min  rootPc=0:  [x,3,5,5,4,3]  barre@3(str1-5) → A+3=C, D+5=G, G+5=C, B+4=D#, e+3=G ✓
+//   vii°D dim  rootPc=2:  [x,5,3,1,x,x]  → A+5=D(root), D+3=F, G+1=G# — {D=2,F=5,G#=8} ✓
+// ---------------------------------------------------------------------------
+
+const DS_MAJOR: readonly OpenVoicing[] = [
+  // I — D# major (A-shape barre at fret 6)
+  // A+6=D#(3,root), D+8=A#(10), G+8=D#(3), B+8=G(7), e+6=A#(10) ✓
+  {
+    roman: 'I',
+    name: 'D# major',
+    quality: 'maj',
+    rootPc: 3,
+    baseFret: 6,
+    frets:   [null, 6, 8, 8, 8, 6],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 6, fromString: 1, toString: 5 },
+  },
+  // ii — F minor (Am-shape barre at fret 8)
+  // A+8=F(5,root), D+10=C(0), G+10=F(5), B+9=G#(8), e+8=C(0) ✓
+  {
+    roman: 'ii',
+    name: 'F minor',
+    quality: 'min',
+    rootPc: 5,
+    baseFret: 8,
+    frets:   [null, 8, 10, 10, 9, 8],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 8, fromString: 1, toString: 5 },
+  },
+  // iii — G minor (Em-shape barre at fret 3)
+  // E+3=G(7,root), A+5=D(2), D+5=G(7), G+3=A#(10), B+3=D(2), e+3=G(7) ✓
+  {
+    roman: 'iii',
+    name: 'G minor',
+    quality: 'min',
+    rootPc: 7,
+    baseFret: 3,
+    frets:   [3, 5, 5, 3, 3, 3],
+    fingers: [1, 3, 4, 1, 1, 1],
+    barre: { fret: 3, fromString: 0, toString: 5 },
+  },
+  // IV — G# major (E-shape barre at fret 4)
+  // E+4=G#(8,root), A+6=D#(3), D+6=G#(8), G+5=C(0), B+4=D#(3), e+4=G#(8) ✓
+  {
+    roman: 'IV',
+    name: 'G# major',
+    quality: 'maj',
+    rootPc: 8,
+    baseFret: 4,
+    frets:   [4, 6, 6, 5, 4, 4],
+    fingers: [1, 3, 4, 2, 1, 1],
+    barre: { fret: 4, fromString: 0, toString: 5 },
+  },
+  // V — A# major (A-shape barre at fret 1)
+  // A+1=A#(10,root), D+3=F(5), G+3=A#(10), B+3=D(2), e+1=F(5) ✓
+  {
+    roman: 'V',
+    name: 'A# major',
+    quality: 'maj',
+    rootPc: 10,
+    baseFret: 1,
+    frets:   [null, 1, 3, 3, 3, 1],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 1, fromString: 1, toString: 5 },
+  },
+  // vi — C minor (Am-shape barre at fret 3)
+  // A+3=C(0,root), D+5=G(7), G+5=C(0), B+4=D#(3), e+3=G(7) ✓
+  {
+    roman: 'vi',
+    name: 'C minor',
+    quality: 'min',
+    rootPc: 0,
+    baseFret: 3,
+    frets:   [null, 3, 5, 5, 4, 3],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 3, fromString: 1, toString: 5 },
+  },
+  // vii° — D diminished (partial 3-string shape)
+  // A+5=D(2,root), D+3=F(5), G+1=G#(8) — {D=2,F=5,G#=8} ✓
+  {
+    roman: 'vii°',
+    name: 'D diminished',
+    quality: 'dim',
+    rootPc: 2,
+    baseFret: 1,
+    frets:   [null, 5, 3, 1, null, null],
+    fingers: [null, 3, 2, 1, null, null],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// G# major diatonic voicings (degree I–vii°)
+//
+// STANDARD_TUNING = [4,9,2,7,11,4]
+// G# major scale PCs: G#=8, A#=10, C=0, C#=1, D#=3, F=5, G=7
+//
+//   I   G# maj rootPc=8:  [4,6,6,5,4,4]  barre@4(str0-5) → E+4=G#, A+6=D#, D+6=G#, G+5=C, B+4=D#, e+4=G# ✓
+//   ii  A# min rootPc=10: [6,8,8,6,6,6]  barre@6(str0-5) → E+6=A#, A+8=F, D+8=A#, G+6=C#, B+6=F, e+6=A# ✓
+//   iii C min  rootPc=0:  [x,3,5,5,4,3]  barre@3(str1-5) → A+3=C, D+5=G, G+5=C, B+4=D#, e+3=G ✓
+//   IV  C# maj rootPc=1:  [x,4,6,6,6,4]  barre@4(str1-5) → A+4=C#, D+6=G#, G+6=C#, B+6=F, e+4=G# ✓
+//   V   D# maj rootPc=3:  [x,6,8,8,8,6]  barre@6(str1-5) → A+6=D#, D+8=A#, G+8=D#, B+8=G, e+6=A# ✓
+//   vi  F min  rootPc=5:  [x,8,10,10,9,8] barre@8(str1-5) → A+8=F, D+10=C, G+10=F, B+9=G#, e+8=C ✓
+//   vii°G dim  rootPc=7:  [3,1,x,3,2,x]  → E+3=G(root), A+1=A#, G+3=A#, B+2=C# — {G=7,A#=10,C#=1} ✓
+// ---------------------------------------------------------------------------
+
+const GS_MAJOR: readonly OpenVoicing[] = [
+  // I — G# major (E-shape barre at fret 4)
+  // E+4=G#(8,root), A+6=D#(3), D+6=G#(8), G+5=C(0), B+4=D#(3), e+4=G#(8) ✓
+  {
+    roman: 'I',
+    name: 'G# major',
+    quality: 'maj',
+    rootPc: 8,
+    baseFret: 4,
+    frets:   [4, 6, 6, 5, 4, 4],
+    fingers: [1, 3, 4, 2, 1, 1],
+    barre: { fret: 4, fromString: 0, toString: 5 },
+  },
+  // ii — A# minor (Em-shape barre at fret 6)
+  // E+6=A#(10,root), A+8=F(5), D+8=A#(10), G+6=C#(1), B+6=F(5), e+6=A#(10) ✓
+  {
+    roman: 'ii',
+    name: 'A# minor',
+    quality: 'min',
+    rootPc: 10,
+    baseFret: 6,
+    frets:   [6, 8, 8, 6, 6, 6],
+    fingers: [1, 3, 4, 1, 1, 1],
+    barre: { fret: 6, fromString: 0, toString: 5 },
+  },
+  // iii — C minor (Am-shape barre at fret 3)
+  // A+3=C(0,root), D+5=G(7), G+5=C(0), B+4=D#(3), e+3=G(7) ✓
+  {
+    roman: 'iii',
+    name: 'C minor',
+    quality: 'min',
+    rootPc: 0,
+    baseFret: 3,
+    frets:   [null, 3, 5, 5, 4, 3],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 3, fromString: 1, toString: 5 },
+  },
+  // IV — C# major (A-shape barre at fret 4)
+  // A+4=C#(1,root), D+6=G#(8), G+6=C#(1), B+6=F(5), e+4=G#(8) ✓
+  {
+    roman: 'IV',
+    name: 'C# major',
+    quality: 'maj',
+    rootPc: 1,
+    baseFret: 4,
+    frets:   [null, 4, 6, 6, 6, 4],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 4, fromString: 1, toString: 5 },
+  },
+  // V — D# major (A-shape barre at fret 6)
+  // A+6=D#(3,root), D+8=A#(10), G+8=D#(3), B+8=G(7), e+6=A#(10) ✓
+  {
+    roman: 'V',
+    name: 'D# major',
+    quality: 'maj',
+    rootPc: 3,
+    baseFret: 6,
+    frets:   [null, 6, 8, 8, 8, 6],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 6, fromString: 1, toString: 5 },
+  },
+  // vi — F minor (Am-shape barre at fret 8)
+  // A+8=F(5,root), D+10=C(0), G+10=F(5), B+9=G#(8), e+8=C(0) ✓
+  {
+    roman: 'vi',
+    name: 'F minor',
+    quality: 'min',
+    rootPc: 5,
+    baseFret: 8,
+    frets:   [null, 8, 10, 10, 9, 8],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 8, fromString: 1, toString: 5 },
+  },
+  // vii° — G diminished (partial 4-string shape)
+  // E+3=G(7,root), A+1=A#(10), G+3=A#(10), B+2=C#(1) — {G=7,A#=10,C#=1} ✓
+  {
+    roman: 'vii°',
+    name: 'G diminished',
+    quality: 'dim',
+    rootPc: 7,
+    baseFret: 1,
+    frets:   [3, 1, null, 3, 2, null],
+    fingers: [3, 1, null, 4, 2, null],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// B major diatonic voicings (degree I–vii°)
+//
+// STANDARD_TUNING = [4,9,2,7,11,4]
+// B major scale PCs: B=11, C#=1, D#=3, E=4, F#=6, G#=8, A#=10
+//
+//   I   B maj  rootPc=11: [x,2,4,4,4,2]  barre@2(str1-5) → A+2=B, D+4=F#, G+4=B, B+4=D#, e+2=F# ✓
+//   ii  C# min rootPc=1:  [x,4,6,6,5,4]  barre@4(str1-5) → A+4=C#, D+6=G#, G+6=C#, B+5=E, e+4=G# ✓
+//   iii D# min rootPc=3:  [x,6,8,8,7,6]  barre@6(str1-5) → A+6=D#, D+8=A#, G+8=D#, B+7=F#, e+6=A# ✓
+//   IV  E maj  rootPc=4:  [0,2,2,1,0,0]  → E+0=E, A+2=B, D+2=E, G+1=G#, B+0=B, e+0=E ✓
+//   V   F# maj rootPc=6:  [2,4,4,3,2,2]  barre@2(str0-5) → E+2=F#, A+4=C#, D+4=F#, G+3=A#, B+2=C#, e+2=F# ✓
+//   vi  G# min rootPc=8:  [4,6,6,4,4,4]  barre@4(str0-5) → E+4=G#, A+6=D#, D+6=G#, G+4=B, B+4=D#, e+4=G# ✓
+//   vii°A# dim rootPc=10: [x,x,x,3,2,0]  → G+3=A#(root), B+2=C#, e+0=E — {A#=10,C#=1,E=4} ✓
+// ---------------------------------------------------------------------------
+
+const B_MAJOR: readonly OpenVoicing[] = [
+  // I — B major (A-shape barre at fret 2)
+  // A+2=B(11,root), D+4=F#(6), G+4=B(11), B+4=D#(3), e+2=F#(6) ✓
+  {
+    roman: 'I',
+    name: 'B major',
+    quality: 'maj',
+    rootPc: 11,
+    baseFret: 2,
+    frets:   [null, 2, 4, 4, 4, 2],
+    fingers: [null, 1, 2, 3, 4, 1],
+    barre: { fret: 2, fromString: 1, toString: 5 },
+  },
+  // ii — C# minor (Am-shape barre at fret 4)
+  // A+4=C#(1,root), D+6=G#(8), G+6=C#(1), B+5=E(4), e+4=G#(8) ✓
+  {
+    roman: 'ii',
+    name: 'C# minor',
+    quality: 'min',
+    rootPc: 1,
+    baseFret: 4,
+    frets:   [null, 4, 6, 6, 5, 4],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 4, fromString: 1, toString: 5 },
+  },
+  // iii — D# minor (Am-shape barre at fret 6)
+  // A+6=D#(3,root), D+8=A#(10), G+8=D#(3), B+7=F#(6), e+6=A#(10) ✓
+  {
+    roman: 'iii',
+    name: 'D# minor',
+    quality: 'min',
+    rootPc: 3,
+    baseFret: 6,
+    frets:   [null, 6, 8, 8, 7, 6],
+    fingers: [null, 1, 3, 4, 2, 1],
+    barre: { fret: 6, fromString: 1, toString: 5 },
+  },
+  // IV — E major (open E-shape)
+  // E+0=E(4,root), A+2=B(11), D+2=E(4), G+1=G#(8), B+0=B(11), e+0=E(4) ✓
+  {
+    roman: 'IV',
+    name: 'E major',
+    quality: 'maj',
+    rootPc: 4,
+    baseFret: 1,
+    frets:   [0, 2, 2, 1, 0, 0],
+    fingers: [null, 2, 3, 1, null, null],
+  },
+  // V — F# major (E-shape barre at fret 2)
+  // E+2=F#(6,root), A+4=C#(1), D+4=F#(6), G+3=A#(10), B+2=C#(1), e+2=F#(6) ✓
+  {
+    roman: 'V',
+    name: 'F# major',
+    quality: 'maj',
+    rootPc: 6,
+    baseFret: 2,
+    frets:   [2, 4, 4, 3, 2, 2],
+    fingers: [1, 3, 4, 2, 1, 1],
+    barre: { fret: 2, fromString: 0, toString: 5 },
+  },
+  // vi — G# minor (Em-shape barre at fret 4)
+  // E+4=G#(8,root), A+6=D#(3), D+6=G#(8), G+4=B(11), B+4=D#(3), e+4=G#(8) ✓
+  {
+    roman: 'vi',
+    name: 'G# minor',
+    quality: 'min',
+    rootPc: 8,
+    baseFret: 4,
+    frets:   [4, 6, 6, 4, 4, 4],
+    fingers: [1, 3, 4, 1, 1, 1],
+    barre: { fret: 4, fromString: 0, toString: 5 },
+  },
+  // vii° — A# diminished (partial 3-string shape)
+  // G+3=A#(10,root), B+2=C#(1), e+0=E(4) — {A#=10,C#=1,E=4} ✓
+  {
+    roman: 'vii°',
+    name: 'A# diminished',
+    quality: 'dim',
+    rootPc: 10,
+    baseFret: 1,
+    frets:   [null, null, null, 3, 2, 0],
+    fingers: [null, null, null, 3, 2, null],
+  },
+];
+
+// ---------------------------------------------------------------------------
 // Voicing map — add keys per PR batch
 // ---------------------------------------------------------------------------
 
@@ -636,7 +1039,10 @@ export const OPEN_VOICINGS: OpenVoicingMap = {
   A: A_MAJOR,
   E: E_MAJOR,
   F: F_MAJOR,
-  // A#, D#, G#, B → PR3
+  'A#': AS_MAJOR,
+  'D#': DS_MAJOR,
+  'G#': GS_MAJOR,
+  B: B_MAJOR,
   // C#, F# → PR4
 };
 

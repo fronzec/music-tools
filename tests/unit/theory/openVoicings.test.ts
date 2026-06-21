@@ -60,8 +60,8 @@ describe('getOpenVoicing — C major', () => {
 // ---------------------------------------------------------------------------
 
 describe('getOpenVoicing — throw path', () => {
-  it('getOpenVoicing("G#", 1) throws (G# not yet authored in PR1)', () => {
-    expect(() => getOpenVoicing('G#', 1)).toThrow(/G#/);
+  it('getOpenVoicing("C#", 1) throws (C# not yet authored until PR4)', () => {
+    expect(() => getOpenVoicing('C#', 1)).toThrow(/C#/);
   });
 
   it('getOpenVoicing("C", 8 as any) throws (degree out of range)', () => {
@@ -74,7 +74,7 @@ describe('getOpenVoicing — throw path', () => {
 // Design-review finding #1: NoteNames → PCs BEFORE comparison
 // ---------------------------------------------------------------------------
 
-const AUTHORED_KEYS: NoteName[] = ['C', 'G', 'D', 'A', 'E', 'F']; // PR1 starts with C only; expand each batch PR
+const AUTHORED_KEYS: NoteName[] = ['C', 'G', 'D', 'A', 'E', 'F', 'A#', 'D#', 'G#', 'B']; // PR1 starts with C only; expand each batch PR
 
 describe('openVoicings correctness invariants (authored keys only)', () => {
   for (const key of AUTHORED_KEYS) {
