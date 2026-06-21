@@ -406,23 +406,24 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 3.1 — Author A# (Bb) barre voicings + correctness test (RED→GREEN)
+### TASK 3.1 — [x] Author A# (Bb) barre voicings + correctness test (RED→GREEN)
 
 - **File:** `src/lib/theory/openVoicings.ts` (EDIT — data only)
 - All 7 A# voicings must have `baseFret > 1`. Run correctness test; must pass.
 
-### TASK 3.2 — Author D# (Eb) barre voicings + correctness test
+### TASK 3.2 — [x] Author D# (Eb) barre voicings + correctness test
 
-### TASK 3.3 — Author G# (Ab) barre voicings + correctness test
+### TASK 3.3 — [x] Author G# (Ab) barre voicings + correctness test
 
-### TASK 3.4 — Author B major voicings + correctness test
+### TASK 3.4 — [x] Author B major voicings + correctness test
 
 - B major in open position uses a partial barre or barre at fret 2; `baseFret` may be 1 or 2 depending on the shape chosen. Correctness test decides.
 
-### TASK 3.5 — PR3 regression run
+### TASK 3.5 — [x] PR3 regression run
 
 - **Command:** `npx vitest run` — full suite green.
 - **PR3 commit sequence:** one commit per key, same pattern as PR2.
+- **Result:** 570 passed | 35 skipped; svelte-check 13 pre-existing errors only.
 
 ---
 
