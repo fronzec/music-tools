@@ -358,7 +358,7 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
 
 ---
 
-### TASK 2.1 — Author G major voicings (7 voicings) and run correctness test (RED→GREEN)
+### TASK 2.1 — Author G major voicings (7 voicings) and run correctness test (RED→GREEN) [x]
 
 - **File:** `src/lib/theory/openVoicings.ts` (EDIT — data only)
 - **Satisfies:** Spec §Voicing Correctness Invariants (all 84 pass), Spec §Voicing Data Contract (84 entries)
@@ -368,25 +368,25 @@ Each PR merges to `main` in order. Every PR boundary leaves the full test suite 
   3. Run `npx vitest run tests/unit/theory/openVoicings.test.ts` — must exit zero.
 - **Done criteria:** all 7 G major voicings pass subset, root-present, ≥3-strings, finger-coverage, metadata, role-totality, and baseFret invariants.
 
-### TASK 2.2 — Author D major voicings + run correctness test
+### TASK 2.2 — Author D major voicings + run correctness test [x]
 
 - Same procedure as 2.1 for key `'D'`. After authoring, add `'D'` to `AUTHORED_KEYS`, run test.
 
-### TASK 2.3 — Author A major voicings + run correctness test
+### TASK 2.3 — Author A major voicings + run correctness test [x]
 
 - Key `'A'`. Add to `AUTHORED_KEYS`, run test.
 
-### TASK 2.4 — Author E major voicings + run correctness test
+### TASK 2.4 — Author E major voicings + run correctness test [x]
 
 - Key `'E'`. Add to `AUTHORED_KEYS`, run test.
 
-### TASK 2.5 — Author F major voicings + run correctness test
+### TASK 2.5 — Author F major voicings + run correctness test [x]
 
 - Key `'F'`. Note: F major IV = Bb major — needs barre shape (`baseFret > 1`); vii° = E° partial shape. Add to `AUTHORED_KEYS`, run test.
 
-### TASK 2.6 — PR2 regression run
+### TASK 2.6 — PR2 regression run [x]
 
-- **Command:** `npx vitest run` — full suite green.
+- **Command:** `npx vitest run` — full suite green (374 passed | 35 skipped).
 - **PR2 commit sequence:**
   1. `feat(voicings): add G major open-position voicings (7 shapes)`
   2. `feat(voicings): add D major open-position voicings (7 shapes)`
