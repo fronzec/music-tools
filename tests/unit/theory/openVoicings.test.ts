@@ -60,12 +60,15 @@ describe('getOpenVoicing — C major', () => {
 // ---------------------------------------------------------------------------
 
 describe('getOpenVoicing — throw path', () => {
-  it('getOpenVoicing("G#", 1) throws (G# not yet authored in PR1)', () => {
-    expect(() => getOpenVoicing('G#', 1)).toThrow(/G#/);
-  });
-
+  // All 12 keys are authored in PR4 — the invalid-key throw path is no longer
+  // reachable via a valid NoteName. Assert the guard that IS reachable: degree
+  // out of the 1–7 range causes a descriptive throw.
   it('getOpenVoicing("C", 8 as any) throws (degree out of range)', () => {
     expect(() => getOpenVoicing('C', 8 as any)).toThrow();
+  });
+
+  it('getOpenVoicing("G", 0 as any) throws (degree out of range)', () => {
+    expect(() => getOpenVoicing('G', 0 as any)).toThrow();
   });
 });
 
@@ -74,7 +77,7 @@ describe('getOpenVoicing — throw path', () => {
 // Design-review finding #1: NoteNames → PCs BEFORE comparison
 // ---------------------------------------------------------------------------
 
-const AUTHORED_KEYS: NoteName[] = ['C']; // PR1 starts with C only; expand each batch PR
+const AUTHORED_KEYS: NoteName[] = ['C', 'G', 'D', 'A', 'E', 'F', 'A#', 'D#', 'G#', 'B', 'C#', 'F#']; // all 12 keys authored in PR4
 
 describe('openVoicings correctness invariants (authored keys only)', () => {
   for (const key of AUTHORED_KEYS) {
@@ -169,19 +172,27 @@ describe('openVoicings correctness invariants (authored keys only)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Block E — sharp-key baseFret constraint (design-review finding #3)
-// Written RED in PR1 (sharps not yet authored) — stays SKIPPED until PR4.
-// Remove the .skip in PR4 after sharps are authored.
+// Block E — sharp-key no-open-strings constraint (design-review finding #3)
+// These keys have no open-position shapes: every played string must be fretted
+// (no played fret === 0). This is the true invariant — a low barre at fret 1
+// (e.g. A# degree I, F degree I) is valid as long as no string sounds open.
 // ---------------------------------------------------------------------------
 
 const SHARP_KEYS = ['C#', 'F#', 'G#', 'D#', 'A#'] as const;
 
-describe.skip('sharp-key baseFret > 1 (activate in PR4 when sharps are authored)', () => {
+describe('sharp-key no-open-strings (all shapes are barre/movable)', () => {
   for (const key of SHARP_KEYS) {
     for (let degree = 1; degree <= 7; degree++) {
-      it(`${key} degree ${degree} has baseFret > 1`, () => {
+      it(`${key} degree ${degree}: no played string has fret === 0 (no open strings)`, () => {
         const v = getOpenVoicing(key as NoteName, degree as Degree);
-        expect(v.baseFret, `${key} deg ${degree}: expected baseFret > 1`).toBeGreaterThan(1);
+        v.frets.forEach((f, i) => {
+          if (f !== null) {
+            expect(
+              f,
+              `${key} deg ${degree} string ${i}: open string found (fret=0); sharp keys must use barre/movable shapes`,
+            ).toBeGreaterThan(0);
+          }
+        });
       });
     }
   }
