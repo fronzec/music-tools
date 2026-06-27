@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { ArpeggioNote } from '$lib/types/progression';
+  import type { ChordQuality } from '$lib/types/chord';
+  import { getIntervalName } from '$lib/theory/notes';
   import {
     L,
     FRET_MARKERS,
@@ -13,10 +15,11 @@
   interface Props {
     notes: ArpeggioNote[];
     activeNoteIndex: number;
+    quality: ChordQuality;
     fretSpan?: number;
   }
 
-  let { notes, activeNoteIndex, fretSpan = 24 }: Props = $props();
+  let { notes, activeNoteIndex, quality, fretSpan = 24 }: Props = $props();
 
   const RANGE_START = 0;
 
@@ -34,21 +37,13 @@
   const MARKER_COLOR = '#374151'; // gray-700
   const MARKER_OPACITY = 0.45;
 
-  // Interval label derived from MIDI delta relative to root (notes[0])
-  const SEMITONE_LABELS: Record<number, string> = {
-    0: 'R',
-    3: 'b3',
-    4: '3',
-    6: 'b5',
-    7: '5',
-  };
-
-  function intervalLabel(note: ArpeggioNote, rootMidi: number): string {
-    const semitone = ((note.midi - rootMidi) % 12 + 12) % 12;
-    return SEMITONE_LABELS[semitone] ?? '';
-  }
-
+  // Interval label derived from the MIDI delta relative to the root (notes[0]),
+  // resolved through the shared getIntervalName so labels have one source of truth.
   let rootMidi = $derived(notes.length > 0 ? notes[0]!.midi : 0);
+
+  function intervalLabel(note: ArpeggioNote): string {
+    return getIntervalName(note.midi - rootMidi, quality);
+  }
 
   // Center Y for single-dot markers
   let centerY = $derived((stringY(0) + stringY(5)) / 2);
@@ -136,7 +131,7 @@
     {@const isActive = note.stepIndex === activeNoteIndex}
     {@const cx = noteX(note.fret, RANGE_START)}
     {@const cy = stringY(note.string)}
-    {@const label = intervalLabel(note, rootMidi)}
+    {@const label = intervalLabel(note)}
     <circle
       {cx}
       {cy}
@@ -156,6 +151,7 @@
         fill={isActive ? '#1e293b' : '#f8fafc'}
         opacity={isActive ? 1 : 0.7}
         pointer-events="none"
+        data-testid="sweep-label"
       >{label}</text>
     {/if}
   {/each}

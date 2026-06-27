@@ -178,7 +178,7 @@
           {#if mode === 'caged'}
             <FullFretboard {shapes} {visibleShapes} labelMode="intervals" />
           {:else}
-            <SweepFretboard notes={currentArpeggio} {activeNoteIndex} />
+            <SweepFretboard notes={currentArpeggio} {activeNoteIndex} quality={currentChord.quality} />
           {/if}
         {:else}
           <p class="py-8 text-center text-muted">Add chords to see shapes</p>

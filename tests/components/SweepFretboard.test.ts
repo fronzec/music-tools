@@ -15,6 +15,7 @@ describe('SweepFretboard', () => {
       const { container } = render(SweepFretboard, {
         notes: makeNotes(),
         activeNoteIndex: 0,
+        quality: 'major',
       });
       const svg = container.querySelector('svg');
       expect(svg).toBeTruthy();
@@ -24,6 +25,7 @@ describe('SweepFretboard', () => {
       const { container } = render(SweepFretboard, {
         notes: makeNotes(),
         activeNoteIndex: 0,
+        quality: 'major',
       });
       const svg = container.querySelector('svg');
       const label = svg?.getAttribute('aria-label');
@@ -35,6 +37,7 @@ describe('SweepFretboard', () => {
       const { container } = render(SweepFretboard, {
         notes: makeNotes(),
         activeNoteIndex: 0,
+        quality: 'major',
       });
       const svg = container.querySelector('svg');
       expect(svg?.getAttribute('role')).toBe('img');
@@ -44,6 +47,7 @@ describe('SweepFretboard', () => {
       const { container } = render(SweepFretboard, {
         notes: makeNotes(),
         activeNoteIndex: 0,
+        quality: 'major',
       });
       const svg = container.querySelector('svg');
       expect(svg?.classList.contains('w-full')).toBe(true);
@@ -56,6 +60,7 @@ describe('SweepFretboard', () => {
       const { container } = render(SweepFretboard, {
         notes: makeNotes(),
         activeNoteIndex: 0,
+        quality: 'major',
       });
       // Note circles have a data-testid attribute to distinguish from fret markers
       const noteCircles = container.querySelectorAll('[data-testid="sweep-note"]');
@@ -66,6 +71,7 @@ describe('SweepFretboard', () => {
       const { container } = render(SweepFretboard, {
         notes: [],
         activeNoteIndex: 0,
+        quality: 'major',
       });
       const noteCircles = container.querySelectorAll('[data-testid="sweep-note"]');
       expect(noteCircles).toHaveLength(0);
@@ -74,7 +80,7 @@ describe('SweepFretboard', () => {
     it('does not crash for dim arpeggio', () => {
       const dimNotes = makeNotes('D', 'dim');
       expect(() =>
-        render(SweepFretboard, { notes: dimNotes, activeNoteIndex: 0 }),
+        render(SweepFretboard, { notes: dimNotes, activeNoteIndex: 0, quality: 'dim' }),
       ).not.toThrow();
     });
   });
@@ -84,6 +90,7 @@ describe('SweepFretboard', () => {
       const { container } = render(SweepFretboard, {
         notes: makeNotes(),
         activeNoteIndex: 2,
+        quality: 'major',
       });
       const activeCircles = container.querySelectorAll('[data-active="true"]');
       expect(activeCircles).toHaveLength(1);
@@ -93,6 +100,7 @@ describe('SweepFretboard', () => {
       const { container } = render(SweepFretboard, {
         notes: makeNotes(),
         activeNoteIndex: 0,
+        quality: 'major',
       });
       const allNotes = container.querySelectorAll('[data-testid="sweep-note"]');
       const inactiveNotes = Array.from(allNotes).filter(
@@ -102,11 +110,40 @@ describe('SweepFretboard', () => {
     });
   });
 
+  describe('interval labels (single source of truth via getIntervalName)', () => {
+    function labels(container: HTMLElement): string[] {
+      return Array.from(container.querySelectorAll('[data-testid="sweep-label"]')).map(
+        (el) => el.textContent ?? '',
+      );
+    }
+
+    it('labels a major arpeggio with root, third, and fifth (R-5-R-3-R)', () => {
+      const { container } = render(SweepFretboard, {
+        notes: makeNotes('C', 'major'),
+        activeNoteIndex: 0,
+        quality: 'major',
+      });
+      expect(labels(container)).toEqual(['R', '5', 'R', '3', 'R']);
+    });
+
+    it('labels a dim arpeggio with b5 and b3 — never a perfect 5th (R-b5-R-b3-R)', () => {
+      const { container } = render(SweepFretboard, {
+        notes: makeNotes('D', 'dim'),
+        activeNoteIndex: 0,
+        quality: 'dim',
+      });
+      const result = labels(container);
+      expect(result).toEqual(['R', 'b5', 'R', 'b3', 'R']);
+      expect(result).not.toContain('5');
+    });
+  });
+
   describe('fretSpan prop', () => {
     it('defaults to a 24-fret span viewBox (wide enough for 24 frets)', () => {
       const { container } = render(SweepFretboard, {
         notes: makeNotes(),
         activeNoteIndex: 0,
+        quality: 'major',
       });
       const svg = container.querySelector('svg');
       const viewBox = svg?.getAttribute('viewBox') ?? '';

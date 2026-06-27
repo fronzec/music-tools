@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import ProgressionBuilder from '$lib/components/ProgressionBuilder.svelte';
 import type { ViewName } from '$lib/types/chord';
+import { PLAYBACK_MS } from '$lib/types/progression';
 
 describe('ProgressionBuilder', () => {
   beforeEach(() => {
@@ -379,6 +380,42 @@ describe('ProgressionBuilder', () => {
       await dimBtns[0]!.click();
       // Should not throw; SVG still present
       expect(container.querySelector('svg')).toBeTruthy();
+    });
+  });
+
+  describe('sweep playback wiring (fake timers)', () => {
+    // The timer $effect is the riskiest logic in this component — exercise it for real.
+    function activeNoteIndexOf(container: HTMLElement): number {
+      const notes = Array.from(container.querySelectorAll('[data-testid="sweep-note"]'));
+      return notes.findIndex((n) => n.getAttribute('data-active') === 'true');
+    }
+
+    it('advances activeNoteIndex one note per tick in sweep mode', async () => {
+      const { container } = renderBuilder();
+      await screen.getByRole('radio', { name: 'Sweep arpeggio view' }).click();
+      expect(activeNoteIndexOf(container)).toBe(0);
+
+      await screen.getByRole('button', { name: 'Start playback' }).click();
+
+      await vi.advanceTimersByTimeAsync(PLAYBACK_MS.medium);
+      expect(activeNoteIndexOf(container)).toBe(1);
+
+      await vi.advanceTimersByTimeAsync(PLAYBACK_MS.medium);
+      expect(activeNoteIndexOf(container)).toBe(2);
+    });
+
+    it('resets the sub-step to note 0 when the active chord changes mid-sweep', async () => {
+      const { container } = renderBuilder();
+      await screen.getByRole('radio', { name: 'Sweep arpeggio view' }).click();
+      await screen.getByRole('button', { name: 'Start playback' }).click();
+
+      await vi.advanceTimersByTimeAsync(PLAYBACK_MS.medium);
+      await vi.advanceTimersByTimeAsync(PLAYBACK_MS.medium);
+      expect(activeNoteIndexOf(container)).toBe(2);
+
+      // Jumping to another chord stops playback and resets the sub-step.
+      await screen.getByRole('button', { name: 'Next chord' }).click();
+      expect(activeNoteIndexOf(container)).toBe(0);
     });
   });
 
