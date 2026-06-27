@@ -121,8 +121,20 @@ describe('indicatorX', () => {
 });
 
 describe('FRET_MARKERS', () => {
-  it('includes standard marker positions', () => {
-    expect(FRET_MARKERS).toEqual([3, 5, 7, 9, 12, 15]);
+  it('includes all standard marker positions [3,5,7,9,12,15]', () => {
+    for (const m of [3, 5, 7, 9, 12, 15]) {
+      expect(FRET_MARKERS, `marker ${m} must be present`).toContain(m);
+    }
+  });
+
+  it('includes extended 24-fret markers [17,19,21,24]', () => {
+    for (const m of [17, 19, 21, 24]) {
+      expect(FRET_MARKERS, `extended marker ${m} must be present`).toContain(m);
+    }
+  });
+
+  it('has exact full extended set [3,5,7,9,12,15,17,19,21,24]', () => {
+    expect(FRET_MARKERS).toEqual([3, 5, 7, 9, 12, 15, 17, 19, 21, 24]);
   });
 
   it('includes 12 (double marker)', () => {

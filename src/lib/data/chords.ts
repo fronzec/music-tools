@@ -11,13 +11,13 @@ const SHAPES = shapesData as Record<NoteName, Record<ChordQuality, ChordShape[]>
 
 /**
  * Returns exactly 5 shapes for the given root and quality, in CAGED order (C, A, G, E, D).
- *
- * @throws {Error} If the root or quality is not found in the dataset.
+ * Returns an empty array when no data exists for the given (root, quality) pair —
+ * for example, `'dim'` quality has no CAGED JSON data; callers render an empty board gracefully.
  */
 export function getShapes(root: NoteName, quality: ChordQuality): ChordShape[] {
   const entry = SHAPES[root]?.[quality];
   if (!entry) {
-    throw new Error(`No shapes found for ${root} ${quality}`);
+    return [];
   }
   // Sort into CAGED order
   return [...entry].sort(

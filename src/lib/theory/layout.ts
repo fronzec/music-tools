@@ -141,6 +141,9 @@ export function indicatorX(baseFret: number, minFret: number): number {
 }
 
 /**
- * Standard fret marker positions on a guitar.
+ * Standard fret marker positions on a guitar, extended through fret 24.
+ * FullFretboard filters these by `mf < minFret + displaySpan` (14), so the
+ * extended markers (17, 19, 21, 24) are invisible in the 14-fret CAGED view.
+ * SweepFretboard uses the full array for the 24-fret neck.
  */
-export const FRET_MARKERS: number[] = [3, 5, 7, 9, 12, 15];
+export const FRET_MARKERS: number[] = [3, 5, 7, 9, 12, 15, 17, 19, 21, 24];

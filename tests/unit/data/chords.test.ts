@@ -50,12 +50,19 @@ describe('getShapes', () => {
     }
   });
 
-  it('throws for invalid root', () => {
-    expect(() => getShapes('H' as NoteName, 'major')).toThrow();
+  it('returns [] for unknown root (graceful fallback)', () => {
+    expect(getShapes('H' as NoteName, 'major')).toEqual([]);
   });
 
-  it('throws for invalid quality', () => {
-    expect(() => getShapes('C', 'dim' as ChordQuality)).toThrow();
+  it('returns [] for dim quality (no CAGED data — graceful fallback)', () => {
+    expect(getShapes('D', 'dim')).toEqual([]);
+  });
+
+  it('returns [] for all 12 roots when quality is dim', () => {
+    const roots: NoteName[] = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    for (const root of roots) {
+      expect(getShapes(root, 'dim'), `getShapes(${root}, dim) should return []`).toEqual([]);
+    }
   });
 
   it('returns 5 unique shape names for each root + quality', () => {
