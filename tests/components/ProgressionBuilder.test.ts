@@ -292,6 +292,96 @@ describe('ProgressionBuilder', () => {
     });
   });
 
+  describe('mode toggle (CAGED / Sweep)', () => {
+    it('renders CAGED and Sweep mode buttons', () => {
+      renderBuilder();
+      expect(screen.getByRole('radio', { name: 'CAGED chord view' })).toBeTruthy();
+      expect(screen.getByRole('radio', { name: 'Sweep arpeggio view' })).toBeTruthy();
+    });
+
+    it('starts in CAGED mode with CAGED button aria-checked true', () => {
+      renderBuilder();
+      const cagedBtn = screen.getByRole('radio', { name: 'CAGED chord view' });
+      const sweepBtn = screen.getByRole('radio', { name: 'Sweep arpeggio view' });
+      expect(cagedBtn.getAttribute('aria-checked')).toBe('true');
+      expect(sweepBtn.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('clicking Sweep switches aria-checked to Sweep', async () => {
+      renderBuilder();
+      const sweepBtn = screen.getByRole('radio', { name: 'Sweep arpeggio view' });
+      await sweepBtn.click();
+      expect(sweepBtn.getAttribute('aria-checked')).toBe('true');
+      const cagedBtn = screen.getByRole('radio', { name: 'CAGED chord view' });
+      expect(cagedBtn.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('switching to Sweep replaces FullFretboard with SweepFretboard SVG', async () => {
+      const { container } = renderBuilder();
+      // In CAGED mode, the svg aria-label contains chord info (e.g. 'C major')
+      expect(container.querySelector('svg')?.getAttribute('aria-label')).toContain('C major');
+
+      const sweepBtn = screen.getByRole('radio', { name: 'Sweep arpeggio view' });
+      await sweepBtn.click();
+
+      // SweepFretboard has 'Sweep' in its aria-label
+      expect(container.querySelector('svg')?.getAttribute('aria-label')).toContain('Sweep');
+    });
+
+    it('switching back to CAGED restores FullFretboard', async () => {
+      const { container } = renderBuilder();
+      const sweepBtn = screen.getByRole('radio', { name: 'Sweep arpeggio view' });
+      await sweepBtn.click();
+      const cagedBtn = screen.getByRole('radio', { name: 'CAGED chord view' });
+      await cagedBtn.click();
+      expect(container.querySelector('svg')?.getAttribute('aria-label')).toContain('C major');
+    });
+  });
+
+  describe('loop toggle', () => {
+    it('renders a loop toggle button in the Playback card', () => {
+      renderBuilder();
+      expect(screen.getByRole('button', { name: /loop/i })).toBeTruthy();
+    });
+
+    it('loop starts OFF (aria-pressed false)', () => {
+      renderBuilder();
+      const loopBtn = screen.getByRole('button', { name: /loop/i });
+      expect(loopBtn.getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('clicking loop toggle turns it ON', async () => {
+      renderBuilder();
+      const loopBtn = screen.getByRole('button', { name: /loop/i });
+      await loopBtn.click();
+      expect(screen.getByRole('button', { name: /loop/i }).getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('clicking loop toggle twice returns it to OFF', async () => {
+      renderBuilder();
+      const loopBtn = screen.getByRole('button', { name: /loop/i });
+      await loopBtn.click();
+      await screen.getByRole('button', { name: /loop/i }).click();
+      expect(screen.getByRole('button', { name: /loop/i }).getAttribute('aria-pressed')).toBe('false');
+    });
+  });
+
+  describe('dim quality in progression', () => {
+    it('renders a dim toggle (°) for each chord', () => {
+      renderBuilder();
+      // Default 4 chords → 4 dim buttons
+      expect(screen.getAllByRole('radio', { name: /to dim$/ })).toHaveLength(4);
+    });
+
+    it('setting a chord to dim does not crash (CAGED board shows empty)', async () => {
+      const { container } = renderBuilder();
+      const dimBtns = screen.getAllByRole('radio', { name: /to dim$/ });
+      await dimBtns[0]!.click();
+      // Should not throw; SVG still present
+      expect(container.querySelector('svg')).toBeTruthy();
+    });
+  });
+
   describe('back button', () => {
     it('calls navigate with "home" when back button is clicked', async () => {
       const { navigate } = renderBuilder();
