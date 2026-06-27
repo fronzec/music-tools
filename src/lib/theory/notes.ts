@@ -28,12 +28,16 @@ export function getIntervalName(semitone: number, quality: ChordQuality): string
   const normalized = ((semitone % 12) + 12) % 12;
 
   if (normalized === 0) return 'R';
-  if (normalized === 7) return '5';
 
   if (quality === 'major') {
     if (normalized === 4) return '3';
-  } else {
+    if (normalized === 7) return '5';
+  } else if (quality === 'minor') {
     if (normalized === 3) return 'b3';
+    if (normalized === 7) return '5';
+  } else if (quality === 'dim') {
+    if (normalized === 3) return 'b3';
+    if (normalized === 6) return 'b5';
   }
 
   // Non-chord tone

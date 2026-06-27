@@ -110,6 +110,32 @@ describe('getIntervalName', () => {
       expect(getIntervalName(4, 'minor')).toBe('');
     });
   });
+
+  describe('dim quality', () => {
+    it('returns R for semitone 0', () => {
+      expect(getIntervalName(0, 'dim')).toBe('R');
+    });
+
+    it('returns b3 for semitone 3', () => {
+      expect(getIntervalName(3, 'dim')).toBe('b3');
+    });
+
+    it('returns b5 for semitone 6', () => {
+      expect(getIntervalName(6, 'dim')).toBe('b5');
+    });
+
+    it('returns empty string for perfect 5th (semitone 7) — not in dim', () => {
+      expect(getIntervalName(7, 'dim')).toBe('');
+    });
+
+    it('returns empty string for major 3rd (semitone 4) — not in dim', () => {
+      expect(getIntervalName(4, 'dim')).toBe('');
+    });
+
+    it('wraps: semitone 18 returns b5', () => {
+      expect(getIntervalName(18, 'dim')).toBe('b5');
+    });
+  });
 });
 
 describe('getNoteName', () => {
