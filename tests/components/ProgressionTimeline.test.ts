@@ -9,30 +9,35 @@ describe('ProgressionTimeline', () => {
     activeIndex?: number;
     isPlaying?: boolean;
     speed?: PlaybackSpeed;
+    loop?: boolean;
   } = {}) {
     const {
       length = 4,
       activeIndex = 0,
       isPlaying = false,
       speed = 'medium',
+      loop = false,
     } = opts;
     const onPrev = vi.fn();
     const onNext = vi.fn();
     const onTogglePlay = vi.fn();
     const onSpeedChange = vi.fn();
     const onSelectDot = vi.fn();
+    const onToggleLoop = vi.fn();
     const result = render(ProgressionTimeline, {
       length,
       activeIndex,
       isPlaying,
       speed,
+      loop,
       onPrev,
       onNext,
       onTogglePlay,
       onSpeedChange,
       onSelectDot,
+      onToggleLoop,
     });
-    return { onPrev, onNext, onTogglePlay, onSpeedChange, onSelectDot, ...result };
+    return { onPrev, onNext, onTogglePlay, onSpeedChange, onSelectDot, onToggleLoop, ...result };
   }
 
   describe('initial render', () => {
@@ -132,6 +137,32 @@ describe('ProgressionTimeline', () => {
       const playBtn = screen.getByRole('button', { name: 'Start playback' });
       await playBtn.click();
       expect(onTogglePlay).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('loop toggle', () => {
+    it('renders a loop toggle button', () => {
+      renderTimeline();
+      expect(screen.getByRole('button', { name: /loop/i })).toBeTruthy();
+    });
+
+    it('loop starts OFF by default (aria-pressed false)', () => {
+      renderTimeline();
+      const loopBtn = screen.getByRole('button', { name: /loop/i });
+      expect(loopBtn.getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('shows loop as ON when loop prop is true', () => {
+      renderTimeline({ loop: true });
+      const loopBtn = screen.getByRole('button', { name: /loop/i });
+      expect(loopBtn.getAttribute('aria-pressed')).toBe('true');
+    });
+
+    it('calls onToggleLoop when clicked', async () => {
+      const { onToggleLoop } = renderTimeline();
+      const loopBtn = screen.getByRole('button', { name: /loop/i });
+      await loopBtn.click();
+      expect(onToggleLoop).toHaveBeenCalledTimes(1);
     });
   });
 

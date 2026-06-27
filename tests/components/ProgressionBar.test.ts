@@ -143,6 +143,37 @@ describe('ProgressionBar', () => {
     });
   });
 
+  describe('dim quality button', () => {
+    it('renders a dim toggle for every chord', () => {
+      renderBar({
+        progression: [makeChord({ root: 'C' }), makeChord({ root: 'F' })],
+      });
+      expect(screen.getAllByRole('radio', { name: /to dim$/ })).toHaveLength(2);
+    });
+
+    it('marks dim as active with aria-checked when quality is dim', () => {
+      renderBar({
+        progression: [makeChord({ root: 'B', quality: 'dim' })],
+      });
+      const dimBtn = screen.getByRole('radio', { name: 'Set chord 1 to dim' });
+      expect(dimBtn.getAttribute('aria-checked')).toBe('true');
+      const majorBtn = screen.getByRole('radio', { name: 'Set chord 1 to major' });
+      expect(majorBtn.getAttribute('aria-checked')).toBe('false');
+      const minorBtn = screen.getByRole('radio', { name: 'Set chord 1 to minor' });
+      expect(minorBtn.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('clicking ° calls onQualityChange with dim', async () => {
+      const { onQualityChange } = renderBar({
+        progression: [makeChord({ root: 'C' }), makeChord({ root: 'F' })],
+      });
+      const dimBtns = screen.getAllByRole('radio', { name: /to dim$/ });
+      await dimBtns[0]!.click();
+      expect(onQualityChange).toHaveBeenCalledWith(0, 'dim');
+      expect(onQualityChange).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('remove chord', () => {
     it('calls onRemove when the remove button is clicked', async () => {
       const { onRemove } = renderBar();
