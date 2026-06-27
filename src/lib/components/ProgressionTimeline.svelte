@@ -6,11 +6,13 @@
     activeIndex: number;
     isPlaying: boolean;
     speed: PlaybackSpeed;
+    loop?: boolean;
     onPrev: () => void;
     onNext: () => void;
     onTogglePlay: () => void;
     onSpeedChange: (speed: PlaybackSpeed) => void;
     onSelectDot?: (index: number) => void;
+    onToggleLoop?: () => void;
   }
 
   let {
@@ -18,11 +20,13 @@
     activeIndex,
     isPlaying,
     speed,
+    loop = false,
     onPrev,
     onNext,
     onTogglePlay,
     onSpeedChange,
     onSelectDot,
+    onToggleLoop,
   }: Props = $props();
 
   const SPEEDS: PlaybackSpeed[] = ['slow', 'medium', 'fast'];
@@ -91,7 +95,7 @@
   </div>
 
   <!-- Speed selector -->
-  <div class="flex items-center justify-center gap-2" role="radiogroup" aria-label="Playback speed">
+  <div class="mb-2 flex items-center justify-center gap-2" role="radiogroup" aria-label="Playback speed">
     {#each SPEEDS as s (s)}
       <button
         class={[
@@ -108,5 +112,22 @@
         {speedLabel(s)}
       </button>
     {/each}
+  </div>
+
+  <!-- Loop toggle -->
+  <div class="flex items-center justify-center">
+    <button
+      class={[
+        'rounded-lg px-3 py-1 text-xs font-medium transition-all duration-200',
+        loop
+          ? 'bg-accent/15 text-accent-soft border border-accent/50'
+          : 'bg-surface text-muted hover:border-accent/40 border border-hairline',
+      ].join(' ')}
+      aria-pressed={loop}
+      aria-label={loop ? 'Disable loop' : 'Enable loop'}
+      onclick={onToggleLoop}
+    >
+      ↺ Loop
+    </button>
   </div>
 </div>
