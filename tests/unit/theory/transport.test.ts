@@ -33,10 +33,11 @@ describe('advancePlayback — caged mode', () => {
     expect(result.isPlaying).toBe(false);
   });
 
-  it('does not reset activeIndex when stopping (loop=false)', () => {
+  it('clamps activeIndex to the last valid chord when stopping (loop=false)', () => {
     const result = advancePlayback(state(2, 0, true), { ...opts, loop: false });
-    // activeIndex stays at the last index (or advances — implementation detail); isPlaying is what matters
+    // activeIndex stays in bounds at the last chord (progressionLength-1), never one past the end
     expect(result.isPlaying).toBe(false);
+    expect(result.activeIndex).toBe(2);
   });
 
   it('wraps activeIndex to 0 when loop=true and at end', () => {
@@ -116,10 +117,25 @@ describe('advancePlayback — sweep mode stop at end', () => {
     expect(result.isPlaying).toBe(false);
   });
 
-  it('activeIndex does not wrap when stopping (loop=false)', () => {
+  it('clamps to the last valid (chord, note) when stopping (loop=false)', () => {
     const result = advancePlayback(state(2, 4, true), opts);
-    // activeIndex should NOT reset to 0 on stop
-    expect(result.activeIndex).not.toBe(0);
+    // stays in bounds on the final note of the final chord, never one past the end
+    expect(result.activeIndex).toBe(2);
+    expect(result.activeNoteIndex).toBe(4);
+  });
+});
+
+// ─── edge case: empty progression ───────────────────────────────────────────
+
+describe('advancePlayback — empty progression', () => {
+  it('stops instead of looping forever when progressionLength=0 (loop=true)', () => {
+    const result = advancePlayback(state(0, 0, true), {
+      mode: 'sweep',
+      progressionLength: 0,
+      arpeggioLength: 5,
+      loop: true,
+    });
+    expect(result.isPlaying).toBe(false);
   });
 });
 

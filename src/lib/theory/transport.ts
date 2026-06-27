@@ -37,12 +37,15 @@ export function advancePlayback(s: PlaybackState, opts: AdvanceOpts): PlaybackSt
 
   const { mode, progressionLength, arpeggioLength, loop } = opts;
 
+  // Nothing to advance through — stop instead of looping forever on an empty progression.
+  if (progressionLength <= 0) return { ...s, isPlaying: false };
+
   if (mode === 'caged') {
     const nextIndex = s.activeIndex + 1;
     if (nextIndex >= progressionLength) {
       return loop
         ? { activeIndex: 0, activeNoteIndex: 0, isPlaying: true }
-        : { ...s, activeIndex: nextIndex, isPlaying: false };
+        : { ...s, activeIndex: progressionLength - 1, activeNoteIndex: 0, isPlaying: false };
     }
     return { ...s, activeIndex: nextIndex, activeNoteIndex: 0 };
   }
@@ -57,7 +60,7 @@ export function advancePlayback(s: PlaybackState, opts: AdvanceOpts): PlaybackSt
       // end of progression
       return loop
         ? { activeIndex: 0, activeNoteIndex: 0, isPlaying: true }
-        : { ...s, activeIndex: nextChordIndex, activeNoteIndex: 0, isPlaying: false };
+        : { ...s, activeIndex: progressionLength - 1, activeNoteIndex: arpeggioLength - 1, isPlaying: false };
     }
     return { ...s, activeIndex: nextChordIndex, activeNoteIndex: 0 };
   }
