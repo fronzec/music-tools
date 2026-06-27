@@ -97,6 +97,20 @@
             >
               m
             </button>
+            <button
+              class={[
+                'rounded px-1.5 py-0.5 text-xs font-bold leading-none transition-colors duration-150',
+                chord.quality === 'dim'
+                  ? 'bg-accent/15 text-accent-soft border border-accent/50'
+                  : 'text-muted',
+              ].join(' ')}
+              role="radio"
+              aria-checked={chord.quality === 'dim'}
+              aria-label="Set chord {index + 1} to dim"
+              onclick={() => onQualityChange(index, 'dim')}
+            >
+              °
+            </button>
           </div>
 
           <button
